@@ -18,15 +18,11 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="Checker">
-            <module name="TreeWalker">
-                <module name="AbbreviationAsWordInName">
-                    <property name="allowedAbbreviationLength" value="1"/>
-                    <property name="allowedAbbreviations" value="CSV"/>
-                    <property name="ignoreStatic" value="true"/>
-                    <property name="tokens" value="VARIABLE_DEF"/>
-                </module>
-            </module>
+        <module name="AbbreviationAsWordInName">
+            <property name="allowedAbbreviationLength" value="1"/>
+            <property name="allowedAbbreviations" value="CSV"/>
+            <property name="ignoreStatic" value="true"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
