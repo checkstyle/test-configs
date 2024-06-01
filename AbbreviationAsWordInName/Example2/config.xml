@@ -18,13 +18,9 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="Checker">
-            <module name="TreeWalker">
-                <module name="AbbreviationAsWordInName">
-                    <property name="ignoreStatic" value="false"/>
-                    <property name="ignoreOverriddenMethods" value="false"/>
-                </module>
-            </module>
+        <module name="AbbreviationAsWordInName">
+            <property name="ignoreStatic" value="false"/>
+            <property name="ignoreOverriddenMethods" value="false"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
