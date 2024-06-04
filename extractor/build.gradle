@@ -1,0 +1,24 @@
+plugins {
+    // Apply the application plugin to add support for building a CLI application in Java.
+    id 'application'
+    id 'java'
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    // Use JUnit 4 test framework.
+    testImplementation 'junit:junit:4.13.2'
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'com.example.extractor.Main'
+}
+
+tasks.withType(JavaCompile) {
+    options.release = 21
+}
