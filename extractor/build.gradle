@@ -13,6 +13,8 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
     // Checkstyle dependencies
+    implementation 'com.puppycrawl.tools:checkstyle:10.17.0'
+    implementation 'com.puppycrawl.tools:checkstyle:10.17.0:tests'
     testImplementation 'com.puppycrawl.tools:checkstyle:10.17.0'
     testImplementation 'com.puppycrawl.tools:checkstyle:10.17.0:tests'
 }
@@ -23,4 +25,12 @@ application {
 
 tasks.withType(JavaCompile) {
     options.release = 21
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+        events "passed", "skipped", "failed"
+    }
 }
