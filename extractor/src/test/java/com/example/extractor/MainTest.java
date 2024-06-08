@@ -2,10 +2,16 @@ package com.example.extractor;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
@@ -37,4 +43,23 @@ public class MainTest {
 
         return false;
     }
+
+    @Test
+    public void testGeneratedConfigMatchesExpected() throws Exception {
+        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/Example1.java";
+        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
+        String outputFilePath = "src/test/resources/generated-config.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/config-example1-expected.xml";
+
+        ConfigSerializer.serializeConfig(exampleFilePath, templateFilePath, outputFilePath);
+
+        String generatedContent = new String(Files.readAllBytes(Path.of(outputFilePath)));
+        String expectedContent = new String(Files.readAllBytes(Path.of(expectedFilePath)));
+
+        // Sort the properties in both the generated and expected content
+        String sortedGeneratedContent = ConfigSerializer.sortProperties(generatedContent);
+        String sortedExpectedContent = ConfigSerializer.sortProperties(expectedContent);
+
+        assertEquals(sortedExpectedContent.trim(), sortedGeneratedContent.trim(), "The generated configuration does not match the expected output.");    }
+
 }
