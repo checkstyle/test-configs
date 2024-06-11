@@ -57,10 +57,10 @@ public class ConfigSerializer {
             if (!childProperties.isEmpty()) {
                 builder.append(indent).append("<module name=\"").append(child.getName()).append("\">\n");
                 builder.append(childProperties).append("\n");
-                builder.append(indent).append("</module>\n");
+                builder.append(indent).append("</module>\n\n"); // Added extra newline here
             } else {
                 // Generate self-closing tag if there are no properties
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n");
+                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n"); // Added extra newline here
             }
         }
         return builder.toString().trim();
