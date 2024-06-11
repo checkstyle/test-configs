@@ -174,4 +174,40 @@ public class MainTest {
 
         assertEquals(sortedExpectedContent.trim(), sortedGeneratedContent.trim(), "The generated configuration does not match the expected output.");
     }
+
+    @Test
+    public void testGeneratedConfigMatchesExpectedAllInOne() throws Exception {
+        // List of example files
+        String[] exampleFiles = {
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example1.java",
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example2.java",
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example3.java",
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example4.java",
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example5.java",
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example6.java",
+                "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/examples/Example7.java"
+        };
+
+        // Template and output paths
+        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
+        String outputFilePath = "src/test/resources/generated-config-all-in-one.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname/configs/config-examples-all-in-one-expected.xml";
+
+        // Clear the output file
+        Files.deleteIfExists(Path.of(outputFilePath));
+
+        // Generate the all-in-one configuration
+        ConfigSerializer.serializeAllInOneConfig(exampleFiles, templateFilePath, outputFilePath);
+
+        // Read the generated content
+        String generatedContent = new String(Files.readAllBytes(Path.of(outputFilePath)));
+        // Read the expected content
+        String expectedContent = new String(Files.readAllBytes(Path.of(expectedFilePath)));
+
+        // Sort the properties in both the generated and expected content
+        String sortedGeneratedContent = ConfigSerializer.sortProperties(generatedContent);
+        String sortedExpectedContent = ConfigSerializer.sortProperties(expectedContent);
+
+        assertEquals(sortedExpectedContent.trim(), sortedGeneratedContent.trim(), "The generated configuration does not match the expected output.");
+    }
 }
