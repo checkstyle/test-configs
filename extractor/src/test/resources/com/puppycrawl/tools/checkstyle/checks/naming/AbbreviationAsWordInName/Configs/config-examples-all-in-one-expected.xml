@@ -24,29 +24,29 @@
 
         <module name="AbbreviationAsWordInName">
             <property name="id" value="example2"/>
-            <property name="ignoreStatic" value="false"/>
             <property name="ignoreOverriddenMethods" value="false"/>
+            <property name="ignoreStatic" value="false"/>
         </module>
 
         <module name="AbbreviationAsWordInName">
-            <property name="id" value="example3"/>
             <property name="allowedAbbreviationLength" value="0"/>
             <property name="allowedAbbreviations" value="XML,URL,O"/>
+            <property name="id" value="example3"/>
             <property name="ignoreStatic" value="false"/>
             <property name="tokens" value="VARIABLE_DEF,CLASS_DEF"/>
         </module>
 
         <module name="AbbreviationAsWordInName">
-            <property name="id" value="example4"/>
             <property name="allowedAbbreviationLength" value="1"/>
             <property name="allowedAbbreviations" value="CSV"/>
+            <property name="id" value="example4"/>
             <property name="ignoreStatic" value="true"/>
             <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
         <module name="AbbreviationAsWordInName">
-            <property name="id" value="example5"/>
             <property name="allowedAbbreviationLength" value="0"/>
+            <property name="id" value="example5"/>
             <property name="ignoreFinal" value="false"/>
             <property name="ignoreStatic" value="false"/>
             <property name="ignoreStaticFinal" value="true"/>
@@ -54,8 +54,8 @@
         </module>
 
         <module name="AbbreviationAsWordInName">
-            <property name="id" value="example6"/>
             <property name="allowedAbbreviationLength" value="0"/>
+            <property name="id" value="example6"/>
             <property name="ignoreFinal" value="false"/>
             <property name="ignoreStatic" value="true"/>
             <property name="ignoreStaticFinal" value="false"/>
@@ -63,8 +63,8 @@
         </module>
 
         <module name="AbbreviationAsWordInName">
-            <property name="id" value="example7"/>
             <property name="allowedAbbreviations" value="ALLOWED"/>
+            <property name="id" value="example7"/>
             <property name="ignoreStaticFinal" value="false"/>
         </module>
 
@@ -76,7 +76,7 @@
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
-        <property name="message" value="Exception occurred while parsing"/>
         <property name="checks" value="Checker"/>
+        <property name="message" value="Exception occurred while parsing"/>
     </module>
 </module>

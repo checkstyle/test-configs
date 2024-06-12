@@ -19,8 +19,8 @@
 
     <module name="TreeWalker">
         <module name="AbbreviationAsWordInName">
-            <property name="ignoreStatic" value="false"/>
             <property name="ignoreOverriddenMethods" value="false"/>
+            <property name="ignoreStatic" value="false"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
@@ -31,7 +31,7 @@
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
-        <property name="message" value="Exception occurred while parsing"/>
         <property name="checks" value="Checker"/>
+        <property name="message" value="Exception occurred while parsing"/>
     </module>
 </module>

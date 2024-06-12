@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ConfigSerializer {
 
-    public static void serializeConfig(String exampleFilePath, String templateFilePath, String outputFilePath) throws Exception {
+    public static String serializeConfigToString(String exampleFilePath, String templateFilePath) throws Exception {
         System.out.println("Loading configuration from example file...");
         TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
@@ -29,11 +29,15 @@ public class ConfigSerializer {
         // Call replacePlaceholders to get the final config content
         String configContent = TemplateProcessor.replacePlaceholders(template, moduleContent);
 
-        // Write the final config content to the output file
-        Files.write(Path.of(outputFilePath), configContent.getBytes());
+        // Ensure the final content ends with a newline
+        if (!configContent.endsWith("\n")) {
+            configContent += "\n";
+        }
+
+        return configContent;
     }
 
-    public static void serializeAllInOneConfig(String[] exampleFilePaths, String templateFilePath, String outputFilePath) throws Exception {
+    public static String serializeAllInOneConfigToString(String[] exampleFilePaths, String templateFilePath) throws Exception {
         System.out.println("Generating all-in-one configuration...");
 
         List<Configuration> combinedChildren = new ArrayList<>();
@@ -60,8 +64,12 @@ public class ConfigSerializer {
         String template = new String(Files.readAllBytes(Path.of(templateFilePath)));
         String configContent = TemplateProcessor.replacePlaceholders(template, combinedModuleContent);
 
-        // Write the final config content to the output file
-        Files.write(Path.of(outputFilePath), configContent.getBytes());
+        // Ensure the final content ends with a newline
+        if (!configContent.endsWith("\n")) {
+            configContent += "\n";
+        }
+
+        return configContent;
     }
 
     private static Configuration addIdProperty(Configuration config, String idValue) {
