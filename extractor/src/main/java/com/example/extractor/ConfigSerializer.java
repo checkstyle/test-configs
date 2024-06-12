@@ -5,8 +5,10 @@ import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ConfigSerializer {
+
+    private static void copyListOfProjectsFile(String targetDir) throws Exception {
+        Path sourcePath = Path.of("src/main/resources/list-of-projects.properties");
+        Path targetPath = Path.of(targetDir, "list-of-projects.properties");
+        Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+    }
 
     public static void serializeConfig(String exampleFilePath, String templateFilePath, String outputFilePath) throws Exception {
         System.out.println("Loading configuration from example file...");
@@ -31,6 +39,9 @@ public class ConfigSerializer {
 
         // Write the final config content to the output file
         Files.write(Path.of(outputFilePath), configContent.getBytes());
+
+        // Copy the list-of-projects.properties file to the build directory
+        copyListOfProjectsFile(new File(outputFilePath).getParent());
     }
 
     public static void serializeAllInOneConfig(String[] exampleFilePaths, String templateFilePath, String outputFilePath) throws Exception {
@@ -62,6 +73,9 @@ public class ConfigSerializer {
 
         // Write the final config content to the output file
         Files.write(Path.of(outputFilePath), configContent.getBytes());
+
+        // Copy the list-of-projects.properties file to the build directory
+        copyListOfProjectsFile(new File(outputFilePath).getParent());
     }
 
     private static Configuration addIdProperty(Configuration config, String idValue) {

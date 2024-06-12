@@ -34,3 +34,29 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
+// Directory for generated files
+def generatedDir = file("$buildDir/generated")
+
+compileJava {
+    options.compilerArgs << "-s"
+    options.compilerArgs << generatedDir.toString()
+
+    doFirst {
+        // make sure that directory exists
+        generatedDir.mkdirs()
+    }
+}
+
+clean.doLast {
+    // clean-up directory when necessary
+    generatedDir.deleteDir()
+}
+
+sourceSets {
+    generated {
+        java {
+            srcDir generatedDir
+        }
+    }
+}
