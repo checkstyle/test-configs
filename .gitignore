@@ -1,0 +1,11 @@
+# Ignore temporary files and directories
+.ci-temp/
+.DS_Store
+
+# Ignore IntelliJ IDEA project files
+.idea/
+AbbreviationAsWordInName/.idea/
+SummaryJavadoc/.idea/
+
+# Ignore build directory
+build/
