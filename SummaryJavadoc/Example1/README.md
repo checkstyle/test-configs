@@ -5,3 +5,7 @@ Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-config
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/SummaryJavadoc/Example1/list-of-projects.properties
 ```
 
+or make comment in PR:
+
+`Github, generate report SummaryJavadoc/Example1`
+
