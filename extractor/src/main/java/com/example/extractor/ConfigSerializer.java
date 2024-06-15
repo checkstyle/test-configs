@@ -15,6 +15,16 @@ import java.util.Map;
 
 public class ConfigSerializer {
 
+    public static void serializeConfigToFile(String exampleFilePath, String templateFilePath, String outputFilePath) throws Exception {
+        String configContent = serializeConfigToString(exampleFilePath, templateFilePath);
+        Files.write(Path.of(outputFilePath), configContent.getBytes());
+    }
+
+    public static void serializeAllInOneConfigToFile(String[] exampleFilePaths, String templateFilePath, String outputFilePath) throws Exception {
+        String configContent = serializeAllInOneConfigToString(exampleFilePaths, templateFilePath);
+        Files.write(Path.of(outputFilePath), configContent.getBytes());
+    }
+
     public static String serializeConfigToString(String exampleFilePath, String templateFilePath) throws Exception {
         System.out.println("Loading configuration from example file...");
         TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
@@ -28,11 +38,6 @@ public class ConfigSerializer {
 
         // Call replacePlaceholders to get the final config content
         String configContent = TemplateProcessor.replacePlaceholders(template, moduleContent);
-
-        // Ensure the final content ends with a newline
-        if (!configContent.endsWith("\n")) {
-            configContent += "\n";
-        }
 
         return configContent;
     }
@@ -63,11 +68,6 @@ public class ConfigSerializer {
         // Read the template and replace the placeholder
         String template = new String(Files.readAllBytes(Path.of(templateFilePath)));
         String configContent = TemplateProcessor.replacePlaceholders(template, combinedModuleContent);
-
-        // Ensure the final content ends with a newline
-        if (!configContent.endsWith("\n")) {
-            configContent += "\n";
-        }
 
         return configContent;
     }
