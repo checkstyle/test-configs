@@ -9,3 +9,4 @@ SummaryJavadoc/.idea/
 
 # Ignore build directory
 build/
+.gradle/
