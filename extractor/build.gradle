@@ -27,7 +27,7 @@ application {
 }
 
 tasks.withType(JavaCompile) {
-    options.release = 21
+    //options.release = 21
 }
 
 test {
