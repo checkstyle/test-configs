@@ -16,11 +16,8 @@ jobs:
         distribution: 'adopt'
         java-version: '21'
 
-#    - name: Grant execute permission for setup script
-#      run: chmod +x setup.sh
-#
-#    - name: Run setup script
-#      run: ./setup.sh
+    - name: Run setup script
+      run: ./setup.sh
 
     - name: Build with Gradle
       run: cd extractor &&  ./gradlew clean build
