@@ -26,4 +26,4 @@ jobs:
       run: cd extractor &&  ./gradlew clean build
 
     - name: Check git changes
-      run: ./github/worflows/commands.sh git-diff
+      run: ./.github/workflows/commands.sh git-diff
