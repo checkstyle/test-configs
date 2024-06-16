@@ -31,7 +31,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample1() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example1.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example1-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example1.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -43,7 +43,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample2() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example2.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example2-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example2.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -55,7 +55,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample3() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example3.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example3-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example3.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -67,7 +67,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample4() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example4.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example4-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example4.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -79,7 +79,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample5() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example5.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example5-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example5.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -91,7 +91,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample6() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example6.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example6-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example6.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -103,7 +103,7 @@ public class MainTest {
     public void testGeneratedConfigMatchesExpectedExample7() throws Exception {
         String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example7.java";
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-example7-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example7.xml";
 
         String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
@@ -124,7 +124,7 @@ public class MainTest {
         };
 
         String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/config-examples-all-in-one-expected.xml";
+        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-all-in-one.xml";
 
         String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(exampleFiles, templateFilePath);
         String expectedContent = loadToString(expectedFilePath);
