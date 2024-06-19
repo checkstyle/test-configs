@@ -6,7 +6,10 @@ public class MainsLauncherTest {
 
     @Test
     public void testMain() throws Exception {
-        Main.main(new String[]{});
+        // Define the path in repo you want to test
+        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname";
+
+        // Pass the path as an argument
+        Main.main(new String[]{pathInRepo});
     }
 }
-
