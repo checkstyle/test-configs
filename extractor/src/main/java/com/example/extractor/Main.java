@@ -12,13 +12,16 @@ public class Main {
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Current working directory: " + Paths.get("").toAbsolutePath().toString());
+        if (args.length < 1) {
+            throw new IllegalArgumentException("Path in repo must be provided as the first argument.");
+        }
+
+        // Get the path in repo from the command-line arguments
+        String pathInRepo = args[0];
+        System.out.println("Using path in repo: " + pathInRepo);
 
         // Path to Checkstyle repo
         String checkstyleRepoPath = ".ci-temp/checkstyle";
-
-        // Path in repo
-        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname";
 
         // Input and output directories
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
