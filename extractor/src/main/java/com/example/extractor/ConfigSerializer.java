@@ -1,4 +1,3 @@
-
 package com.example.extractor;
 
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
@@ -117,7 +116,7 @@ public class ConfigSerializer {
         };
     }
 
-    private static String buildCombinedTreeWalkerChildren(List<Configuration> children, String indent) {
+    private static String buildCombinedTreeWalkerChildren(List<Configuration> children, String indent) throws CheckstyleException {
         StringBuilder builder = new StringBuilder();
 
         for (Configuration child : children) {
@@ -135,23 +134,19 @@ public class ConfigSerializer {
         return builder.toString().trim();
     }
 
-    private static String buildProperties(Configuration config, String indent) {
+    private static String buildProperties(Configuration config, String indent) throws CheckstyleException {
         StringBuilder builder = new StringBuilder();
         boolean firstProperty = true;
         List<String> sortedPropertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
         Collections.sort(sortedPropertyNames);
         for (String propertyName : sortedPropertyNames) {
-            try {
-                String propertyValue = config.getProperty(propertyName);
-                if (!firstProperty) {
-                    builder.append("\n");
-                }
-                builder.append(indent).append("<property name=\"").append(propertyName)
-                        .append("\" value=\"").append(propertyValue).append("\"/>");
-                firstProperty = false;
-            } catch (CheckstyleException e) {
-                System.err.println("Error retrieving property: " + e.getMessage());
+            String propertyValue = config.getProperty(propertyName);
+            if (!firstProperty) {
+                builder.append("\n");
             }
+            builder.append(indent).append("<property name=\"").append(propertyName)
+                    .append("\" value=\"").append(propertyValue).append("\"/>");
+            firstProperty = false;
         }
         return builder.toString();
     }
@@ -193,7 +188,7 @@ public class ConfigSerializer {
         return sortedContent.toString().trim();
     }
 
-    private static String buildModuleContent(Configuration config, String indent) {
+    private static String buildModuleContent(Configuration config, String indent) throws CheckstyleException {
         StringBuilder builder = new StringBuilder();
         for (Configuration child : config.getChildren()) {
             String childProperties = buildProperties(child, indent + "    ");
