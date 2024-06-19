@@ -1,3 +1,4 @@
+
 package com.example.extractor;
 
 import java.nio.file.*;
@@ -27,7 +28,7 @@ public class Main {
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
 
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
-        Path outputDirectory = PROJECT_ROOT.resolve("AbbreviationAsWordInName");
+        Path outputDirectory = PROJECT_ROOT.resolve("AbstractClassName");
 
         // Process files in the input directory and save results to the output directory
         processFiles(inputDirectory, outputDirectory.toString());
