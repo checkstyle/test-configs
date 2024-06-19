@@ -9,3 +9,4 @@ public class MainsLauncherTest {
         Main.main(new String[]{});
     }
 }
+

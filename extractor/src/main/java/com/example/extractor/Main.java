@@ -18,24 +18,24 @@ public class Main {
         String checkstyleRepoPath = ".ci-temp/checkstyle";
 
         // Path in repo
-        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/summaryjavadoc";
+        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/naming/abbreviationaswordinname";
 
         // Input and output directories
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
 
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
-        Path outputDirectory = PROJECT_ROOT.resolve("SummaryJavadoc2");
+        Path outputDirectory = PROJECT_ROOT.resolve("AbbreviationAsWordInName");
 
         // Process files in the input directory and save results to the output directory
         processFiles(inputDirectory, outputDirectory.toString());
     }
 
     public static void processFiles(String inputDir, String outputDir) throws Exception {
-        // Pattern to match files named Example#.java or Example#.txt
-        Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
+        // Pattern to match files named Example#.java
+        Pattern pattern = Pattern.compile("Example\\d+\\.java");
 
-        // Collect all Example#.java or Example#.txt files in the input directory
-        System.out.println("Walking through the input directory to collect Example#.java and Example#.txt files...");
+        // Collect all Example#.java files in the input directory
+        System.out.println("Walking through the input directory to collect Example#.java files...");
         try (Stream<Path> paths = Files.walk(Paths.get(inputDir))) {
             List<String> exampleFiles = paths
                     .filter(Files::isRegularFile)
@@ -46,7 +46,7 @@ public class Main {
                     .map(Path::toString)
                     .collect(Collectors.toList());
 
-            System.out.println("Found " + exampleFiles.size() + " Example#.java and Example#.txt files.");
+            System.out.println("Found " + exampleFiles.size() + " Example#.java files.");
 
             // Ensure output directory exists
             Path outputPath = Paths.get(outputDir).toAbsolutePath();
@@ -59,7 +59,7 @@ public class Main {
 
             // Create subfolders for each file in the output directory
             for (String exampleFile : exampleFiles) {
-                String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "");
+                String fileName = Paths.get(exampleFile).getFileName().toString().replace(".java", "");
                 Path subfolderPath = Paths.get(outputDir, fileName);
                 Files.createDirectories(subfolderPath);
                 processFile(exampleFile, subfolderPath);
@@ -92,8 +92,7 @@ public class Main {
                 return;
             }
 
-            String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "-config.xml");
-            Path outputFilePath = outputPath.resolve(fileName);
+            Path outputFilePath = outputPath.resolve("config.xml");
             System.out.println("Writing generated configuration to: " + outputFilePath);
             Files.writeString(outputFilePath, generatedContent);
         } catch (Exception e) {
