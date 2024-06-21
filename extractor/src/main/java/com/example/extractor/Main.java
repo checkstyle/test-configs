@@ -12,22 +12,26 @@ public class Main {
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            throw new IllegalArgumentException("Path in repo must be provided as the first argument.");
+        if (args.length < 2) {
+            throw new IllegalArgumentException("Path in repo and output directory name must be provided as arguments.");
         }
 
-        // Get the path in repo from the command-line arguments
+        // Get the path in repo and output directory name from the command-line arguments
         String pathInRepo = args[0];
+        String outputDirName = args[1];
         System.out.println("Using path in repo: " + pathInRepo);
+        System.out.println("Using output directory name: " + outputDirName);
 
         // Path to Checkstyle repo
         String checkstyleRepoPath = ".ci-temp/checkstyle";
 
-        // Input and output directories
+        // Input directory
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
 
+        // Construct the output directory path relative to PROJECT_ROOT
+        Path outputDirectory = PROJECT_ROOT.resolve(outputDirName);
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
-        Path outputDirectory = PROJECT_ROOT.resolve("AbbreviationAsWordInName");
+        System.out.println("Output directory: " + outputDirectory);
 
         // Process files in the input directory and save results to the output directory
         processFiles(inputDirectory, outputDirectory.toString());
