@@ -18,8 +18,8 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="SummaryJavadoc">
-            <property name="period" value="。"/>
+        <module name="SummaryJavadocCheck">
+            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
@@ -30,7 +30,7 @@
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
-        <property name="message" value="Exception occurred while parsing"/>
         <property name="checks" value="Checker"/>
+        <property name="message" value="Exception occurred while parsing"/>
     </module>
 </module>
