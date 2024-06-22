@@ -10,6 +10,8 @@ import java.util.regex.Matcher;
 public class Main {
 
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
+    private static final String PROJECT_PROPERTIES_FILENAME = "list-of-projects.properties";
+    private static final String PROJECT_PROPERTIES_FILE_PATH = "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
 
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
@@ -102,6 +104,12 @@ public class Main {
             Path outputFilePath = outputPath.resolve("config.xml");
             System.out.println("Writing generated configuration to: " + outputFilePath);
             Files.writeString(outputFilePath, generatedContent);
+
+            // Copy the project.properties file to the subfolder
+            Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
+            Path targetPropertiesPath = outputPath.resolve(PROJECT_PROPERTIES_FILENAME);
+            System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
+            Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             System.err.println("Error reading or processing the file: " + exampleFile);
             e.printStackTrace();
