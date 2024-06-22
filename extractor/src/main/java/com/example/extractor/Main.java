@@ -38,11 +38,11 @@ public class Main {
     }
 
     public static void processFiles(String inputDir, String outputDir) throws Exception {
-        // Pattern to match files named Example#.java
-        Pattern pattern = Pattern.compile("Example\\d+\\.java");
+        // Pattern to match files named Example#.java or Example#.txt
+        Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
 
-        // Collect all Example#.java files in the input directory
-        System.out.println("Walking through the input directory to collect Example#.java files...");
+        // Collect all Example#.java and Example#.txt files in the input directory
+        System.out.println("Walking through the input directory to collect Example#.java and Example#.txt files...");
         try (Stream<Path> paths = Files.walk(Paths.get(inputDir))) {
             List<String> exampleFiles = paths
                     .filter(Files::isRegularFile)
@@ -53,7 +53,7 @@ public class Main {
                     .map(Path::toString)
                     .collect(Collectors.toList());
 
-            System.out.println("Found " + exampleFiles.size() + " Example#.java files.");
+            System.out.println("Found " + exampleFiles.size() + " Example#.java or Example#.txt files.");
 
             // Ensure output directory exists
             Path outputPath = Paths.get(outputDir).toAbsolutePath();
@@ -66,7 +66,7 @@ public class Main {
 
             // Create subfolders for each file in the output directory
             for (String exampleFile : exampleFiles) {
-                String fileName = Paths.get(exampleFile).getFileName().toString().replace(".java", "");
+                String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "");
                 Path subfolderPath = Paths.get(outputDir, fileName);
                 Files.createDirectories(subfolderPath);
                 processFile(exampleFile, subfolderPath);
