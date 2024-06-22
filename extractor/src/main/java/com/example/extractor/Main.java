@@ -12,33 +12,37 @@ public class Main {
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            throw new IllegalArgumentException("Path in repo must be provided as the first argument.");
+        if (args.length < 2) {
+            throw new IllegalArgumentException("Path in repo and output directory name must be provided as arguments.");
         }
 
-        // Get the path in repo from the command-line arguments
+        // Get the path in repo and output directory name from the command-line arguments
         String pathInRepo = args[0];
+        String outputDirName = args[1];
         System.out.println("Using path in repo: " + pathInRepo);
+        System.out.println("Using output directory name: " + outputDirName);
 
         // Path to Checkstyle repo
         String checkstyleRepoPath = ".ci-temp/checkstyle";
 
-        // Input and output directories
+        // Input directory
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
 
+        // Construct the output directory path relative to PROJECT_ROOT
+        Path outputDirectory = PROJECT_ROOT.resolve(outputDirName);
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
-        Path outputDirectory = PROJECT_ROOT.resolve("AbbreviationAsWordInName");
+        System.out.println("Output directory: " + outputDirectory);
 
         // Process files in the input directory and save results to the output directory
         processFiles(inputDirectory, outputDirectory.toString());
     }
 
     public static void processFiles(String inputDir, String outputDir) throws Exception {
-        // Pattern to match files named Example#.java
-        Pattern pattern = Pattern.compile("Example\\d+\\.java");
+        // Pattern to match files named Example#.java or Example#.txt
+        Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
 
-        // Collect all Example#.java files in the input directory
-        System.out.println("Walking through the input directory to collect Example#.java files...");
+        // Collect all Example#.java and Example#.txt files in the input directory
+        System.out.println("Walking through the input directory to collect Example#.java and Example#.txt files...");
         try (Stream<Path> paths = Files.walk(Paths.get(inputDir))) {
             List<String> exampleFiles = paths
                     .filter(Files::isRegularFile)
@@ -49,7 +53,7 @@ public class Main {
                     .map(Path::toString)
                     .collect(Collectors.toList());
 
-            System.out.println("Found " + exampleFiles.size() + " Example#.java files.");
+            System.out.println("Found " + exampleFiles.size() + " Example#.java or Example#.txt files.");
 
             // Ensure output directory exists
             Path outputPath = Paths.get(outputDir).toAbsolutePath();
@@ -62,7 +66,7 @@ public class Main {
 
             // Create subfolders for each file in the output directory
             for (String exampleFile : exampleFiles) {
-                String fileName = Paths.get(exampleFile).getFileName().toString().replace(".java", "");
+                String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "");
                 Path subfolderPath = Paths.get(outputDir, fileName);
                 Files.createDirectories(subfolderPath);
                 processFile(exampleFile, subfolderPath);
