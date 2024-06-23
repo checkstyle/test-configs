@@ -1,6 +1,7 @@
 package com.example.extractor;
 
 import java.nio.file.*;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -135,10 +136,16 @@ public class Main {
                         return matcher.matches();
                     })
                     .map(Path::toString)
+                    .sorted(Comparator.comparingInt(Main::extractExampleNumber)) // Sort based on example number
                     .collect(Collectors.toList());
         }
 
         System.out.println("Found " + exampleFiles.size() + " Example#.java or Example#.txt files for all-in-one config.");
+
+        // Print the order of files being processed
+        for (int i = 0; i < exampleFiles.size(); i++) {
+            System.out.println("Processing file: " + exampleFiles.get(i));
+        }
 
         // Ensure output directory exists
         Path outputPath = Paths.get(outputDir).toAbsolutePath();
@@ -165,14 +172,32 @@ public class Main {
         String[] exampleFilePaths = exampleFiles.toArray(new String[0]);
         String outputFilePath = allInOneSubfolderPath.resolve("config-all-in-one.xml").toString();
 
+        // Print the order of example file paths
+        System.out.println("Order of example file paths to be processed:");
+        for (String exampleFilePath : exampleFilePaths) {
+            System.out.println(exampleFilePath);
+        }
+
         // Generate the all-in-one configuration file
         System.out.println("Generating all-in-one configuration file at: " + outputFilePath);
         ConfigSerializer.serializeAllInOneConfigToFile(exampleFilePaths, templateFilePath, outputFilePath);
+
+        System.out.println("Writing generated configuration to: " + outputFilePath);
+        String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(exampleFilePaths, templateFilePath);
+        Files.writeString(Path.of(outputFilePath), generatedContent);
 
         // Copy the project.properties file to the all-in-one subfolder
         Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
         Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
         System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
         Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private static int extractExampleNumber(String filename) {
+        Matcher matcher = Pattern.compile("Example(\\d+)\\.(java|txt)").matcher(filename);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        return Integer.MAX_VALUE; // A large number to place invalid filenames at the end
     }
 }
