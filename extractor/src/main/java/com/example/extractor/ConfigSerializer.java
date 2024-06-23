@@ -34,6 +34,7 @@ public class ConfigSerializer {
 
         // Accumulate values
         Configuration treeWalkerModule = getTreeWalkerModule(xmlConfig);
+
         String moduleContent = treeWalkerModule != null ? buildModuleContent(treeWalkerModule, "        ") : "";
 
         // Call replacePlaceholders to get the final config content
@@ -202,5 +203,29 @@ public class ConfigSerializer {
             }
         }
         return builder.toString().trim();
+    }
+
+    public static String extractModuleName(String exampleFilePath) throws Exception {
+        TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+        Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+        return getSpecificModuleName(xmlConfig);
+    }
+
+    private static String getSpecificModuleName(Configuration config) {
+        if (config.getChildren().length == 0) {
+            return config.getName();
+        }
+        for (Configuration child : config.getChildren()) {
+            // Skip Checker and TreeWalker, look deeper
+            if (!"Checker".equals(child.getName()) && !"TreeWalker".equals(child.getName())) {
+                return child.getName();
+            } else {
+                String moduleName = getSpecificModuleName(child);
+                if (!moduleName.equals(child.getName())) {
+                    return moduleName;
+                }
+            }
+        }
+        return config.getName();
     }
 }

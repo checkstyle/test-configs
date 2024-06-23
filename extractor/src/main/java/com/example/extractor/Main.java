@@ -1,12 +1,12 @@
 package com.example.extractor;
 
 import java.nio.file.*;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.ArrayList;
 
 public class Main {
 
@@ -15,15 +15,13 @@ public class Main {
     private static final String PROJECT_PROPERTIES_FILE_PATH = "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            throw new IllegalArgumentException("Path in repo and output directory name must be provided as arguments.");
+        if (args.length < 1) {
+            throw new IllegalArgumentException("Path in repo must be provided as argument.");
         }
 
-        // Get the path in repo and output directory name from the command-line arguments
+        // Get the path in repo from the command-line arguments
         String pathInRepo = args[0];
-        String outputDirName = args[1];
         System.out.println("Using path in repo: " + pathInRepo);
-        System.out.println("Using output directory name: " + outputDirName);
 
         // Path to Checkstyle repo
         String checkstyleRepoPath = "../.ci-temp/checkstyle";
@@ -31,16 +29,30 @@ public class Main {
         // Input directory
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
 
-        // Construct the output directory path relative to PROJECT_ROOT
-        Path outputDirectory = PROJECT_ROOT.resolve(outputDirName);
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
-        System.out.println("Output directory: " + outputDirectory);
 
-        // Process files in the input directory and save results to the output directory
-        processFiles(inputDirectory, outputDirectory.toString());
+        // Process directories
+        processDirectory(inputDirectory, PROJECT_ROOT.toString());
+    }
 
-        // Generate the all-in-one configuration
-        generateAllInOneConfig(inputDirectory, outputDirectory.toString());
+    public static void processDirectory(String inputDir, String outputDir) throws Exception {
+        try (Stream<Path> paths = Files.walk(Paths.get(inputDir))) {
+            List<Path> directories = paths
+                    .filter(Files::isDirectory)
+                    .collect(Collectors.toList());
+
+            for (Path dir : directories) {
+                String relativePath = Paths.get(inputDir).relativize(dir).toString();
+                if (!relativePath.isEmpty()) {
+                    Path outputPath = PROJECT_ROOT.resolve(relativePath);
+                    processFiles(dir.toString(), outputPath.toString());
+                    generateAllInOneConfig(dir.toString(), outputPath.toString());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error walking through the input directory or processing files.");
+            e.printStackTrace();
+        }
     }
 
     public static void processFiles(String inputDir, String outputDir) throws Exception {
@@ -61,8 +73,15 @@ public class Main {
 
             System.out.println("Found " + exampleFiles.size() + " Example#.java or Example#.txt files.");
 
+            if (exampleFiles.isEmpty()) {
+                return; // Skip processing if no example files found
+            }
+
+            // Get the module name from the first example file
+            String moduleName = ConfigSerializer.extractModuleName(exampleFiles.get(0));
+
             // Ensure output directory exists
-            Path outputPath = Paths.get(outputDir).toAbsolutePath();
+            Path outputPath = PROJECT_ROOT.resolve(moduleName);
             if (!Files.exists(outputPath)) {
                 System.out.println("Output directory does not exist. Creating: " + outputPath);
                 Files.createDirectories(outputPath);
@@ -73,7 +92,7 @@ public class Main {
             // Create subfolders for each file in the output directory
             for (String exampleFile : exampleFiles) {
                 String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "");
-                Path subfolderPath = Paths.get(outputDir, fileName);
+                Path subfolderPath = outputPath.resolve(fileName);
                 Files.createDirectories(subfolderPath);
                 processFile(exampleFile, subfolderPath);
             }
@@ -135,13 +154,21 @@ public class Main {
                         return matcher.matches();
                     })
                     .map(Path::toString)
+                    .sorted(Comparator.comparingInt(Main::extractExampleNumber)) // Sort based on example number
                     .collect(Collectors.toList());
         }
 
         System.out.println("Found " + exampleFiles.size() + " Example#.java or Example#.txt files for all-in-one config.");
 
+        if (exampleFiles.isEmpty()) {
+            return; // Skip processing if no example files found
+        }
+
+        // Get the module name from the first example file
+        String moduleName = ConfigSerializer.extractModuleName(exampleFiles.get(0));
+
         // Ensure output directory exists
-        Path outputPath = Paths.get(outputDir).toAbsolutePath();
+        Path outputPath = PROJECT_ROOT.resolve(moduleName);
         if (!Files.exists(outputPath)) {
             System.out.println("Output directory does not exist. Creating: " + outputPath);
             Files.createDirectories(outputPath);
@@ -165,14 +192,27 @@ public class Main {
         String[] exampleFilePaths = exampleFiles.toArray(new String[0]);
         String outputFilePath = allInOneSubfolderPath.resolve("config-all-in-one.xml").toString();
 
+
         // Generate the all-in-one configuration file
         System.out.println("Generating all-in-one configuration file at: " + outputFilePath);
         ConfigSerializer.serializeAllInOneConfigToFile(exampleFilePaths, templateFilePath, outputFilePath);
+
+        System.out.println("Writing generated configuration to: " + outputFilePath);
+        String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(exampleFilePaths, templateFilePath);
+        Files.writeString(Path.of(outputFilePath), generatedContent);
 
         // Copy the project.properties file to the all-in-one subfolder
         Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
         Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
         System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
         Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private static int extractExampleNumber(String filename) {
+        Matcher matcher = Pattern.compile("Example(\\d+)\\.(java|txt)").matcher(filename);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+        return Integer.MAX_VALUE; // A large number to place invalid filenames at the end
     }
 }
