@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -25,7 +26,7 @@ public class Main {
         System.out.println("Using output directory name: " + outputDirName);
 
         // Path to Checkstyle repo
-        String checkstyleRepoPath = ".ci-temp/checkstyle";
+        String checkstyleRepoPath = "../.ci-temp/checkstyle";
 
         // Input directory
         String inputDirectory = checkstyleRepoPath + "/" + pathInRepo;
@@ -37,6 +38,9 @@ public class Main {
 
         // Process files in the input directory and save results to the output directory
         processFiles(inputDirectory, outputDirectory.toString());
+
+        // Generate the all-in-one configuration
+        generateAllInOneConfig(inputDirectory, outputDirectory.toString());
     }
 
     public static void processFiles(String inputDir, String outputDir) throws Exception {
@@ -114,5 +118,61 @@ public class Main {
             System.err.println("Error reading or processing the file: " + exampleFile);
             e.printStackTrace();
         }
+    }
+
+    public static void generateAllInOneConfig(String inputDir, String outputDir) throws Exception {
+        // Pattern to match files named Example#.java or Example#.txt
+        Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
+
+        // Collect all Example#.java and Example#.txt files in the input directory
+        System.out.println("Walking through the input directory to collect Example#.java and Example#.txt files...");
+        List<String> exampleFiles;
+        try (Stream<Path> paths = Files.walk(Paths.get(inputDir))) {
+            exampleFiles = paths
+                    .filter(Files::isRegularFile)
+                    .filter(path -> {
+                        Matcher matcher = pattern.matcher(path.getFileName().toString());
+                        return matcher.matches();
+                    })
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        }
+
+        System.out.println("Found " + exampleFiles.size() + " Example#.java or Example#.txt files for all-in-one config.");
+
+        // Ensure output directory exists
+        Path outputPath = Paths.get(outputDir).toAbsolutePath();
+        if (!Files.exists(outputPath)) {
+            System.out.println("Output directory does not exist. Creating: " + outputPath);
+            Files.createDirectories(outputPath);
+        } else {
+            System.out.println("Output directory already exists: " + outputPath);
+        }
+
+        // Create a subfolder named "all-examples-in-one"
+        Path allInOneSubfolderPath = outputPath.resolve("all-examples-in-one");
+        if (!Files.exists(allInOneSubfolderPath)) {
+            System.out.println("Subfolder 'all-examples-in-one' does not exist. Creating: " + allInOneSubfolderPath);
+            Files.createDirectories(allInOneSubfolderPath);
+        } else {
+            System.out.println("Subfolder 'all-examples-in-one' already exists: " + allInOneSubfolderPath);
+        }
+
+        // Determine the template file path using the class loader
+        String templateFilePath = Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath();
+        System.out.println("Template file path: " + templateFilePath);
+
+        String[] exampleFilePaths = exampleFiles.toArray(new String[0]);
+        String outputFilePath = allInOneSubfolderPath.resolve("config-all-in-one.xml").toString();
+
+        // Generate the all-in-one configuration file
+        System.out.println("Generating all-in-one configuration file at: " + outputFilePath);
+        ConfigSerializer.serializeAllInOneConfigToFile(exampleFilePaths, templateFilePath, outputFilePath);
+
+        // Copy the project.properties file to the all-in-one subfolder
+        Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
+        Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
+        System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
+        Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
     }
 }
