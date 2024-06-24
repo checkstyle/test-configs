@@ -18,23 +18,19 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="AbstractClassName">
+        <module name="ConstantName">
             <property name="id" value="example1"/>
         </module>
 
-        <module name="AbstractClassName">
+        <module name="ConstantName">
+            <property name="format" value="^log(ger)?$|^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
             <property name="id" value="example2"/>
-            <property name="ignoreModifier" value="true"/>
         </module>
 
-        <module name="AbstractClassName">
+        <module name="ConstantName">
+            <property name="applyToProtected" value="false"/>
+            <property name="applyToPublic" value="false"/>
             <property name="id" value="example3"/>
-            <property name="ignoreName" value="true"/>
-        </module>
-
-        <module name="AbstractClassName">
-            <property name="format" value="^Generator.+$"/>
-            <property name="id" value="example4"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

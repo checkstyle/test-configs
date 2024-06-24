@@ -18,23 +18,29 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="AbstractClassName">
+        <module name="LocalVariableName">
             <property name="id" value="example1"/>
         </module>
 
-        <module name="AbstractClassName">
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example2"/>
-            <property name="ignoreModifier" value="true"/>
         </module>
 
-        <module name="AbstractClassName">
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example3"/>
-            <property name="ignoreName" value="true"/>
         </module>
 
-        <module name="AbstractClassName">
-            <property name="format" value="^Generator.+$"/>
+        <module name="LocalVariableName">
+            <property name="allowOneCharVarInForLoop" value="true"/>
+            <property name="format" value="^[a-z][_a-zA-Z0-9]+$"/>
             <property name="id" value="example4"/>
+        </module>
+
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][_a-zA-Z0-9]{2,}$"/>
+            <property name="id" value="example5"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
