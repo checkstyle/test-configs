@@ -18,9 +18,25 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="ParameterNumber">
+        <module name="RecordComponentNumber">
+            <property name="id" value="example1"/>
+        </module>
+
+        <module name="RecordComponentNumber">
+            <property name="id" value="example2"/>
+            <property name="max" value="5"/>
+        </module>
+
+        <module name="RecordComponentNumber">
+            <property name="accessModifiers" value="private"/>
+            <property name="id" value="example3"/>
+            <property name="max" value="3"/>
+        </module>
+
+        <module name="RecordComponentNumber">
+            <property name="accessModifiers" value="public"/>
+            <property name="id" value="example3"/>
             <property name="max" value="10"/>
-            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

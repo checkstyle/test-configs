@@ -18,9 +18,14 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="ParameterNumber">
+        <module name="RecordComponentNumber">
+            <property name="accessModifiers" value="private"/>
+            <property name="max" value="3"/>
+        </module>
+
+        <module name="RecordComponentNumber">
+            <property name="accessModifiers" value="public"/>
             <property name="max" value="10"/>
-            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

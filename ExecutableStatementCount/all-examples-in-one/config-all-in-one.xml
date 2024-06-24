@@ -18,9 +18,14 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="ParameterNumber">
-            <property name="max" value="10"/>
-            <property name="tokens" value="METHOD_DEF"/>
+        <module name="ExecutableStatementCount">
+            <property name="id" value="example1"/>
+        </module>
+
+        <module name="ExecutableStatementCount">
+            <property name="id" value="example2"/>
+            <property name="max" value="20"/>
+            <property name="tokens" value="CTOR_DEF,METHOD_DEF"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
