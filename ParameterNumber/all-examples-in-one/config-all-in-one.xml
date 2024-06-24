@@ -22,30 +22,20 @@
             <property name="id" value="example1"/>
         </module>
 
-        <module name="SuppressWarningsHolder">
-            <property name="aliasList" value="com.puppycrawl.tools.checkstyle.checks.sizes.ParameterNumberCheck=paramnum"/>
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="MemberName">
+        <module name="ParameterNumber">
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="ConstantName">
-            <property name="id" value="example2"/>
+            <property name="max" value="10"/>
+            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <module name="ParameterNumber">
-            <property name="id" value="example2"/>
-            <property name="id" value="example2"/>
+            <property name="id" value="example3"/>
+            <property name="ignoreOverriddenMethods" value="true"/>
         </module>
 
-        <module name="NoWhitespaceAfter">
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="SuppressWarningsHolder">
-            <property name="id" value="example2"/>
+        <module name="ParameterNumber">
+            <property name="id" value="example4"/>
+            <property name="ignoreAnnotatedBy" value="JsonCreator"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

@@ -18,9 +18,19 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="ParameterNumber">
-            <property name="max" value="10"/>
-            <property name="tokens" value="METHOD_DEF"/>
+        <module name="MethodCount">
+            <property name="id" value="example1"/>
+        </module>
+
+        <module name="MethodCount">
+            <property name="id" value="example2"/>
+            <property name="maxTotal" value="30"/>
+        </module>
+
+        <module name="MethodCount">
+            <property name="id" value="example3"/>
+            <property name="maxPublic" value="10"/>
+            <property name="maxTotal" value="40"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

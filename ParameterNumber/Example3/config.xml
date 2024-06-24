@@ -19,8 +19,7 @@
 
     <module name="TreeWalker">
         <module name="ParameterNumber">
-            <property name="max" value="10"/>
-            <property name="tokens" value="METHOD_DEF"/>
+            <property name="ignoreOverriddenMethods" value="true"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
