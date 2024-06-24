@@ -11,7 +11,7 @@ public class MainsLauncherTest {
     @Test
     public void testMain() throws Exception {
         // Define the path in repo you want to test
-        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/blocks";
+        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/coding";
 
         // Pass only the path in repo as argument
         Main.main(new String[]{pathInRepo});
