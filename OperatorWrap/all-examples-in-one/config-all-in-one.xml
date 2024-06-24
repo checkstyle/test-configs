@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name = "Checker">
+    <property name="charset" value="UTF-8"/>
+
+    <!-- do not change severity to 'error', as that will hide errors caused by exceptions -->
+    <property name="severity" value="warning"/>
+
+    <!-- haltOnException is required for exception fixes and reporting of all exceptions -->
+    <property name="haltOnException" value="false"/>
+
+    <!-- BeforeExecutionFileFilters is required for sources of java9 -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module\-info\.java$" />
+    </module>
+
+    <module name="TreeWalker">
+        <module name="OperatorWrap">
+            <property name="id" value="example1"/>
+        </module>
+
+        <module name="OperatorWrap">
+            <property name="id" value="example2"/>
+            <property name="option" value="eol"/>
+            <property name="tokens" value="ASSIGN,DIV_ASSIGN,PLUS_ASSIGN,MINUS_ASSIGN,STAR_ASSIGN,                       MOD_ASSIGN,SR_ASSIGN,BSR_ASSIGN,SL_ASSIGN,                       BXOR_ASSIGN,BOR_ASSIGN,BAND_ASSIGN"/>
+        </module>
+
+        <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
+        <module name="SuppressionXpathSingleFilter">
+            <property name="message" value="Javadoc comment at column \d+ has parse error"/>
+        </module>
+    </module>
+
+    <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
+    <module name="SuppressionSingleFilter">
+        <property name="checks" value="Checker"/>
+        <property name="message" value="Exception occurred while parsing"/>
+    </module>
+</module>
