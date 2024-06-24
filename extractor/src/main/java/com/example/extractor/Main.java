@@ -36,21 +36,29 @@ public class Main {
     }
 
     public static void processDirectory(String inputDir, String outputDir) throws Exception {
-        try (Stream<Path> paths = Files.walk(Paths.get(inputDir))) {
-            List<Path> directories = paths
-                    .filter(Files::isDirectory)
-                    .collect(Collectors.toList());
+        Path inputPath = Paths.get(inputDir);
+        try (Stream<Path> paths = Files.list(inputPath)) {
+            List<Path> contents = paths.collect(Collectors.toList());
 
-            for (Path dir : directories) {
-                String relativePath = Paths.get(inputDir).relativize(dir).toString();
-                if (!relativePath.isEmpty()) {
-                    Path outputPath = PROJECT_ROOT.resolve(relativePath);
-                    processFiles(dir.toString(), outputPath.toString());
-                    generateAllInOneConfig(dir.toString(), outputPath.toString());
+            boolean hasSubdirectories = contents.stream().anyMatch(Files::isDirectory);
+
+            if (hasSubdirectories) {
+                // If there are subdirectories, process them
+                for (Path dir : contents) {
+                    if (Files.isDirectory(dir)) {
+                        String relativePath = inputPath.relativize(dir).toString();
+                        Path outputPath = Paths.get(outputDir).resolve(relativePath);
+                        processFiles(dir.toString(), outputPath.toString());
+                        generateAllInOneConfig(dir.toString(), outputPath.toString());
+                    }
                 }
+            } else {
+                // If there are no subdirectories, process the current directory
+                processFiles(inputDir, outputDir);
+                generateAllInOneConfig(inputDir, outputDir);
             }
         } catch (Exception e) {
-            System.err.println("Error walking through the input directory or processing files.");
+            System.err.println("Error processing directory: " + inputDir);
             e.printStackTrace();
         }
     }
