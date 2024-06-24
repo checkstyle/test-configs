@@ -19,24 +19,11 @@
 
     <module name="TreeWalker">
         <module name="AbbreviationAsWordInName">
-            <property name="allowedAbbreviationLength" value="1"/>
-            <property name="allowedAbbreviations" value="CSV"/>
             <property name="id" value="example1"/>
-            <property name="ignoreStatic" value="true"/>
-            <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
         <module name="AbbreviationAsWordInName">
-            <property name="allowedAbbreviationLength" value="0"/>
             <property name="id" value="example2"/>
-            <property name="ignoreFinal" value="false"/>
-            <property name="ignoreStatic" value="false"/>
-            <property name="ignoreStaticFinal" value="true"/>
-            <property name="tokens" value="VARIABLE_DEF"/>
-        </module>
-
-        <module name="AbbreviationAsWordInName">
-            <property name="id" value="example3"/>
             <property name="ignoreOverriddenMethods" value="false"/>
             <property name="ignoreStatic" value="false"/>
         </module>
@@ -44,13 +31,26 @@
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="0"/>
             <property name="allowedAbbreviations" value="XML,URL,O"/>
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
             <property name="ignoreStatic" value="false"/>
             <property name="tokens" value="VARIABLE_DEF,CLASS_DEF"/>
         </module>
 
         <module name="AbbreviationAsWordInName">
+            <property name="allowedAbbreviationLength" value="1"/>
+            <property name="allowedAbbreviations" value="CSV"/>
+            <property name="id" value="example4"/>
+            <property name="ignoreStatic" value="true"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+
+        <module name="AbbreviationAsWordInName">
+            <property name="allowedAbbreviationLength" value="0"/>
             <property name="id" value="example5"/>
+            <property name="ignoreFinal" value="false"/>
+            <property name="ignoreStatic" value="false"/>
+            <property name="ignoreStaticFinal" value="true"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
         <module name="AbbreviationAsWordInName">
