@@ -15,13 +15,20 @@ public class Main {
     private static final String PROJECT_PROPERTIES_FILE_PATH = "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            throw new IllegalArgumentException("Path in repo must be provided as argument.");
+        if (args.length < 2) {
+            throw new IllegalArgumentException("Path in repo and configuration type must be provided as arguments.");
         }
 
-        // Get the path in repo from the command-line arguments
+        // Get the path in repo and configuration type from the command-line arguments
         String pathInRepo = args[0];
+        String configType = args[1].toLowerCase();
+
+        if (!configType.equals("treewalker") && !configType.equals("non-treewalker")) {
+            throw new IllegalArgumentException("Configuration type must be either 'treewalker' or 'non-treewalker'.");
+        }
+
         System.out.println("Using path in repo: " + pathInRepo);
+        System.out.println("Configuration type: " + configType);
 
         // Path to Checkstyle repo
         String checkstyleRepoPath = "../.ci-temp/checkstyle";
@@ -32,10 +39,10 @@ public class Main {
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
 
         // Process directories
-        processDirectory(inputDirectory, PROJECT_ROOT.toString());
+        processDirectory(inputDirectory, PROJECT_ROOT.toString(), configType);
     }
 
-    public static void processDirectory(String inputDir, String outputDir) throws Exception {
+    public static void processDirectory(String inputDir, String outputDir, String configType) throws Exception {
         Path inputPath = Paths.get(inputDir);
         try (Stream<Path> paths = Files.list(inputPath)) {
             List<Path> contents = paths.collect(Collectors.toList());
@@ -48,14 +55,14 @@ public class Main {
                     if (Files.isDirectory(dir)) {
                         String relativePath = inputPath.relativize(dir).toString();
                         Path outputPath = Paths.get(outputDir).resolve(relativePath);
-                        processFiles(dir.toString(), outputPath.toString());
-                        generateAllInOneConfig(dir.toString(), outputPath.toString());
+                        processFiles(dir.toString(), outputPath.toString(), configType);
+                        generateAllInOneConfig(dir.toString(), outputPath.toString(), configType);
                     }
                 }
             } else {
                 // If there are no subdirectories, process the current directory
-                processFiles(inputDir, outputDir);
-                generateAllInOneConfig(inputDir, outputDir);
+                processFiles(inputDir, outputDir, configType);
+                generateAllInOneConfig(inputDir, outputDir, configType);
             }
         } catch (Exception e) {
             System.err.println("Error processing directory: " + inputDir);
@@ -63,7 +70,7 @@ public class Main {
         }
     }
 
-    public static void processFiles(String inputDir, String outputDir) throws Exception {
+    public static void processFiles(String inputDir, String outputDir, String configType) throws Exception {
         // Pattern to match files named Example#.java or Example#.txt
         Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
 
@@ -102,7 +109,7 @@ public class Main {
                 String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "");
                 Path subfolderPath = outputPath.resolve(fileName);
                 Files.createDirectories(subfolderPath);
-                processFile(exampleFile, subfolderPath);
+                processFile(exampleFile, subfolderPath, configType);
             }
         } catch (Exception e) {
             System.err.println("Error walking through the input directory or processing files.");
@@ -110,9 +117,11 @@ public class Main {
         }
     }
 
-    private static void processFile(String exampleFile, Path outputPath) {
+    private static void processFile(String exampleFile, Path outputPath, String configType) {
         // Determine the template file path using the class loader
-        String templateFilePath = Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath();
+        String templateFilePath = configType.equals("treewalker")
+                ? Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath()
+                : Main.class.getClassLoader().getResource("config-template-non-treewalker.xml").getPath();
         System.out.println("Template file path: " + templateFilePath);
 
         System.out.println("Processing file: " + exampleFile);
@@ -147,7 +156,7 @@ public class Main {
         }
     }
 
-    public static void generateAllInOneConfig(String inputDir, String outputDir) throws Exception {
+    public static void generateAllInOneConfig(String inputDir, String outputDir, String configType) throws Exception {
         // Pattern to match files named Example#.java or Example#.txt
         Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
 
@@ -194,12 +203,13 @@ public class Main {
         }
 
         // Determine the template file path using the class loader
-        String templateFilePath = Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath();
+        String templateFilePath = configType.equals("treewalker")
+                ? Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath()
+                : Main.class.getClassLoader().getResource("config-template-non-treewalker.xml").getPath();
         System.out.println("Template file path: " + templateFilePath);
 
         String[] exampleFilePaths = exampleFiles.toArray(new String[0]);
         String outputFilePath = allInOneSubfolderPath.resolve("config-all-in-one.xml").toString();
-
 
         // Generate the all-in-one configuration file
         System.out.println("Generating all-in-one configuration file at: " + outputFilePath);

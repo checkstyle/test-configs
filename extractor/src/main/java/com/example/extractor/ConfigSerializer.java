@@ -32,13 +32,13 @@ public class ConfigSerializer {
 
         String template = new String(Files.readAllBytes(Path.of(templateFilePath)));
 
-        // Accumulate values
-        Configuration treeWalkerModule = getTreeWalkerModule(xmlConfig);
-
-        String moduleContent = treeWalkerModule != null ? buildModuleContent(treeWalkerModule, "        ") : "";
+        // Determine if it's a TreeWalker or non-TreeWalker configuration
+        Configuration targetModule = getTargetModule(xmlConfig);
+        String baseIndent = isTreeWalkerConfig(xmlConfig) ? "        " : "    ";
+        String moduleContent = targetModule != null ? buildModuleContent(targetModule, baseIndent) : "";
 
         // Call replacePlaceholders to get the final config content
-        String configContent = TemplateProcessor.replacePlaceholders(template, moduleContent);
+        String configContent = TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalkerConfig(xmlConfig));
 
         return configContent;
     }
@@ -48,27 +48,30 @@ public class ConfigSerializer {
 
         List<Configuration> combinedChildren = new ArrayList<>();
         int exampleIndex = 1;
+        boolean isTreeWalker = true;
         for (String exampleFilePath : exampleFilePaths) {
             System.out.println("Loading configuration from example file: " + exampleFilePath);
             TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
             Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
-            Configuration treeWalkerModule = getTreeWalkerModule(xmlConfig);
-            if (treeWalkerModule != null) {
+            Configuration targetModule = getTargetModule(xmlConfig);
+            if (targetModule != null) {
                 // Add an id property to each child module based on the example index
-                for (Configuration child : treeWalkerModule.getChildren()) {
+                for (Configuration child : targetModule.getChildren()) {
                     Configuration modifiedChild = addIdProperty(child, "example" + exampleIndex);
                     combinedChildren.add(modifiedChild);
                 }
             }
+            isTreeWalker &= isTreeWalkerConfig(xmlConfig);
             exampleIndex++;
         }
 
-        // Build combined TreeWalker content
-        String combinedModuleContent = buildCombinedTreeWalkerChildren(combinedChildren, "        ");
+        // Build combined module content
+        String baseIndent = isTreeWalker ? "        " : "    ";
+        String combinedModuleContent = buildCombinedModuleChildren(combinedChildren, baseIndent);
 
         // Read the template and replace the placeholder
         String template = new String(Files.readAllBytes(Path.of(templateFilePath)));
-        String configContent = TemplateProcessor.replacePlaceholders(template, combinedModuleContent);
+        String configContent = TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
 
         return configContent;
     }
@@ -117,7 +120,7 @@ public class ConfigSerializer {
         };
     }
 
-    private static String buildCombinedTreeWalkerChildren(List<Configuration> children, String indent) throws CheckstyleException {
+    private static String buildCombinedModuleChildren(List<Configuration> children, String indent) throws CheckstyleException {
         StringBuilder builder = new StringBuilder();
 
         for (Configuration child : children) {
@@ -125,10 +128,9 @@ public class ConfigSerializer {
             if (!childProperties.isEmpty()) {
                 builder.append(indent).append("<module name=\"").append(child.getName()).append("\">\n");
                 builder.append(childProperties).append("\n");
-                builder.append(indent).append("</module>\n\n"); // Added extra newline here
+                builder.append(indent).append("</module>\n\n");
             } else {
-                // Generate self-closing tag if there are no properties
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n"); // Added extra newline here
+                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n");
             }
         }
 
@@ -152,6 +154,11 @@ public class ConfigSerializer {
         return builder.toString();
     }
 
+    private static Configuration getTargetModule(Configuration config) {
+        Configuration treeWalkerModule = getTreeWalkerModule(config);
+        return treeWalkerModule != null ? treeWalkerModule : config;
+    }
+
     private static Configuration getTreeWalkerModule(Configuration config) {
         for (Configuration child : config.getChildren()) {
             if ("TreeWalker".equals(child.getName())) {
@@ -159,6 +166,10 @@ public class ConfigSerializer {
             }
         }
         return null;
+    }
+
+    private static boolean isTreeWalkerConfig(Configuration config) {
+        return getTreeWalkerModule(config) != null;
     }
 
     public static String sortProperties(String configContent) {
@@ -196,10 +207,9 @@ public class ConfigSerializer {
             if (!childProperties.isEmpty()) {
                 builder.append(indent).append("<module name=\"").append(child.getName()).append("\">\n");
                 builder.append(childProperties).append("\n");
-                builder.append(indent).append("</module>\n\n"); // Added extra newline here
+                builder.append(indent).append("</module>\n\n");
             } else {
-                // Generate self-closing tag if there are no properties
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n"); // Added extra newline here
+                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n");
             }
         }
         return builder.toString().trim();
