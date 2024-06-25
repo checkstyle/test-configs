@@ -18,11 +18,7 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="IllegalTokenText">
-            <property name="format" value="""/>
-            <property name="id" value="example1"/>
-            <property name="tokens" value="TEXT_BLOCK_CONTENT"/>
-        </module>
+        <module name="InnerAssignment"/>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
