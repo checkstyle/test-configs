@@ -18,7 +18,7 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="WhitespaceAfter">
+        <module name="NoWhitespaceBeforeCaseDefaultColon">
             <property name="id" value="example1"/>
         </module>
 
