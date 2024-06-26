@@ -1,5 +1,9 @@
 package com.example.extractor;
 
+import com.puppycrawl.tools.checkstyle.api.Configuration;
+import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
+import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
+
 import java.nio.file.*;
 import java.util.Comparator;
 import java.util.List;
@@ -15,20 +19,14 @@ public class Main {
     private static final String PROJECT_PROPERTIES_FILE_PATH = "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 2) {
-            throw new IllegalArgumentException("Path in repo and configuration type must be provided as arguments.");
+        if (args.length < 1) {
+            throw new IllegalArgumentException("Path in repo must be provided as argument.");
         }
 
-        // Get the path in repo and configuration type from the command-line arguments
+        // Get the path in repo from the command-line arguments
         String pathInRepo = args[0];
-        String configType = args[1].toLowerCase();
-
-        if (!configType.equals("treewalker") && !configType.equals("non-treewalker")) {
-            throw new IllegalArgumentException("Configuration type must be either 'treewalker' or 'non-treewalker'.");
-        }
 
         System.out.println("Using path in repo: " + pathInRepo);
-        System.out.println("Configuration type: " + configType);
 
         // Path to Checkstyle repo
         String checkstyleRepoPath = "../.ci-temp/checkstyle";
@@ -39,10 +37,10 @@ public class Main {
         System.out.println("PROJECT_ROOT: " + PROJECT_ROOT);
 
         // Process directories
-        processDirectory(inputDirectory, PROJECT_ROOT.toString(), configType);
+        processDirectory(inputDirectory, PROJECT_ROOT.toString());
     }
 
-    public static void processDirectory(String inputDir, String outputDir, String configType) throws Exception {
+    public static void processDirectory(String inputDir, String outputDir) throws Exception {
         Path inputPath = Paths.get(inputDir);
         try (Stream<Path> paths = Files.list(inputPath)) {
             List<Path> contents = paths.collect(Collectors.toList());
@@ -55,14 +53,14 @@ public class Main {
                     if (Files.isDirectory(dir)) {
                         String relativePath = inputPath.relativize(dir).toString();
                         Path outputPath = Paths.get(outputDir).resolve(relativePath);
-                        processFiles(dir.toString(), outputPath.toString(), configType);
-                        generateAllInOneConfig(dir.toString(), outputPath.toString(), configType);
+                        processFiles(dir.toString(), outputPath.toString());
+                        generateAllInOneConfig(dir.toString(), outputPath.toString());
                     }
                 }
             } else {
                 // If there are no subdirectories, process the current directory
-                processFiles(inputDir, outputDir, configType);
-                generateAllInOneConfig(inputDir, outputDir, configType);
+                processFiles(inputDir, outputDir);
+                generateAllInOneConfig(inputDir, outputDir);
             }
         } catch (Exception e) {
             System.err.println("Error processing directory: " + inputDir);
@@ -70,7 +68,7 @@ public class Main {
         }
     }
 
-    public static void processFiles(String inputDir, String outputDir, String configType) throws Exception {
+    public static void processFiles(String inputDir, String outputDir) throws Exception {
         // Pattern to match files named Example#.java or Example#.txt
         Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
 
@@ -109,7 +107,7 @@ public class Main {
                 String fileName = Paths.get(exampleFile).getFileName().toString().replaceFirst("\\.(java|txt)$", "");
                 Path subfolderPath = outputPath.resolve(fileName);
                 Files.createDirectories(subfolderPath);
-                processFile(exampleFile, subfolderPath, configType);
+                processFile(exampleFile, subfolderPath);
             }
         } catch (Exception e) {
             System.err.println("Error walking through the input directory or processing files.");
@@ -117,13 +115,7 @@ public class Main {
         }
     }
 
-    private static void processFile(String exampleFile, Path outputPath, String configType) {
-        // Determine the template file path using the class loader
-        String templateFilePath = configType.equals("treewalker")
-                ? Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath()
-                : Main.class.getClassLoader().getResource("config-template-non-treewalker.xml").getPath();
-        System.out.println("Template file path: " + templateFilePath);
-
+    private static void processFile(String exampleFile, Path outputPath) {
         System.out.println("Processing file: " + exampleFile);
         String fileContent;
         try {
@@ -133,7 +125,7 @@ public class Main {
             String generatedContent;
             try {
                 System.out.println("Generating configuration for file: " + exampleFile);
-                generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
+                generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, getTemplateFilePath(exampleFile));
                 System.out.println("Generated configuration:\n" + generatedContent);
             } catch (Exception e) {
                 System.err.println("Failed to process file: " + exampleFile);
@@ -156,7 +148,7 @@ public class Main {
         }
     }
 
-    public static void generateAllInOneConfig(String inputDir, String outputDir, String configType) throws Exception {
+    public static void generateAllInOneConfig(String inputDir, String outputDir) throws Exception {
         // Pattern to match files named Example#.java or Example#.txt
         Pattern pattern = Pattern.compile("Example\\d+\\.(java|txt)");
 
@@ -203,9 +195,7 @@ public class Main {
         }
 
         // Determine the template file path using the class loader
-        String templateFilePath = configType.equals("treewalker")
-                ? Main.class.getClassLoader().getResource("config-template-treewalker.xml").getPath()
-                : Main.class.getClassLoader().getResource("config-template-non-treewalker.xml").getPath();
+        String templateFilePath = getTemplateFilePath(exampleFiles.get(0));
         System.out.println("Template file path: " + templateFilePath);
 
         String[] exampleFilePaths = exampleFiles.toArray(new String[0]);
@@ -224,6 +214,13 @@ public class Main {
         Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
         System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
         Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private static String getTemplateFilePath(String exampleFilePath) throws Exception {
+        TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+        Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+        boolean isTreeWalker = ConfigSerializer.isTreeWalkerConfig(xmlConfig);
+        return Main.class.getClassLoader().getResource(isTreeWalker ? "config-template-treewalker.xml" : "config-template-non-treewalker.xml").getPath();
     }
 
     private static int extractExampleNumber(String filename) {
