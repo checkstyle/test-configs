@@ -2,10 +2,6 @@ package com.example.extractor;
 
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class MainsLauncherTest {
 
     @Test
@@ -13,16 +9,16 @@ public class MainsLauncherTest {
         // Define the path in repo you want to test
         String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/naming";
 
-        // Pass the path in repo and configuration type as arguments
-        Main.main(new String[]{pathInRepo, "treewalker"});
+        // Pass the path in repo as the argument
+        Main.main(new String[]{pathInRepo});
     }
 
     @Test
     public void testMainNonTreeWalker() throws Exception {
         // Define the path in repo you want to test for non-TreeWalker configuration
-        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/orderedproperties";
+        String pathInRepo = "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/translation";
 
-        // Pass the path in repo and configuration type as arguments
-        Main.main(new String[]{pathInRepo, "non-treewalker"});
+        // Pass the path in repo as the argument
+        Main.main(new String[]{pathInRepo});
     }
 }

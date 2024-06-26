@@ -48,20 +48,21 @@ public class ConfigSerializer {
 
         List<Configuration> combinedChildren = new ArrayList<>();
         int exampleIndex = 1;
-        boolean isTreeWalker = true;
+        boolean isTreeWalker = true; // Assume true initially and determine later
+
         for (String exampleFilePath : exampleFilePaths) {
             System.out.println("Loading configuration from example file: " + exampleFilePath);
             TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
             Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
             Configuration targetModule = getTargetModule(xmlConfig);
             if (targetModule != null) {
+                isTreeWalker &= isTreeWalkerConfig(xmlConfig); // Adjust based on actual config
                 // Add an id property to each child module based on the example index
                 for (Configuration child : targetModule.getChildren()) {
                     Configuration modifiedChild = addIdProperty(child, "example" + exampleIndex);
                     combinedChildren.add(modifiedChild);
                 }
             }
-            isTreeWalker &= isTreeWalkerConfig(xmlConfig);
             exampleIndex++;
         }
 
@@ -168,7 +169,7 @@ public class ConfigSerializer {
         return null;
     }
 
-    private static boolean isTreeWalkerConfig(Configuration config) {
+    public static boolean isTreeWalkerConfig(Configuration config) {
         return getTreeWalkerModule(config) != null;
     }
 
