@@ -29,7 +29,7 @@
 
         <module name="IllegalThrows">
             <property name="id" value="example3"/>
-            <property name="ignoredMethodNames" value="func1"/>
+            <property name="ignoredMethodNames" value="f1"/>
         </module>
 
         <module name="IllegalThrows">

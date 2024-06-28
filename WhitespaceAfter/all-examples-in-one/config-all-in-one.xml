@@ -20,6 +20,10 @@
     <module name="TreeWalker">
         <module name="WhitespaceAfter">
             <property name="id" value="example1"/>
+        </module>
+
+        <module name="WhitespaceAfter">
+            <property name="id" value="example2"/>
             <property name="tokens" value="COMMA, SEMI"/>
         </module>
 

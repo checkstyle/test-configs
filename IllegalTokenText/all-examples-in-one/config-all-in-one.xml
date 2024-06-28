@@ -19,9 +19,29 @@
 
     <module name="TreeWalker">
         <module name="IllegalTokenText">
-            <property name="format" value="""/>
+            <property name="format" value="a href"/>
             <property name="id" value="example1"/>
+            <property name="tokens" value="STRING_LITERAL"/>
+        </module>
+
+        <module name="IllegalTokenText">
+            <property name="format" value="a href"/>
+            <property name="id" value="example2"/>
+            <property name="ignoreCase" value="true"/>
+            <property name="tokens" value="STRING_LITERAL"/>
+        </module>
+
+        <module name="IllegalTokenText">
+            <property name="format" value="""/>
+            <property name="id" value="example3"/>
             <property name="tokens" value="TEXT_BLOCK_CONTENT"/>
+        </module>
+
+        <module name="IllegalTokenText">
+            <property name="format" value="^0[^lx]"/>
+            <property name="id" value="example4"/>
+            <property name="ignoreCase" value="true"/>
+            <property name="tokens" value="NUM_INT,NUM_LONG"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

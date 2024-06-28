@@ -19,10 +19,7 @@
 
     <module name="TreeWalker">
         <module name="AnnotationUseStyle">
-            <property name="closingParens" value="ignore"/>
-            <property name="elementStyle" value="ignore"/>
             <property name="id" value="example1"/>
-            <property name="trailingArrayComma" value="always"/>
         </module>
 
         <module name="AnnotationUseStyle">
@@ -40,7 +37,10 @@
         </module>
 
         <module name="AnnotationUseStyle">
+            <property name="closingParens" value="ignore"/>
+            <property name="elementStyle" value="ignore"/>
             <property name="id" value="example4"/>
+            <property name="trailingArrayComma" value="always"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
