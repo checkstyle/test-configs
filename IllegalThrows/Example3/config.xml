@@ -19,7 +19,7 @@
 
     <module name="TreeWalker">
         <module name="IllegalThrows">
-            <property name="ignoredMethodNames" value="func1"/>
+            <property name="ignoredMethodNames" value="f1"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

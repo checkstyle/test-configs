@@ -20,11 +20,11 @@
     <module name="TreeWalker">
         <module name="MissingOverride">
             <property name="id" value="example1"/>
-            <property name="javaFiveCompatibility" value="true"/>
         </module>
 
         <module name="MissingOverride">
             <property name="id" value="example2"/>
+            <property name="javaFiveCompatibility" value="true"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
