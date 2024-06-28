@@ -5,7 +5,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -19,8 +18,21 @@ jobs:
     - name: Run setup script
       run: ./setup.sh
 
-    - name: Build with Gradle
-      run: cd extractor &&  ./gradlew clean build
+    - name: Build and Test with Gradle
+      run: |
+        cd extractor
+        ./gradlew clean build test run --args="../.ci-temp/checkstyle" --info --stacktrace --console=plain \
+          -Dorg.gradle.logging.level=DEBUG \
+          -Dtest.single=MainsLauncherTest
 
     - name: Check git changes
       run: ./.github/workflows/commands.sh git-diff
+
+    - name: Upload build reports
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-reports
+        path: |
+          extractor/build/reports
+          extractor/build/test-results
