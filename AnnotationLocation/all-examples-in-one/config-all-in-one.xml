@@ -19,11 +19,7 @@
 
     <module name="TreeWalker">
         <module name="AnnotationLocation">
-            <property name="allowSamelineMultipleAnnotations" value="false"/>
-            <property name="allowSamelineParameterizedAnnotation" value="false"/>
-            <property name="allowSamelineSingleParameterlessAnnotation" value="true"/>
             <property name="id" value="example1"/>
-            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <module name="AnnotationLocation">
@@ -41,7 +37,11 @@
         </module>
 
         <module name="AnnotationLocation">
+            <property name="allowSamelineMultipleAnnotations" value="false"/>
+            <property name="allowSamelineParameterizedAnnotation" value="false"/>
+            <property name="allowSamelineSingleParameterlessAnnotation" value="true"/>
             <property name="id" value="example4"/>
+            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

@@ -20,11 +20,11 @@
     <module name="TreeWalker">
         <module name="AnnotationOnSameLine">
             <property name="id" value="example1"/>
-            <property name="tokens" value="INTERFACE_DEF, VARIABLE_DEF, CTOR_DEF"/>
         </module>
 
         <module name="AnnotationOnSameLine">
             <property name="id" value="example2"/>
+            <property name="tokens" value="INTERFACE_DEF, VARIABLE_DEF, CTOR_DEF"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->

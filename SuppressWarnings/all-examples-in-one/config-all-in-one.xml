@@ -19,13 +19,13 @@
 
     <module name="TreeWalker">
         <module name="SuppressWarnings">
-            <property name="format" value="^unchecked$|^unused$"/>
             <property name="id" value="example1"/>
-            <property name="tokens" value="        CLASS_DEF,INTERFACE_DEF,ENUM_DEF,        ANNOTATION_DEF,ANNOTATION_FIELD_DEF,        ENUM_CONSTANT_DEF,METHOD_DEF,CTOR_DEF        "/>
         </module>
 
         <module name="SuppressWarnings">
+            <property name="format" value="^unchecked$|^unused$"/>
             <property name="id" value="example2"/>
+            <property name="tokens" value="        CLASS_DEF,INTERFACE_DEF,ENUM_DEF,        ANNOTATION_DEF,ANNOTATION_FIELD_DEF,        ENUM_CONSTANT_DEF,METHOD_DEF,CTOR_DEF        "/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
