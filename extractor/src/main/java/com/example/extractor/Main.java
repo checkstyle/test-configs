@@ -50,17 +50,18 @@ public class Main {
             }
         }
 
-        // Generate all-in-one configs for each module
+        // Generate all-in-one configs and READMEs for each module
         for (Map.Entry<String, List<Path>> entry : moduleExamples.entrySet()) {
             generateAllInOneConfig(entry.getKey(), entry.getValue());
+            generateReadmes(entry.getKey(), entry.getValue());
         }
     }
 
     private static List<Path> findNonFilterExampleDirs(Path basePath) throws Exception {
         return Files.walk(basePath)
                 .filter(Files::isDirectory)
-                .filter(path -> !path.toString().contains("suppresswarningsholder")) // Exclude SuppressWarningsHolder modules
-                .filter(path -> !path.toString().contains("filters") && !path.toString().contains("filfilters")) // Exclude filter and filfilters modules
+                .filter(path -> !path.toString().contains("suppresswarningsholder"))
+                .filter(path -> !path.toString().contains("filters") && !path.toString().contains("filfilters"))
                 .filter(path -> {
                     try {
                         return Files.list(path)
@@ -78,7 +79,7 @@ public class Main {
             List<Path> exampleFiles = paths
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().matches("Example\\d+\\.(java|txt)"))
-                    .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE)) // Exclude specific file for regexp
+                    .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE))
                     .collect(Collectors.toList());
 
             if (exampleFiles.isEmpty()) {
@@ -90,11 +91,14 @@ public class Main {
             Path outputPath = PROJECT_ROOT.resolve(moduleName);
             Files.createDirectories(outputPath);
 
+            List<Path> processedExampleFolders = new ArrayList<>();
+
             for (Path exampleFile : exampleFiles) {
                 String fileName = exampleFile.getFileName().toString().replaceFirst("\\.(java|txt)$", "");
                 Path subfolderPath = outputPath.resolve(fileName);
                 Files.createDirectories(subfolderPath);
                 processFile(exampleFile.toString(), subfolderPath);
+                processedExampleFolders.add(subfolderPath);
             }
 
             return moduleName;
@@ -106,28 +110,18 @@ public class Main {
     }
 
     private static void processFile(String exampleFile, Path outputPath) {
-        // Exclude specific files
         if (exampleFile.endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE)) {
             System.out.println("Skipping excluded file: " + exampleFile);
             return;
         }
 
         System.out.println("Processing file: " + exampleFile);
-        String fileContent;
         try {
-            fileContent = new String(Files.readAllBytes(Paths.get(exampleFile)));
+            String fileContent = new String(Files.readAllBytes(Paths.get(exampleFile)));
             System.out.println("File content:\n" + fileContent);
 
-            String generatedContent;
-            try {
-                System.out.println("Generating configuration for file: " + exampleFile);
-                generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, getTemplateFilePath(exampleFile));
-                System.out.println("Generated configuration:\n" + generatedContent);
-            } catch (Exception e) {
-                System.err.println("Failed to process file: " + exampleFile);
-                e.printStackTrace();
-                return;
-            }
+            String generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, getTemplateFilePath(exampleFile));
+            System.out.println("Generated configuration:\n" + generatedContent);
 
             Path outputFilePath = outputPath.resolve("config.xml");
             System.out.println("Writing generated configuration to: " + outputFilePath);
@@ -138,6 +132,11 @@ public class Main {
             Path targetPropertiesPath = outputPath.resolve(PROJECT_PROPERTIES_FILENAME);
             System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
             Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Generate individual README for this example
+            String moduleName = outputPath.getParent().getFileName().toString();
+            ReadmeGenerator.generateIndividualReadme(outputPath, moduleName);
+
         } catch (Exception e) {
             System.err.println("Error reading or processing the file: " + exampleFile);
             e.printStackTrace();
@@ -151,7 +150,7 @@ public class Main {
                 paths.filter(Files::isRegularFile)
                         .filter(path -> path.getFileName().toString().matches("Example\\d+\\.(java|txt)"))
                         .map(Path::toString)
-                        .filter(file -> !file.endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE)) // Exclude specific file for regexp
+                        .filter(file -> !file.endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE))
                         .forEach(allExampleFiles::add);
             }
         }
@@ -178,6 +177,34 @@ public class Main {
         Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
         Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
         Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+
+        ReadmeGenerator.generateAllInOneReadme(allInOneSubfolderPath, moduleName);
+    }
+
+    private static void generateReadmes(String moduleName, List<Path> exampleDirs) throws Exception {
+        Path outputPath = PROJECT_ROOT.resolve(moduleName);
+
+        for (Path dir : exampleDirs) {
+            try (Stream<Path> paths = Files.list(dir)) {
+                paths.filter(Files::isRegularFile)
+                        .filter(path -> path.getFileName().toString().matches("Example\\d+\\.(java|txt)"))
+                        .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE))
+                        .forEach(exampleFile -> {
+                            String fileName = exampleFile.getFileName().toString().replaceFirst("\\.(java|txt)$", "");
+                            Path subfolderPath = outputPath.resolve(fileName);
+                            try {
+                                ReadmeGenerator.generateIndividualReadme(subfolderPath, moduleName);
+                            } catch (Exception e) {
+                                System.err.println("Error generating individual README for: " + subfolderPath);
+                                e.printStackTrace();
+                            }
+                        });
+            }
+        }
+
+        // Generate README for all-examples-in-one
+        Path allInOneSubfolderPath = outputPath.resolve("all-examples-in-one");
+        ReadmeGenerator.generateAllInOneReadme(allInOneSubfolderPath, moduleName);
     }
 
     private static String getTemplateFilePath(String exampleFilePath) throws Exception {
@@ -192,6 +219,6 @@ public class Main {
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         }
-        return Integer.MAX_VALUE; // A large number to place invalid filenames at the end
+        return Integer.MAX_VALUE;
     }
 }
