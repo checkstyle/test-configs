@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class ReadmeGenerator {
-    private static final String GITHUB_URL = "https://github.com/checkstyle/test-configs/blob/main/";
+    private static final String GITHUB_RAW_URL = "https://raw.githubusercontent.com/checkstyle/test-configs/main/";
 
     public static void generateIndividualReadme(Path exampleFolder, String moduleName) throws IOException {
         String folderName = exampleFolder.getFileName().toString();
@@ -22,8 +22,8 @@ public class ReadmeGenerator {
             ```
             """,
                 folderName,
-                GITHUB_URL + moduleName + "/" + folderName + "/config.xml",
-                GITHUB_URL + moduleName + "/" + folderName + "/list-of-projects.properties",
+                GITHUB_RAW_URL + moduleName + "/" + folderName + "/config.xml",
+                GITHUB_RAW_URL + moduleName + "/" + folderName + "/list-of-projects.properties",
                 moduleName,
                 folderName
         );
@@ -45,8 +45,8 @@ public class ReadmeGenerator {
             Github, generate report
             ```
             """,
-                GITHUB_URL + moduleName + "/all-examples-in-one/config-all-in-one.xml",
-                GITHUB_URL + moduleName + "/all-examples-in-one/list-of-projects.properties",
+                GITHUB_RAW_URL + moduleName + "/all-examples-in-one/config-all-in-one.xml",
+                GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties",
                 moduleName
         );
 
