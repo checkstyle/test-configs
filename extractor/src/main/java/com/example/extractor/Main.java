@@ -30,25 +30,24 @@ public class Main {
         }
 
         String checkstyleRepoPath = args[0];
-        System.out.println("Using Checkstyle repo path: " + checkstyleRepoPath);
 
         // Process compilable and non-compilable paths
         List<Path> allExampleDirs = new ArrayList<>();
         allExampleDirs.addAll(findNonFilterExampleDirs(Paths.get(checkstyleRepoPath, "src", "xdocs-examples", "resources")));
         allExampleDirs.addAll(findNonFilterExampleDirs(Paths.get(checkstyleRepoPath, "src", "xdocs-examples", "resources-noncompilable")));
 
-        System.out.println("Found " + allExampleDirs.size() + " non-filter directories with Example files.");
-
         Map<String, List<Path>> moduleExamples = new HashMap<>();
 
         // Process all directories
         for (Path dir : allExampleDirs) {
-            System.out.println("Processing directory: " + dir);
             String moduleName = processDirectory(dir.toString(), PROJECT_ROOT.toString());
             if (moduleName != null) {
                 moduleExamples.computeIfAbsent(moduleName, k -> new ArrayList<>()).add(dir);
             }
         }
+
+        // Process projects for examples based on YAML file
+        YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
 
         // Generate all-in-one configs and READMEs for each module
         for (Map.Entry<String, List<Path>> entry : moduleExamples.entrySet()) {
@@ -111,20 +110,15 @@ public class Main {
 
     private static void processFile(String exampleFile, Path outputPath) {
         if (exampleFile.endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE)) {
-            System.out.println("Skipping excluded file: " + exampleFile);
             return;
         }
 
-        System.out.println("Processing file: " + exampleFile);
         try {
             String fileContent = new String(Files.readAllBytes(Paths.get(exampleFile)));
-            System.out.println("File content:\n" + fileContent);
 
             String generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, getTemplateFilePath(exampleFile));
-            System.out.println("Generated configuration:\n" + generatedContent);
 
             Path outputFilePath = outputPath.resolve("config.xml");
-            System.out.println("Writing generated configuration to: " + outputFilePath);
             Files.writeString(outputFilePath, generatedContent);
 
             // Copy the project.properties file to the subfolder
@@ -168,7 +162,6 @@ public class Main {
         String templateFilePath = getTemplateFilePath(allExampleFiles.get(0));
         String outputFilePath = allInOneSubfolderPath.resolve("config-all-in-one.xml").toString();
 
-        System.out.println("Generating all-in-one configuration file for " + moduleName + " at: " + outputFilePath);
         String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
                 allExampleFiles.toArray(new String[0]), templateFilePath);
         Files.writeString(Path.of(outputFilePath), generatedContent);

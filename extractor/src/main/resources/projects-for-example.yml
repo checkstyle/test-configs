@@ -1,0 +1,12 @@
+SummaryJavadoc:
+  Example3:
+    projects:
+      - WxJava
+      - openjdk17
+
+# More checks and examples can be added as needed
+# SomeOtherCheck:
+#   example1:
+#     projects:
+#       - project1
+#       - project2

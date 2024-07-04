@@ -26,7 +26,6 @@ public class ConfigSerializer {
     }
 
     public static String serializeConfigToString(String exampleFilePath, String templateFilePath) throws Exception {
-        System.out.println("Loading configuration from example file...");
         TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
 
@@ -44,14 +43,11 @@ public class ConfigSerializer {
     }
 
     public static String serializeAllInOneConfigToString(String[] exampleFilePaths, String templateFilePath) throws Exception {
-        System.out.println("Generating all-in-one configuration...");
-
         List<Configuration> combinedChildren = new ArrayList<>();
         int exampleIndex = 1;
         boolean isTreeWalker = true; // Assume true initially and determine later
 
         for (String exampleFilePath : exampleFilePaths) {
-            System.out.println("Loading configuration from example file: " + exampleFilePath);
             TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
             Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
             Configuration targetModule = getTargetModule(xmlConfig);
