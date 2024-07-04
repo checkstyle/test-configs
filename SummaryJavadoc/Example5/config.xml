@@ -18,7 +18,7 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="SummaryJavadocCheck">
+        <module name="SummaryJavadoc">
             <property name="period" value="。"/>
         </module>
 

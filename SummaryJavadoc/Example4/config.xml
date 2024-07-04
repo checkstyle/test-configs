@@ -18,8 +18,8 @@
     </module>
 
     <module name="TreeWalker">
-        <module name="SummaryJavadocCheck">
-            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
+        <module name="SummaryJavadoc">
+            <property name="period" value="。"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
