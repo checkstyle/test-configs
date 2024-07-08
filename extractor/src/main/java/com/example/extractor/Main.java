@@ -124,7 +124,6 @@ public class Main {
             // Copy the project.properties file to the subfolder
             Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
             Path targetPropertiesPath = outputPath.resolve(PROJECT_PROPERTIES_FILENAME);
-            System.out.println("Copying project properties from: " + sourcePropertiesPath + " to " + targetPropertiesPath);
             Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
 
             // Generate individual README for this example
@@ -166,10 +165,31 @@ public class Main {
                 allExampleFiles.toArray(new String[0]), templateFilePath);
         Files.writeString(Path.of(outputFilePath), generatedContent);
 
-        // Copy the project.properties file
-        Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
-        Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
-        Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+        // Handle the all-examples-in-one case explicitly
+        try {
+            Map<String, Object> yamlData = YamlParserAndProjectHandler.parseYamlFile();
+            Map<String, Object> moduleConfig = (Map<String, Object>) yamlData.get(moduleName);
+
+            if (moduleConfig != null && moduleConfig.containsKey("all-examples-in-one")) {
+                Map<String, Object> allInOneConfig = (Map<String, Object>) moduleConfig.get("all-examples-in-one");
+                List<String> projectNames = (List<String>) allInOneConfig.get("projects");
+                YamlParserAndProjectHandler.createProjectsFileForExample(allInOneSubfolderPath, projectNames,
+                        Files.readAllLines(Paths.get(YamlParserAndProjectHandler.ALL_PROJECTS_FILE_PATH)));
+            } else {
+                // If no specific configuration for all-examples-in-one, use the default
+                Path sourcePropertiesPath = Paths.get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_FILE_PATH).toAbsolutePath();
+                Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
+                Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing YAML file for all-examples-in-one: " + e.getMessage());
+            e.printStackTrace();
+
+            // Fallback to copying the default properties file
+            Path sourcePropertiesPath = Paths.get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_FILE_PATH).toAbsolutePath();
+            Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
+            Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
         ReadmeGenerator.generateAllInOneReadme(allInOneSubfolderPath, moduleName);
     }
