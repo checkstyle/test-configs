@@ -7,10 +7,10 @@ import java.util.*;
 
 public class YamlParserAndProjectHandler {
 
-    private static final String YAML_FILE_PATH = "src/main/resources/projects-for-example.yml";
-    private static final String ALL_PROJECTS_FILE_PATH = "src/main/resources/all-projects.properties";
-    private static final String DEFAULT_PROJECTS_FILE_PATH = "src/main/resources/list-of-projects.properties";
-    private static final String DEFAULT_COMMENTS =
+    public static final String YAML_FILE_PATH = "src/main/resources/projects-for-example.yml";
+    public static final String ALL_PROJECTS_FILE_PATH = "src/main/resources/all-projects.properties";
+    public static final String DEFAULT_PROJECTS_FILE_PATH = "src/main/resources/list-of-projects.properties";
+    public static final String DEFAULT_COMMENTS =
             "# List of GIT repositories to clone / pull for checking with Checkstyle\n" +
                     "# File format: REPO_NAME|[local|git]|URL|[COMMIT_ID]|[EXCLUDE FOLDERS]\n" +
                     "# Please note that bash comments works in this file\n\n";
@@ -30,18 +30,23 @@ public class YamlParserAndProjectHandler {
 
                 Path examplePath = Paths.get(testConfigPath, checkName, exampleName);
                 createProjectsFileForExample(examplePath, projectNames, allProjectLines);
+
+                // Handle all-examples-in-one case
+                if ("all-examples-in-one".equals(exampleName)) {
+                    createAllInOneProjectsFile(Paths.get(testConfigPath, checkName), projectNames, allProjectLines);
+                }
             }
         }
     }
 
-    private static Map<String, Object> parseYamlFile() throws IOException {
+    public static Map<String, Object> parseYamlFile() throws IOException {
         try (InputStream inputStream = new FileInputStream(YAML_FILE_PATH)) {
             Yaml yaml = new Yaml();
             return yaml.load(inputStream);
         }
     }
 
-    private static void createProjectsFileForExample(Path examplePath, List<String> projectNames, List<String> allProjectLines) throws IOException {
+    public static void createProjectsFileForExample(Path examplePath, List<String> projectNames, List<String> allProjectLines) throws IOException {
         Files.createDirectories(examplePath);
         Path projectsFilePath = examplePath.resolve("list-of-projects.properties");
 
@@ -59,14 +64,32 @@ public class YamlParserAndProjectHandler {
             fileContents.addAll(Files.readAllLines(Paths.get(DEFAULT_PROJECTS_FILE_PATH)));
         }
 
-        try {
-            Files.write(projectsFilePath, fileContents);
-        } catch (IOException e) {
-            throw new IllegalStateException("Error writing file: " + e.getMessage(), e);
-        }
+        Files.write(projectsFilePath, fileContents);
     }
 
-    private static String findProjectInfo(String projectName, List<String> allProjectLines) {
+    public static void createAllInOneProjectsFile(Path modulePath, List<String> projectNames, List<String> allProjectLines) throws IOException {
+        Path allInOnePath = modulePath.resolve("all-examples-in-one");
+        Files.createDirectories(allInOnePath);
+        Path projectsFilePath = allInOnePath.resolve("list-of-projects.properties");
+
+        List<String> fileContents = new ArrayList<>();
+        fileContents.add(DEFAULT_COMMENTS);
+
+        if (projectNames != null && !projectNames.isEmpty()) {
+            for (String projectName : projectNames) {
+                String projectInfo = findProjectInfo(projectName, allProjectLines);
+                if (projectInfo != null) {
+                    fileContents.add(projectInfo);
+                }
+            }
+        } else {
+            fileContents.addAll(allProjectLines);
+        }
+
+        Files.write(projectsFilePath, fileContents);
+    }
+
+    public static String findProjectInfo(String projectName, List<String> allProjectLines) {
         for (String line : allProjectLines) {
             if (line.startsWith(projectName + "|")) {
                 return line;

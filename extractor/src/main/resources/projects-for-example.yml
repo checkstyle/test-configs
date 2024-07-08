@@ -1,12 +1,204 @@
 SummaryJavadoc:
   Example3:
     projects:
+      # javadocs in japan language
       - WxJava
       - openjdk17
 
-# More checks and examples can be added as needed
-# SomeOtherCheck:
-#   example1:
-#     projects:
-#       - project1
-#       - project2
+RequireThis:
+  Example1:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
+  Example2:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
+  Example3:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
+  Example4:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
+  Example5:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
+  Example6:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
+  all-examples-in-one:
+    projects:
+      - spring-integration
+      - checkstyle
+      - sevntu-checkstyle
+      - checkstyle-sonar
+      - openjdk17
+      - guava
+      - spotbugs
+      - pmd
+      - spoon
+      - lombok-ast
+      - spring-framework
+      - hibernate-orm
+      - elasticsearch
+      - java-design-patterns
+      - MaterialDesignLibrary
+      - Hbase
+      - Orekit
+      - apache-ant
+      - apache-jsecurity
+      - android-launcher
+      - apache-struts
+      - infinispan
+      - protonpack
+      - jOOL
+      - RxJava
+      - Vavr
