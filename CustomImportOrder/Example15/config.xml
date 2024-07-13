@@ -18,20 +18,19 @@
     </module>
 
     <module name="TreeWalker">
+        <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
+        <property name="skipFileOnJavaParseException" value="true"/>
+        <property name="javaParseExceptionSeverity" value="ignore"/>
+
         <module name="CustomImportOrder">
             <property name="customImportOrderRules" value="SAME_PACKAGE(3), THIRD_PARTY_PACKAGE, STATIC, SPECIAL_IMPORTS"/>
             <property name="specialImportsRegExp" value="^android\."/>
         </module>
 
-        <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
+        <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>
         </module>
     </module>
 
-    <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
-    <module name="SuppressionSingleFilter">
-        <property name="checks" value="Checker"/>
-        <property name="message" value="Exception occurred while parsing"/>
-    </module>
 </module>
