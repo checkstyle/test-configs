@@ -19,12 +19,7 @@
 
     <module name="TreeWalker">
         <module name="UnusedLocalVariable">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="UnusedLocalVariable">
             <property name="allowUnnamedVariables" value="false"/>
-            <property name="id" value="example2"/>
         </module>
 
         <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
