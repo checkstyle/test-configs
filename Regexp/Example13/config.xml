@@ -18,21 +18,20 @@
     </module>
 
     <module name="TreeWalker">
+        <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
+        <property name="skipFileOnJavaParseException" value="true"/>
+        <property name="javaParseExceptionSeverity" value="ignore"/>
+
         <module name="Regexp">
             <property name="duplicateLimit" value="0"/>
             <property name="format" value="(/\*\*\n)( \*.*\n)*( \* <P>\n \*   <I>        This software is the confidential and proprietary information of\n        \*   ACME \(<B>"Confidential Information"</B>        \)\. You shall not\n \*   disclose such Confidential Information        and shall use it only in\n \*   accordance with the terms of the        license agreement you entered into\n \*   with ACME\.</I>\n        \* </P>\n \*\n \* © copyright \d\d\d\d ACME\n        \*\n \* @author .*)(\n\s\*.*)*/\n[\w|\s]*( class | interface )"/>
             <property name="message" value="Copyright in class/interface Javadoc"/>
         </module>
 
-        <!-- usuppress javadoc parsing errors, as we test Check not a parser -->
+        <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>
         </module>
     </module>
 
-    <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
-    <module name="SuppressionSingleFilter">
-        <property name="checks" value="Checker"/>
-        <property name="message" value="Exception occurred while parsing"/>
-    </module>
 </module>
