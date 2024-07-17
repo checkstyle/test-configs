@@ -1,4 +1,4 @@
-# Example4 Configs
+# AvoidStarImport Example4 Configs
 Paste below given to PR description to use such test configs:
 ```
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/AvoidStarImport/Example4/config.xml
@@ -6,5 +6,5 @@ Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-conf
 ```
 Make comment in PR:
 ```
-Github, generate report
+Github, generate report for AvoidStarImport/Example4
 ```

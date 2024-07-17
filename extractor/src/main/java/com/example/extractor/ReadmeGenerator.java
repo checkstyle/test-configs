@@ -18,10 +18,10 @@ public class ReadmeGenerator {
             ```
             Make comment in PR:
             ```
-            Github, generate report
+            Github, generate report for %s/%s
             ```
             """,
-                folderName,
+                moduleName + " " + folderName,
                 GITHUB_RAW_URL + moduleName + "/" + folderName + "/config.xml",
                 GITHUB_RAW_URL + moduleName + "/" + folderName + "/list-of-projects.properties",
                 moduleName,
@@ -34,7 +34,7 @@ public class ReadmeGenerator {
 
     public static void generateAllInOneReadme(Path allInOneFolder, String moduleName) throws IOException {
         String readmeContent = String.format("""
-            # All Examples in One Configs
+            # %s All Examples in One Configs
             Paste below given to PR description to use such test configs:
             ```
             Diff Regression config: %s
@@ -42,9 +42,10 @@ public class ReadmeGenerator {
             ```
             Make comment in PR:
             ```
-            Github, generate report
+            Github, generate report for %s/all-examples-in-one
             ```
             """,
+                moduleName,
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/config-all-in-one.xml",
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties",
                 moduleName

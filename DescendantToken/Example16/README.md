@@ -1,4 +1,4 @@
-# Example16 Configs
+# DescendantToken Example16 Configs
 Paste below given to PR description to use such test configs:
 ```
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/DescendantToken/Example16/config.xml
@@ -6,5 +6,5 @@ Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-conf
 ```
 Make comment in PR:
 ```
-Github, generate report
+Github, generate report for DescendantToken/Example16
 ```

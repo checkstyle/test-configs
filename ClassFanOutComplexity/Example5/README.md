@@ -1,4 +1,4 @@
-# Example5 Configs
+# ClassFanOutComplexity Example5 Configs
 Paste below given to PR description to use such test configs:
 ```
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/ClassFanOutComplexity/Example5/config.xml
@@ -6,5 +6,5 @@ Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-conf
 ```
 Make comment in PR:
 ```
-Github, generate report
+Github, generate report for ClassFanOutComplexity/Example5
 ```

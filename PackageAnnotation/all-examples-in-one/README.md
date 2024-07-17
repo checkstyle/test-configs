@@ -1,4 +1,4 @@
-# All Examples in One Configs
+# PackageAnnotation All Examples in One Configs
 Paste below given to PR description to use such test configs:
 ```
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/PackageAnnotation/all-examples-in-one/config-all-in-one.xml
@@ -6,5 +6,5 @@ Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-conf
 ```
 Make comment in PR:
 ```
-Github, generate report
+Github, generate report for PackageAnnotation/all-examples-in-one
 ```
