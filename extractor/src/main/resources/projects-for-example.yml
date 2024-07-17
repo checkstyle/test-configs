@@ -3,7 +3,7 @@ SummaryJavadoc:
     projects:
       # javadocs in japan language
       - WxJava
-      - openjdk17
+      - openjdk21
 
 RequireThis:
   Example1:
@@ -12,7 +12,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
@@ -40,7 +40,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
@@ -68,7 +68,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
@@ -96,7 +96,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
@@ -124,7 +124,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
@@ -152,7 +152,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
@@ -180,7 +180,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk17
+      - openjdk21
       - guava
       - spotbugs
       - pmd
