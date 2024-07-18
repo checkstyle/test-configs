@@ -159,7 +159,7 @@ public class Main {
         Files.createDirectories(allInOneSubfolderPath);
 
         String templateFilePath = getTemplateFilePath(allExampleFiles.get(0));
-        String outputFilePath = allInOneSubfolderPath.resolve("config-all-in-one.xml").toString();
+        String outputFilePath = allInOneSubfolderPath.resolve("config.xml").toString();
 
         String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
                 allExampleFiles.toArray(new String[0]), templateFilePath);

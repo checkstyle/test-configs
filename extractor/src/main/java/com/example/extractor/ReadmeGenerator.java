@@ -45,7 +45,7 @@ public class ReadmeGenerator {
             Github, generate report
             ```
             """,
-                GITHUB_RAW_URL + moduleName + "/all-examples-in-one/config-all-in-one.xml",
+                GITHUB_RAW_URL + moduleName + "/all-examples-in-one/config.xml",
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties",
                 moduleName
         );
