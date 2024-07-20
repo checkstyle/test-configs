@@ -174,7 +174,8 @@ public class Main {
                 Map<String, Object> allInOneConfig = (Map<String, Object>) moduleConfig.get("all-examples-in-one");
                 List<String> projectNames = (List<String>) allInOneConfig.get("projects");
                 YamlParserAndProjectHandler.createProjectsFileForExample(allInOneSubfolderPath, projectNames,
-                        Files.readAllLines(Paths.get(YamlParserAndProjectHandler.ALL_PROJECTS_FILE_PATH)));
+                        Files.readAllLines(Paths.get(YamlParserAndProjectHandler.ALL_PROJECTS_FILE_PATH)),
+                        moduleName);
             } else {
                 // If no specific configuration for all-examples-in-one, use the default
                 Path sourcePropertiesPath = Paths.get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_FILE_PATH).toAbsolutePath();
