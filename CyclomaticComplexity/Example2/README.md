@@ -1,4 +1,9 @@
 # Example2 Configs
+Make comment in PR:
+```
+Github, generate report for CyclomaticComplexity/Example2
+```
+OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/CyclomaticComplexity/Example2/config.xml
