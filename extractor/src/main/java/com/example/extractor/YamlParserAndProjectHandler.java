@@ -29,11 +29,11 @@ public class YamlParserAndProjectHandler {
                 List<String> projectNames = (List<String>) exampleData.get("projects");
 
                 Path examplePath = Paths.get(testConfigPath, checkName, exampleName);
-                createProjectsFileForExample(examplePath, projectNames, allProjectLines);
+                createProjectsFileForExample(examplePath, projectNames, allProjectLines, checkName);
 
                 // Handle all-examples-in-one case
                 if ("all-examples-in-one".equals(exampleName)) {
-                    createAllInOneProjectsFile(Paths.get(testConfigPath, checkName), projectNames, allProjectLines);
+                    createAllInOneProjectsFile(Paths.get(testConfigPath, checkName), projectNames, allProjectLines, checkName);
                 }
             }
         }
@@ -46,7 +46,7 @@ public class YamlParserAndProjectHandler {
         }
     }
 
-    public static void createProjectsFileForExample(Path examplePath, List<String> projectNames, List<String> allProjectLines) throws IOException {
+    public static void createProjectsFileForExample(Path examplePath, List<String> projectNames, List<String> allProjectLines, String checkName) throws IOException {
         Files.createDirectories(examplePath);
         Path projectsFilePath = examplePath.resolve("list-of-projects.properties");
 
@@ -58,6 +58,8 @@ public class YamlParserAndProjectHandler {
                 String projectInfo = findProjectInfo(projectName, allProjectLines);
                 if (projectInfo != null) {
                     fileContents.add(projectInfo);
+                } else {
+                    throw new IllegalArgumentException("Project not found in all-projects.properties: " + projectName + " (Check: " + checkName + ")");
                 }
             }
         } else {
@@ -67,7 +69,7 @@ public class YamlParserAndProjectHandler {
         Files.write(projectsFilePath, fileContents);
     }
 
-    public static void createAllInOneProjectsFile(Path modulePath, List<String> projectNames, List<String> allProjectLines) throws IOException {
+    public static void createAllInOneProjectsFile(Path modulePath, List<String> projectNames, List<String> allProjectLines, String checkName) throws IOException {
         Path allInOnePath = modulePath.resolve("all-examples-in-one");
         Files.createDirectories(allInOnePath);
         Path projectsFilePath = allInOnePath.resolve("list-of-projects.properties");
@@ -80,6 +82,8 @@ public class YamlParserAndProjectHandler {
                 String projectInfo = findProjectInfo(projectName, allProjectLines);
                 if (projectInfo != null) {
                     fileContents.add(projectInfo);
+                } else {
+                    throw new IllegalArgumentException("Project not found in all-projects.properties: " + projectName + " (Check: " + checkName + ", Example: all-examples-in-one)");
                 }
             }
         } else {
