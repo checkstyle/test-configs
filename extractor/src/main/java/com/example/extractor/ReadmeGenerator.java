@@ -11,6 +11,11 @@ public class ReadmeGenerator {
         String folderName = exampleFolder.getFileName().toString();
         String readmeContent = String.format("""
             # %s Configs
+            Make comment in PR:
+            ```
+            Github, generate report for %s/%s
+            ```
+            OR as alternate:
             Paste below given to PR description to use such test configs:
             ```
             Diff Regression config: %s
@@ -22,10 +27,10 @@ public class ReadmeGenerator {
             ```
             """,
                 folderName,
-                GITHUB_RAW_URL + moduleName + "/" + folderName + "/config.xml",
-                GITHUB_RAW_URL + moduleName + "/" + folderName + "/list-of-projects.properties",
                 moduleName,
-                folderName
+                folderName,
+                GITHUB_RAW_URL + moduleName + "/" + folderName + "/config.xml",
+                GITHUB_RAW_URL + moduleName + "/" + folderName + "/list-of-projects.properties"
         );
 
         Path readmePath = exampleFolder.resolve("README.md");
@@ -35,6 +40,11 @@ public class ReadmeGenerator {
     public static void generateAllInOneReadme(Path allInOneFolder, String moduleName) throws IOException {
         String readmeContent = String.format("""
             # All Examples in One Configs
+            Make comment in PR:
+            ```
+            Github, generate report for %s/all-examples-in-one
+            ```
+            OR as alternate:
             Paste below given to PR description to use such test configs:
             ```
             Diff Regression config: %s
@@ -45,9 +55,9 @@ public class ReadmeGenerator {
             Github, generate report
             ```
             """,
+                moduleName,
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/config.xml",
-                GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties",
-                moduleName
+                GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties"
         );
 
         Path readmePath = allInOneFolder.resolve("README.md");

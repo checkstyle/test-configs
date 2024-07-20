@@ -1,4 +1,9 @@
 # Example3 Configs
+Make comment in PR:
+```
+Github, generate report for MissingSwitchDefault/Example3
+```
+OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/MissingSwitchDefault/Example3/config.xml
