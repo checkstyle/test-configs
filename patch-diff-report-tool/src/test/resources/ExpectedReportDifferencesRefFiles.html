@@ -1,0 +1,617 @@
+<html>
+	<head>
+		<title>checkstyle xml difference report</title>
+		<style type="text/css" media="all">@import url("./css/maven-base.css");@import url("./css/maven-theme.css");</style>
+		<link rel="stylesheet" href="./css/site.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<http-equiv http-equiv="Content-Language" content="en"></http-equiv>
+	</head>
+	<body class="composite">
+		<div id="contentBox">
+			<div class="section">
+				<h2 a="Checkstyle XML difference report">Checkstyle XML difference report</h2>
+				This is symmetric difference generated from two checkstyle-result.xml reports. <br/>
+				All matching records from each XML file are deleted, then remaining records are merged into single report. <br>
+		        <a href="https://github.com/checkstyle/contribution/tree/master/patch-diff-report-tool">Utility that generated this report.</a>
+			</div>
+
+			
+				<h2><a name="Configuration" href="#Configuration">Checkstyle configuration report</a></h2>
+				<div class="section">
+					<table border="0" class="bodyTable">
+							<tr class="a">
+								<th>Module Name</th>
+								<th>Base properties</th>
+								<th>Patch properties</th>
+							</tr>
+							
+								
+									<tr>
+										<td class="c">Checker</td>
+										
+										<td class="c">
+											
+												severity
+												
+													<li>warning</li>
+												
+												<br/>
+											
+												charset
+												
+													<li>UTF-8</li>
+												
+												<br/>
+											
+												haltOnException
+												
+													<li>false</li>
+												
+												<br/>
+											
+										</td>
+										
+										
+										<td class="c">
+											
+												severity
+												
+													<li>warning</li>
+												
+												<br/>
+											
+												charset
+												
+													<li>UTF-8</li>
+												
+												<br/>
+											
+												haltOnException
+												
+													<li>false</li>
+												
+												<br/>
+											
+										</td>
+										
+									</tr>
+									
+										
+									<tr>
+										<td class="c">TreeWalker</td>
+										
+										<td class="c">
+											
+										</td>
+										
+										
+										<td class="c">
+											
+										</td>
+										
+									</tr>
+									
+										
+									<tr>
+										<td class="c">MyCheck1</td>
+										
+										<td class="c">
+											
+										</td>
+										
+										
+										<td class="c">
+											
+										</td>
+										
+									</tr>
+									
+								
+									
+										
+									<tr>
+										<td class="c">MyCheck2</td>
+										
+										<td class="c">
+											
+												propertyName
+												
+													<li>propertyValue</li>
+												
+												<br/>
+											
+										</td>
+										
+										
+										<td class="c">
+											
+												propertyName
+												
+													<li>propertyValue</li>
+												
+												<br/>
+											
+										</td>
+										
+									</tr>
+									
+								
+									
+										
+									<tr>
+										<td class="c">MyCheck3</td>
+										
+										<td class="c">
+											
+										</td>
+										
+										
+										<td class="c">
+											
+										</td>
+										
+									</tr>
+									
+										
+									<tr>
+										<td class="c">MyCheck4</td>
+										
+										<td class="c">
+											
+												propertyName2
+												
+													<li>propertyValue2a</li>
+												
+													<li>propertyValue2b</li>
+												
+												<br/>
+											
+										</td>
+										
+										
+										<td class="c">
+											
+												propertyName2
+												
+													<li>propertyValue2a</li>
+												
+													<li>propertyValue2b</li>
+												
+												<br/>
+											
+										</td>
+										
+									</tr>
+									
+								
+									
+								
+									
+								
+									
+								
+								
+					</table>	
+				</div>
+			
+
+			<div class="section">
+				<h2><a name="Summary" href="#Summary">Summary:</a></h2>
+				<div class="section">
+					<table border="0" class="bodyTable">
+						<tr class="a">
+							<th>Report id</th>
+							<th>Files</th>
+							<th>Violations</th>
+							
+								<th>Severity-warning</th>
+							
+						</tr>
+						<tr class="b">
+							<td>base</td>
+							<td id="filesBase">9</td>
+							<td id="totalBase">7</td>
+							
+								<td id="warningSeverityNumBase">7</td>
+							
+						</tr>
+						<tr class="a">
+							<td>patch</td>
+							<td id="filesPatch">9</td>
+							<td id="totalPatch">7 (6 removed, 6 added)</td>
+							
+								<td id="warningSeverityStatisticsPatch">7 (6 removed, 6 added)</td>
+							
+						</tr>
+						<tr class="d">
+							<td/>
+							<td id="filesDiff">8 files with differences</td>
+							<td id="totalDiff">12 changes in violations</td>
+							
+								<td id="warningSeverityNumDiff">12 changes in violations</td>
+							
+						<tr>
+					</table>
+
+					
+						<br />
+						<table border="0" class="bodyTable">
+							<tr class="a">
+								<th>Report id</th>
+								
+									<th>Test1</th>
+								
+									<th>MyTestCheck</th>
+								
+									<th>Test</th>
+								
+									<th>Test2</th>
+								
+							</tr>
+							<tr class="b">
+								<td>base</td>
+								
+									<td id="Test1ModuleNumBase">1</td>
+								
+									<td id="MyTestCheckModuleNumBase">1</td>
+								
+									<td id="TestModuleNumBase">5</td>
+								
+									<td id="Test2ModuleNumBase">0</td>
+								
+							</tr>
+							<tr class="a">
+								<td>patch</td>
+								
+									<td id="Test1ModuleStatisticsPatch">0 (1 removed)</td>
+								
+									<td id="MyTestCheckModuleStatisticsPatch">1 (1 removed, 1 added)</td>
+								
+									<td id="TestModuleStatisticsPatch">5 (4 removed, 4 added)</td>
+								
+									<td id="Test2ModuleStatisticsPatch">1 (1 added)</td>
+								
+							</tr>
+							<tr class="d">
+								<td>changes in violations</td>
+								
+									<td id="Test1ModuleNumDiff">1</td>
+								
+									<td id="MyTestCheckModuleNumDiff">2</td>
+								
+									<td id="TestModuleNumDiff">8</td>
+								
+									<td id="Test2ModuleNumDiff">1</td>
+								
+							<tr>
+						</table>
+					
+
+					<br />
+					Number of unique base messages reported below: <span id="uniqueMessagesBase">6</span><br />
+					Number of unique patch messages reported below: <span id="uniqueMessagesPatch">6</span><br />
+				</div>
+			</div>
+
+			<div class="section">
+				<h2><a name="Violations" href="#Violations">Violations:</a></h2>
+				<div class="section">
+					<h3>BaseOnly1.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="b">
+								
+								<td class="keepWidth"><a name="A1" href = "#A1">#A1</a></td>
+								<td>warning</td>
+								<td>MyTest</td>
+								<td>Should appear only in base.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/BaseOnly1.java.html#L5">5</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>BaseOnly2.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="b">
+								
+								<td class="keepWidth"><a name="A2" href = "#A2">#A2</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>File should appear only in base.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/BaseOnly2.java.html#L5">5</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>Change1.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="b">
+								
+								<td class="keepWidth"><a name="A3" href = "#A3">#A3</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>Should appear in base and change in patch. Line same.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change1.java.html#L8">8</a></td>
+								
+								
+									
+									<td class="keepWidth">2</td>
+								
+							</tr>
+						
+							
+								<tr class="a">
+							
+								<td class="keepWidth"><a name="A4" href = "#A4">#A4</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>Should appear in patch but be different from base. Line same.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change1.java.html#L8">8</a></td>
+								
+								
+									
+									<td class="keepWidth">2</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>Change2.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="b">
+								
+								<td class="keepWidth"><a name="A5" href = "#A5">#A5</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>Should appear in base and change in patch. Line change.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change2.java.html#L10">10</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+							
+								<tr class="a">
+							
+								<td class="keepWidth"><a name="A6" href = "#A6">#A6</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>Should appear in base and change in patch. Line change.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change2.java.html#L11">11</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>Change3.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="b">
+								
+								<td class="keepWidth"><a name="A7" href = "#A7">#A7</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>Should appear in base and change in patch. Column change.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change3.java.html#L10">10</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+							
+								<tr class="a">
+							
+								<td class="keepWidth"><a name="A8" href = "#A8">#A8</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>Should appear in base and change in patch. Column change.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change3.java.html#L10">10</a></td>
+								
+								
+									
+									<td class="keepWidth">5</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>Change4.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="b">
+								
+								<td class="keepWidth"><a name="A9" href = "#A9">#A9</a></td>
+								<td>warning</td>
+								<td>Test1</td>
+								<td>Should appear in base and change in patch. Source change.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change4.java.html#L10">10</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+							
+								<tr class="a">
+							
+								<td class="keepWidth"><a name="A10" href = "#A10">#A10</a></td>
+								<td>warning</td>
+								<td>Test2</td>
+								<td>Should appear in base and change in patch. Source change.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/Change4.java.html#L10">10</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>PatchOnly1.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="a">
+							
+								<td class="keepWidth"><a name="A11" href = "#A11">#A11</a></td>
+								<td>warning</td>
+								<td>MyTest</td>
+								<td>Should appear only in patch.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/PatchOnly1.java.html#L7">7</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+				<div class="section">
+					<h3>PatchOnly2.java</h3>
+					<tr class="b">
+					<table border="0" class="bodyTable">
+					        <th></th>
+							<th>Severity</th>
+							<th>Rule</th>
+							<th>Message</th>
+							<th>Line</th>
+							<th>Col</th>
+						</tr>
+						
+							
+								<tr class="a">
+							
+								<td class="keepWidth"><a name="A12" href = "#A12">#A12</a></td>
+								<td>warning</td>
+								<td>Test</td>
+								<td>File should appear only in patch.</td>
+								
+									
+									<td class="keepWidth"><a href = "xref/PatchOnly2.java.html#L5">5</a></td>
+								
+								
+									
+									<td class="keepWidth">1</td>
+								
+							</tr>
+						
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
