@@ -1,6 +1,10 @@
 plugins {
     id 'application'
     id 'java'
+    id 'pmd'
+    id 'com.github.spotbugs' version '6.0.19'
+    id 'de.thetaphi.forbiddenapis' version '3.7'
+    id 'checkstyle'
 }
 
 repositories {
@@ -24,7 +28,6 @@ dependencies {
     // YAML dependency
     implementation 'org.yaml:snakeyaml:1.30'
     testImplementation 'org.yaml:snakeyaml:1.30'
-
 }
 
 application {
@@ -42,3 +45,46 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
+// PMD Configuration
+pmd {
+    toolVersion = "7.3.0"
+    ruleSets = []
+    ruleSetFiles = files("${rootDir}/config/pmd/pmd-ruleset.xml")
+    ignoreFailures = false
+    consoleOutput = true
+}
+
+tasks.withType(Pmd) {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
+// SpotBugs Configuration
+spotbugs {
+    ignoreFailures = false
+    effort = com.github.spotbugs.snom.Effort.MAX
+    excludeFilter = file("${rootDir}/config/spotbugs/spotbugs-exclude.xml")
+}
+
+// Checkstyle Configuration
+checkstyle {
+    toolVersion = "10.17.0"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+// Forbidden APIs Configuration
+forbiddenApis {
+    bundledSignatures = ['jdk-unsafe', 'jdk-deprecated']
+    signaturesFiles = files("${rootDir}/config/forbidden-apis/forbidden-apis.txt")
+    ignoreFailures = false
+}
+
+// Disable PMD, SpotBugs, and Forbidden APIs tasks
+tasks.withType(Pmd) { it.enabled = false }
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) { it.enabled = false }
+tasks.withType(de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis) { it.enabled = false }
