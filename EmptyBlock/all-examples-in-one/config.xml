@@ -34,7 +34,7 @@
 
         <module name="EmptyBlock">
             <property name="id" value="example3"/>
-            <property name="tokens" value="LITERAL_DEFAULT"/>
+            <property name="tokens" value="LITERAL_CASE,LITERAL_DEFAULT"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
