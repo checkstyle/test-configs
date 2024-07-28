@@ -1,11 +1,14 @@
 package com.example.extractor;
 
-import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
-import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,11 +76,18 @@ public class Main {
     }
 
     public static String processDirectory(String inputDir, String outputDir) throws Exception {
+        if (inputDir == null || outputDir == null) {
+            throw new IllegalArgumentException("inputDir and outputDir must not be null");
+        }
+
         Path inputPath = Paths.get(inputDir);
         try (Stream<Path> paths = Files.list(inputPath)) {
             List<Path> exampleFiles = paths
                     .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().matches("Example\\d+\\.(java|txt)"))
+                    .filter(path -> {
+                        Path fileName = path.getFileName();
+                        return fileName != null && fileName.toString().matches("Example\\d+\\.(java|txt)");
+                    })
                     .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE))
                     .collect(Collectors.toList());
 
@@ -85,19 +95,29 @@ public class Main {
                 return null;
             }
 
-            String moduleName = ConfigSerializer.extractModuleName(exampleFiles.get(0).toString());
+            Path firstExampleFile = exampleFiles.get(0);
+            if (firstExampleFile == null) {
+                return null;
+            }
+
+            String moduleName = ConfigSerializer.extractModuleName(firstExampleFile.toString());
+            if (moduleName == null) {
+                return null;
+            }
 
             Path outputPath = PROJECT_ROOT.resolve(moduleName);
             Files.createDirectories(outputPath);
 
-            List<Path> processedExampleFolders = new ArrayList<>();
-
             for (Path exampleFile : exampleFiles) {
-                String fileName = exampleFile.getFileName().toString().replaceFirst("\\.(java|txt)$", "");
-                Path subfolderPath = outputPath.resolve(fileName);
-                Files.createDirectories(subfolderPath);
-                processFile(exampleFile.toString(), subfolderPath);
-                processedExampleFolders.add(subfolderPath);
+                if (exampleFile != null) {
+                    Path fileName = exampleFile.getFileName();
+                    if (fileName != null) {
+                        String fileNameStr = fileName.toString().replaceFirst("\\.(java|txt)$", "");
+                        Path subfolderPath = outputPath.resolve(fileNameStr);
+                        Files.createDirectories(subfolderPath);
+                        processFile(exampleFile.toString(), subfolderPath);
+                    }
+                }
             }
 
             return moduleName;
@@ -109,17 +129,20 @@ public class Main {
     }
 
     private static void processFile(String exampleFile, Path outputPath) {
-        if (exampleFile.endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE)) {
+        if (exampleFile == null || outputPath == null || exampleFile.endsWith(EXCLUDED_FILE_PATH_REGEXPMULTILINE)) {
             return;
         }
 
         try {
-            String fileContent = new String(Files.readAllBytes(Paths.get(exampleFile)));
+            String templateFilePath = getTemplateFilePath(exampleFile);
+            if (templateFilePath == null) {
+                throw new IllegalStateException("Unable to get template file path for: " + exampleFile);
+            }
 
-            String generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, getTemplateFilePath(exampleFile));
+            String generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
 
             Path outputFilePath = outputPath.resolve("config.xml");
-            Files.writeString(outputFilePath, generatedContent);
+            Files.writeString(outputFilePath, generatedContent, StandardCharsets.UTF_8);
 
             // Copy the project.properties file to the subfolder
             Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
@@ -127,14 +150,20 @@ public class Main {
             Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
 
             // Generate individual README for this example
-            String moduleName = outputPath.getParent().getFileName().toString();
-            ReadmeGenerator.generateIndividualReadme(outputPath, moduleName);
-
+            Path parentPath = outputPath.getParent();
+            if (parentPath != null) {
+                Path moduleNamePath = parentPath.getFileName();
+                if (moduleNamePath != null) {
+                    String moduleName = moduleNamePath.toString();
+                    ReadmeGenerator.generateIndividualReadme(outputPath, moduleName);
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error reading or processing the file: " + exampleFile);
             e.printStackTrace();
         }
     }
+
 
     public static void generateAllInOneConfig(String moduleName, List<Path> exampleDirs) throws Exception {
         List<String> allExampleFiles = new ArrayList<>();
@@ -225,7 +254,8 @@ public class Main {
         TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
         boolean isTreeWalker = ConfigSerializer.isTreeWalkerConfig(xmlConfig);
-        return Main.class.getClassLoader().getResource(isTreeWalker ? "config-template-treewalker.xml" : "config-template-non-treewalker.xml").getPath();
+        String resourcePath = isTreeWalker ? "config-template-treewalker.xml" : "config-template-non-treewalker.xml";
+        return Main.class.getClassLoader().getResource(resourcePath).getPath();
     }
 
     private static int extractExampleNumber(String filename) {

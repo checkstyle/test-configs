@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
@@ -146,7 +148,8 @@ public class MainTest {
         return false;
     }
 
-    private String loadToString(String filePath) throws Exception {
-        return new String(Files.readAllBytes(Path.of(filePath)));
+    private String loadToString(String filePath) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(filePath));
+        return new String(encoded, StandardCharsets.UTF_8);
     }
 }
