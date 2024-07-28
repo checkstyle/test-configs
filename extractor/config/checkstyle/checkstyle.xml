@@ -5,9 +5,9 @@
 
 <module name="Checker">
     <property name="charset" value="UTF-8"/>
-    <property name="severity" value="warning"/>
 
     <module name="TreeWalker">
-        <!-- Add checkstyle modules here as needed -->
+        <module name="UnusedImports"/>
+        <module name="AvoidStarImport"/>
     </module>
 </module>

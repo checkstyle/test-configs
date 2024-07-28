@@ -22,8 +22,24 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="EmptyBlock">
-            <property name="tokens" value="LITERAL_CASE,LITERAL_DEFAULT"/>
+        <module name="PatternVariableName">
+            <property name="format" value="^[A-Z][A-Z0-9]*$"/>
+            <property name="id" value="FinalPatternVariableName"/>
+        </module>
+
+        <module name="PatternVariableName">
+            <property name="format" value="^([a-z][a-zA-Z0-9]*|_)$"/>
+            <property name="id" value="NonFinalPatternVariableName"/>
+        </module>
+
+        <module name="SuppressionXpathSingleFilter">
+            <property name="id" value="FinalPatternVariableName"/>
+            <property name="query" value="//PATTERN_VARIABLE_DEF[            not(./MODIFIERS/FINAL)]/IDENT"/>
+        </module>
+
+        <module name="SuppressionXpathSingleFilter">
+            <property name="id" value="NonFinalPatternVariableName"/>
+            <property name="query" value="//PATTERN_VARIABLE_DEF[            (./MODIFIERS/FINAL)]/IDENT"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

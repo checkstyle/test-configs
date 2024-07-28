@@ -5,6 +5,7 @@ import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -17,19 +18,19 @@ public class ConfigSerializer {
 
     public static void serializeConfigToFile(String exampleFilePath, String templateFilePath, String outputFilePath) throws Exception {
         String configContent = serializeConfigToString(exampleFilePath, templateFilePath);
-        Files.write(Path.of(outputFilePath), configContent.getBytes());
+        Files.writeString(Path.of(outputFilePath), configContent, StandardCharsets.UTF_8);
     }
 
     public static void serializeAllInOneConfigToFile(String[] exampleFilePaths, String templateFilePath, String outputFilePath) throws Exception {
         String configContent = serializeAllInOneConfigToString(exampleFilePaths, templateFilePath);
-        Files.write(Path.of(outputFilePath), configContent.getBytes());
+        Files.writeString(Path.of(outputFilePath), configContent, StandardCharsets.UTF_8);
     }
 
     public static String serializeConfigToString(String exampleFilePath, String templateFilePath) throws Exception {
         TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
 
-        String template = new String(Files.readAllBytes(Path.of(templateFilePath)));
+        String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
 
         // Determine if it's a TreeWalker or non-TreeWalker configuration
         Configuration targetModule = getTargetModule(xmlConfig);
@@ -37,9 +38,7 @@ public class ConfigSerializer {
         String moduleContent = targetModule != null ? buildModuleContent(targetModule, baseIndent) : "";
 
         // Call replacePlaceholders to get the final config content
-        String configContent = TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalkerConfig(xmlConfig));
-
-        return configContent;
+        return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalkerConfig(xmlConfig));
     }
 
     public static String serializeAllInOneConfigToString(String[] exampleFilePaths, String templateFilePath) throws Exception {
@@ -67,10 +66,8 @@ public class ConfigSerializer {
         String combinedModuleContent = buildCombinedModuleChildren(combinedChildren, baseIndent);
 
         // Read the template and replace the placeholder
-        String template = new String(Files.readAllBytes(Path.of(templateFilePath)));
-        String configContent = TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
-
-        return configContent;
+        String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+        return TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
     }
 
     private static Configuration addIdProperty(Configuration config, String idValue) {
