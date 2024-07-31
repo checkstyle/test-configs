@@ -1,2 +1,0 @@
-Line 1 Different (Base)
-Line 2 Same

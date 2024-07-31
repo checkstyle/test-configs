@@ -1,2 +1,0 @@
-Line 1 Different (Patch)
-Line 2 Same
