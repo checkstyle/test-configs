@@ -22,38 +22,8 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="PatternVariableName">
+        <module name="SealedShouldHavePermitsList">
             <property name="id" value="example1"/>
-        </module>
-
-        <module name="PatternVariableName">
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="PatternVariableName">
-            <property name="format" value="^[a-z][_a-zA-Z0-9]{2,}$"/>
-            <property name="id" value="example3"/>
-        </module>
-
-        <module name="PatternVariableName">
-            <property name="format" value="^[A-Z][A-Z0-9]*$"/>
-            <property name="id" value="example4"/>
-        </module>
-
-        <module name="PatternVariableName">
-            <property name="format" value="^([a-z][a-zA-Z0-9]*|_)$"/>
-            <property name="id" value="example4"/>
-        </module>
-
-        <module name="SuppressionXpathSingleFilter">
-            <property name="id" value="example4"/>
-            <property name="query" value="//PATTERN_VARIABLE_DEF[            not(./MODIFIERS/FINAL)]/IDENT"/>
-        </module>
-
-        <module name="SuppressionXpathSingleFilter">
-            <property name="id" value="example4"/>
-            <property name="query" value="//PATTERN_VARIABLE_DEF[            (./MODIFIERS/FINAL)]/IDENT"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

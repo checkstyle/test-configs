@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,11 @@ public class ConfigSerializer {
 
         // Read the template and replace the placeholder
         String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
-        return TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
+
+        String result = TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
+
+        // Remove duplicate id properties
+        return removeDuplicateIdProperties(result);
     }
 
     private static Configuration addIdProperty(Configuration config, String idValue) {
@@ -231,5 +236,38 @@ public class ConfigSerializer {
             }
         }
         return config.getName();
+    }
+
+    public static String removeDuplicateIdProperties(String xmlContent) {
+        String[] lines = xmlContent.split("\n");
+        StringBuilder result = new StringBuilder();
+        Map<String, String> moduleIdMap = new HashMap<>();
+        String currentModule = null;
+
+        for (String line : lines) {
+            String trimmedLine = line.trim();
+            if (trimmedLine.startsWith("<module name=")) {
+                currentModule = trimmedLine;
+                moduleIdMap.clear(); // Reset for new module
+            }
+
+            if (trimmedLine.startsWith("<property name=\"id\"")) {
+                String idValue = extractIdValue(trimmedLine);
+                if (currentModule != null && !moduleIdMap.containsKey(idValue)) {
+                    moduleIdMap.put(idValue, trimmedLine);
+                    result.append(line).append("\n");
+                }
+            } else {
+                result.append(line).append("\n");
+            }
+        }
+
+        return result.toString();
+    }
+
+    private static String extractIdValue(String propertyLine) {
+        int start = propertyLine.indexOf("value=\"") + 7;
+        int end = propertyLine.lastIndexOf("\"");
+        return propertyLine.substring(start, end);
     }
 }
