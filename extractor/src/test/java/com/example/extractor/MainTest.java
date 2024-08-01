@@ -2,7 +2,6 @@ package com.example.extractor;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,107 +14,151 @@ import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
-public class MainTest {
+/**
+ * Unit tests for the Main class.
+ */
+class MainTest {
 
+    /**
+     * The constant TEMPLATE_FILE_PATH.
+     */
+    private static final String TEMPLATE_FILE_PATH = "src/main/resources/config-template-treewalker.xml";
+
+    /**
+     * Default constructor.
+     */
+    public MainTest() {
+        // No-argument constructor
+    }
+
+    /**
+     * Tests parsing the configuration from the header.
+     * @throws Exception if an error occurs during parsing.
+     */
     @Test
-    public void testParseConfigFromHeader() throws Exception {
-        String filePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example1.java";
+    void testParseConfigFromHeader() throws Exception {
+        final String filePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example1.java";
         final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(filePath);
         final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
 
         assertNotNull(xmlConfig, "Config should not be null");
-        assertTrue(containsModule(xmlConfig, "Checker"), "Config should contain module name 'Checker'");
-        assertTrue(containsModule(xmlConfig, "TreeWalker"), "Config should contain module name 'TreeWalker'");
-        assertTrue(containsModule(xmlConfig, "AbbreviationAsWordInName"), "Config should contain module name 'AbbreviationAsWordInName'");
+        assertThat(containsModule(xmlConfig, "Checker")).isTrue();
+        assertThat(containsModule(xmlConfig, "TreeWalker")).isTrue();
+        assertThat(containsModule(xmlConfig, "AbbreviationAsWordInName")).isTrue();
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example1.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample1() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example1.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example1.xml";
+    void testGeneratedConfigMatchesExpectedExample1() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example1.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example1.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example2.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample2() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example2.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example2.xml";
+    void testGeneratedConfigMatchesExpectedExample2() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example2.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example2.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example3.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample3() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example3.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example3.xml";
+    void testGeneratedConfigMatchesExpectedExample3() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example3.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example3.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example4.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample4() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example4.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example4.xml";
+    void testGeneratedConfigMatchesExpectedExample4() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example4.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example4.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example5.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample5() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example5.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example5.xml";
+    void testGeneratedConfigMatchesExpectedExample5() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example5.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example5.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example6.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample6() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example6.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example6.xml";
+    void testGeneratedConfigMatchesExpectedExample6() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example6.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example6.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for Example7.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedExample7() throws Exception {
-        String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example7.java";
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example7.xml";
+    void testGeneratedConfigMatchesExpectedExample7() throws Exception {
+        final String exampleFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example7.java";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-example7.xml";
 
-        String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFilePath, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
+    /**
+     * Tests if the generated configuration matches the expected configuration for all examples.
+     * @throws Exception if an error occurs during processing.
+     */
     @Test
-    public void testGeneratedConfigMatchesExpectedAllInOne() throws Exception {
-        String[] exampleFiles = {
+    void testGeneratedConfigMatchesExpectedAllInOne() throws Exception {
+        final String[] exampleFiles = {
                 "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example1.java",
                 "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example2.java",
                 "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example3.java",
@@ -125,21 +168,20 @@ public class MainTest {
                 "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Examples/Example7.java"
         };
 
-        String templateFilePath = "src/main/resources/config-template-treewalker.xml";
-        String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-all-in-one.xml";
+        final String expectedFilePath = "src/test/resources/com/puppycrawl/tools/checkstyle/checks/naming/AbbreviationAsWordInName/Configs/expected-config-all-in-one.xml";
 
-        String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(exampleFiles, templateFilePath);
-        String expectedContent = loadToString(expectedFilePath);
+        final String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(exampleFiles, TEMPLATE_FILE_PATH);
+        final String expectedContent = loadToString(expectedFilePath);
 
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
 
-    private boolean containsModule(Configuration config, String moduleName) {
+    private boolean containsModule(final Configuration config, final String moduleName) {
         if (config.getName().equals(moduleName)) {
             return true;
         }
 
-        for (Configuration child : config.getChildren()) {
+        for (final Configuration child : config.getChildren()) {
             if (containsModule(child, moduleName)) {
                 return true;
             }
@@ -148,8 +190,8 @@ public class MainTest {
         return false;
     }
 
-    private String loadToString(String filePath) throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(filePath));
+    private String loadToString(final String filePath) throws IOException {
+        final byte[] encoded = Files.readAllBytes(Paths.get(filePath));
         return new String(encoded, StandardCharsets.UTF_8);
     }
 }

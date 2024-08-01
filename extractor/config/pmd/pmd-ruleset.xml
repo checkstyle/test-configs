@@ -2,19 +2,68 @@
 <ruleset name="Custom PMD rules"
          xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0
-                             http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
-    <description>
-        Custom PMD ruleset for the extractor project
-    </description>
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
 
-    <rule ref="category/java/bestpractices.xml"/>
-    <rule ref="category/java/codestyle.xml"/>
-    <rule ref="category/java/design.xml"/>
-    <rule ref="category/java/documentation.xml"/>
-    <rule ref="category/java/errorprone.xml"/>
+    <description>Custom PMD ruleset for the extractor project</description>
+
+    <!-- Configure JUnitTestContainsTooManyAsserts rule -->
+    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+        <properties>
+            <property name="maximumAsserts" value="6"/>
+        </properties>
+    </rule>
+
+
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="GuardLogStatement"/>
+
+    </rule>
+
+
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="LongVariable"/>
+        <exclude name="CommentDefaultAccessModifier"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="AtLeastOneConstructor"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <property name="minimum" value="30"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml">
+        <exclude name="SignatureDeclareThrowsException"/>
+        <exclude name="GodClass"/>
+        <exclude name="TooManyMethods"/>
+        <exclude name="AvoidCatchingGenericException"/>
+    </rule>
+
+    <rule ref="category/java/documentation.xml">
+        <exclude name="CommentSize"/>
+    </rule>
+
+    <rule ref="category/java/documentation.xml/CommentSize">
+        <properties>
+            <property name="maxLines" value="20"/>
+            <property name="maxLineLength" value="120"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <exclude name="AvoidDuplicateLiterals"/>
+    </rule>
+
     <rule ref="category/java/multithreading.xml"/>
+
     <rule ref="category/java/performance.xml"/>
 
-    <!-- We can add specific exclusions here if they become problematic during usage -->
+    <rule ref="category/java/design.xml/LawOfDemeter">
+        <properties>
+            <property name="trustRadius" value="3" />
+        </properties>
+    </rule>
+
 </ruleset>

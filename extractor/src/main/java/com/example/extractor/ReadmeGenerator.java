@@ -5,21 +5,39 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ReadmeGenerator {
+/**
+ * This class generates README files for test configurations.
+ */
+public final class ReadmeGenerator {
+    /**
+     * The Constant GITHUB_RAW_URL.
+     */
     private static final String GITHUB_RAW_URL = "https://raw.githubusercontent.com/checkstyle/test-configs/main/";
 
-    public static void generateIndividualReadme(Path exampleFolder, String moduleName) throws IOException {
+    // Private constructor to prevent instantiation
+    private ReadmeGenerator() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Generates a README file for an individual example.
+     *
+     * @param exampleFolder The folder containing the example.
+     * @param moduleName The name of the module.
+     * @throws IOException If an I/O error occurs.
+     */
+    public static void generateIndividualReadme(final Path exampleFolder, final String moduleName) throws IOException {
         if (exampleFolder == null || moduleName == null) {
             throw new IllegalArgumentException("exampleFolder and moduleName must not be null");
         }
 
-        Path fileName = exampleFolder.getFileName();
+        final Path fileName = exampleFolder.getFileName();
         if (fileName == null) {
             throw new IllegalArgumentException("exampleFolder must have a valid file name");
         }
 
-        String folderName = fileName.toString();
-        String readmeContent = String.format(
+        final String folderName = fileName.toString();
+        final String readmeContent = String.format(
                 "# %s Configs%n" +
                         "Make comment in PR:%n" +
                         "```%n" +
@@ -42,16 +60,23 @@ public class ReadmeGenerator {
                 GITHUB_RAW_URL + moduleName + "/" + folderName + "/list-of-projects.properties"
         );
 
-        Path readmePath = exampleFolder.resolve("README.md");
+        final Path readmePath = exampleFolder.resolve("README.md");
         Files.writeString(readmePath, readmeContent, StandardCharsets.UTF_8);
     }
 
-    public static void generateAllInOneReadme(Path allInOneFolder, String moduleName) throws IOException {
+    /**
+     * Generates a README file for all-in-one examples.
+     *
+     * @param allInOneFolder The folder containing all examples.
+     * @param moduleName The name of the module.
+     * @throws IOException If an I/O error occurs.
+     */
+    public static void generateAllInOneReadme(final Path allInOneFolder, final String moduleName) throws IOException {
         if (allInOneFolder == null || moduleName == null) {
             throw new IllegalArgumentException("allInOneFolder and moduleName must not be null");
         }
 
-        String readmeContent = String.format(
+        final String readmeContent = String.format(
                 "# All Examples in One Configs%n" +
                         "Make comment in PR:%n" +
                         "```%n" +
@@ -72,7 +97,7 @@ public class ReadmeGenerator {
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties"
         );
 
-        Path readmePath = allInOneFolder.resolve("README.md");
+        final Path readmePath = allInOneFolder.resolve("README.md");
         Files.writeString(readmePath, readmeContent, StandardCharsets.UTF_8);
     }
 }

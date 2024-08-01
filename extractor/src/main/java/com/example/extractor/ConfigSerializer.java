@@ -14,63 +14,90 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigSerializer {
 
-    public static void serializeConfigToFile(String exampleFilePath, String templateFilePath, String outputFilePath) throws Exception {
-        String configContent = serializeConfigToString(exampleFilePath, templateFilePath);
-        Files.writeString(Path.of(outputFilePath), configContent, StandardCharsets.UTF_8);
+/**
+ * Utility class for serializing Checkstyle configurations.
+ * This class provides methods to serialize configurations to files or strings,
+ * and to extract module names from configuration files.
+ */
+public final class ConfigSerializer {
+
+    /** Constant for the TreeWalker module name. */
+    private static final String TREE_WALKER = "TreeWalker";
+
+    /** Constant for the Checker module name. */
+    private static final String CHECKER = "Checker";
+
+    /** XML tag for module elements. */
+    private static final String MODULE_TAG = "<module name=\"";
+
+    /** Indentation for TreeWalker modules. */
+    private static final String TREE_WALKER_INDENT = "        ";
+
+    /** Indentation for non-TreeWalker modules. */
+    private static final String NON_TREE_WALKER_INDENT = "    ";
+
+    private ConfigSerializer() {
+        // Private constructor to prevent instantiation
     }
 
-    public static void serializeAllInOneConfigToFile(String[] exampleFilePaths, String templateFilePath, String outputFilePath) throws Exception {
-        String configContent = serializeAllInOneConfigToString(exampleFilePaths, templateFilePath);
-        Files.writeString(Path.of(outputFilePath), configContent, StandardCharsets.UTF_8);
-    }
+    /**
+     * Serializes a configuration to a string.
+     *
+     * @param exampleFilePath  Path to the example file
+     * @param templateFilePath Path to the template file
+     * @return Serialized configuration as a string
+     * @throws Exception If an Exception occurs
+     */
+    public static String serializeConfigToString(final String exampleFilePath, final String templateFilePath)
+            throws Exception {
+        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+        final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
 
-    public static String serializeConfigToString(String exampleFilePath, String templateFilePath) throws Exception {
-        TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-        Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+        final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
 
-        String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+        final Configuration targetModule = getTargetModule(xmlConfig);
+        final String baseIndent = isTreeWalkerConfig(xmlConfig) ? TREE_WALKER_INDENT : NON_TREE_WALKER_INDENT;
+        final String moduleContent = targetModule != null ? buildModuleContent(targetModule, baseIndent) : "";
 
-        // Determine if it's a TreeWalker or non-TreeWalker configuration
-        Configuration targetModule = getTargetModule(xmlConfig);
-        String baseIndent = isTreeWalkerConfig(xmlConfig) ? "        " : "    ";
-        String moduleContent = targetModule != null ? buildModuleContent(targetModule, baseIndent) : "";
-
-        // Call replacePlaceholders to get the final config content
         return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalkerConfig(xmlConfig));
     }
 
-    public static String serializeAllInOneConfigToString(String[] exampleFilePaths, String templateFilePath) throws Exception {
-        List<Configuration> combinedChildren = new ArrayList<>();
-        int exampleIndex = 1;
-        boolean isTreeWalker = true; // Assume true initially and determine later
+    /**
+     * Serializes multiple configurations to a single string.
+     *
+     * @param exampleFilePaths Array of paths to example files
+     * @param templateFilePath Path to the template file
+     * @return Serialized configuration as a string
+     * @throws Exception If an Exception occurs
+     */
+    public static String serializeAllInOneConfigToString(final String[] exampleFilePaths, final String templateFilePath)
+            throws Exception{
+        final List<Configuration> combinedChildren = new ArrayList<>();
+        boolean isTreeWalker = true;
 
-        for (String exampleFilePath : exampleFilePaths) {
-            TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-            Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
-            Configuration targetModule = getTargetModule(xmlConfig);
+        for (int i = 0; i < exampleFilePaths.length; i++) {
+            final String exampleFilePath = exampleFilePaths[i];
+            final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+            final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+            final Configuration targetModule = getTargetModule(xmlConfig);
             if (targetModule != null) {
-                isTreeWalker &= isTreeWalkerConfig(xmlConfig); // Adjust based on actual config
-                // Add an id property to each child module based on the example index
-                for (Configuration child : targetModule.getChildren()) {
-                    Configuration modifiedChild = addIdProperty(child, "example" + exampleIndex);
+                isTreeWalker &= isTreeWalkerConfig(xmlConfig);
+                for (final Configuration child : targetModule.getChildren()) {
+                    final Configuration modifiedChild = addIdProperty(child, "example" + (i + 1));
                     combinedChildren.add(modifiedChild);
                 }
             }
-            exampleIndex++;
         }
 
-        // Build combined module content
-        String baseIndent = isTreeWalker ? "        " : "    ";
-        String combinedModuleContent = buildCombinedModuleChildren(combinedChildren, baseIndent);
+        final String baseIndent = isTreeWalker ? TREE_WALKER_INDENT : NON_TREE_WALKER_INDENT;
+        final String combinedModuleContent = buildCombinedModuleChildren(combinedChildren, baseIndent);
 
-        // Read the template and replace the placeholder
-        String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+        final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
         return TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
     }
 
-    private static Configuration addIdProperty(Configuration config, String idValue) {
+    private static Configuration addIdProperty(final Configuration config, final String idValue) {
         return new Configuration() {
             @Override
             public String getName() {
@@ -79,7 +106,7 @@ public class ConfigSerializer {
 
             @Override
             public Map<String, String> getMessages() {
-                return null;
+                return Collections.emptyMap();
             }
 
             @Override
@@ -88,19 +115,19 @@ public class ConfigSerializer {
             }
 
             @Override
-            public String getAttribute(String name) throws CheckstyleException {
+            public String getAttribute(final String name) {
                 return null;
             }
 
             @Override
             public String[] getPropertyNames() {
-                List<String> propertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
+                final List<String> propertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
                 propertyNames.add("id");
                 return propertyNames.toArray(new String[0]);
             }
 
             @Override
-            public String getProperty(String name) throws CheckstyleException {
+            public String getProperty(final String name) throws CheckstyleException {
                 if ("id".equals(name)) {
                     return idValue;
                 }
@@ -114,120 +141,104 @@ public class ConfigSerializer {
         };
     }
 
-    private static String buildCombinedModuleChildren(List<Configuration> children, String indent) throws CheckstyleException {
-        StringBuilder builder = new StringBuilder();
+    private static String buildCombinedModuleChildren(final List<Configuration> children, final String indent)
+            throws CheckstyleException {
+        final StringBuilder builder = new StringBuilder(children.size() * 300);
 
-        for (Configuration child : children) {
-            String childProperties = buildProperties(child, indent + "    ");
-            if (!childProperties.isEmpty()) {
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\">\n");
-                builder.append(childProperties).append("\n");
-                builder.append(indent).append("</module>\n\n");
+        for (final Configuration child : children) {
+            final String childProperties = buildProperties(child, indent + "    ");
+            if (childProperties.isEmpty()) {
+                builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\"/>\n\n");
             } else {
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n");
+                builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\">\n")
+                        .append(childProperties).append('\n')
+                        .append(indent).append("</module>\n\n");
             }
         }
 
         return builder.toString().trim();
     }
 
-    private static String buildProperties(Configuration config, String indent) throws CheckstyleException {
-        StringBuilder builder = new StringBuilder();
-        boolean firstProperty = true;
-        List<String> sortedPropertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
+    private static String buildProperties(final Configuration config, final String indent) throws CheckstyleException {
+        final String[] propertyNames = config.getPropertyNames();
+        // Estimate 50 characters per property (name, value, XML tags)
+        final StringBuilder builder = new StringBuilder(propertyNames.length * 50);
+        final List<String> sortedPropertyNames = new ArrayList<>(Arrays.asList(propertyNames));
         Collections.sort(sortedPropertyNames);
-        for (String propertyName : sortedPropertyNames) {
-            String propertyValue = config.getProperty(propertyName);
-            if (!firstProperty) {
-                builder.append("\n");
+        for (final String propertyName : sortedPropertyNames) {
+            final String propertyValue = config.getProperty(propertyName);
+            if (builder.length() > 0) {
+                builder.append('\n');
             }
             builder.append(indent).append("<property name=\"").append(propertyName)
                     .append("\" value=\"").append(propertyValue).append("\"/>");
-            firstProperty = false;
         }
         return builder.toString();
     }
 
-    private static Configuration getTargetModule(Configuration config) {
-        Configuration treeWalkerModule = getTreeWalkerModule(config);
-        return treeWalkerModule != null ? treeWalkerModule : config;
+    private static Configuration getTargetModule(final Configuration config) {
+        final Configuration treeWalkerModule = getTreeWalkerModule(config);
+        return treeWalkerModule == null ? config : treeWalkerModule;
     }
 
-    private static Configuration getTreeWalkerModule(Configuration config) {
-        for (Configuration child : config.getChildren()) {
-            if ("TreeWalker".equals(child.getName())) {
+    private static Configuration getTreeWalkerModule(final Configuration config) {
+        for (final Configuration child : config.getChildren()) {
+            if (TREE_WALKER.equals(child.getName())) {
                 return child;
             }
         }
         return null;
     }
 
-    public static boolean isTreeWalkerConfig(Configuration config) {
+    /**
+     * Checks if the configuration is a TreeWalker configuration.
+     *
+     * @param config The configuration to check
+     * @return true if it's a TreeWalker configuration, false otherwise
+     */
+    public static boolean isTreeWalkerConfig(final Configuration config) {
         return getTreeWalkerModule(config) != null;
     }
 
-    public static String sortProperties(String configContent) {
-        String[] lines = configContent.split("\n");
-        List<String> propertyLines = new ArrayList<>();
-        StringBuilder sortedContent = new StringBuilder();
-
-        for (String line : lines) {
-            if (line.trim().startsWith("<property")) {
-                propertyLines.add(line);
+    private static String buildModuleContent(final Configuration config, final String indent) throws CheckstyleException {
+        final StringBuilder builder = new StringBuilder();
+        for (final Configuration child : config.getChildren()) {
+            final String childProperties = buildProperties(child, indent + "    ");
+            if (childProperties.isEmpty()) {
+                builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\"/>\n\n");
             } else {
-                if (!propertyLines.isEmpty()) {
-                    Collections.sort(propertyLines);
-                    for (String propertyLine : propertyLines) {
-                        sortedContent.append(propertyLine).append("\n");
-                    }
-                    propertyLines.clear();
-                }
-                sortedContent.append(line).append("\n");
-            }
-        }
-        if (!propertyLines.isEmpty()) {
-            Collections.sort(propertyLines);
-            for (String propertyLine : propertyLines) {
-                sortedContent.append(propertyLine).append("\n");
-            }
-        }
-        return sortedContent.toString().trim();
-    }
-
-    private static String buildModuleContent(Configuration config, String indent) throws CheckstyleException {
-        StringBuilder builder = new StringBuilder();
-        for (Configuration child : config.getChildren()) {
-            String childProperties = buildProperties(child, indent + "    ");
-            if (!childProperties.isEmpty()) {
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\">\n");
-                builder.append(childProperties).append("\n");
-                builder.append(indent).append("</module>\n\n");
-            } else {
-                builder.append(indent).append("<module name=\"").append(child.getName()).append("\"/>\n\n");
+                builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\">\n")
+                        .append(childProperties).append('\n')
+                        .append(indent).append("</module>\n\n");
             }
         }
         return builder.toString().trim();
     }
 
-    public static String extractModuleName(String exampleFilePath) throws Exception {
-        TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-        Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+    /**
+     * Extracts the module name from a given example file.
+     *
+     * @param exampleFilePath Path to the example file
+     * @return The extracted module name
+     * @throws Exception If an Exception occurs
+     */
+    public static String extractModuleName(final String exampleFilePath) throws Exception  {
+        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+        final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
         return getSpecificModuleName(xmlConfig);
     }
 
-    private static String getSpecificModuleName(Configuration config) {
+    private static String getSpecificModuleName(final Configuration config) {
         if (config.getChildren().length == 0) {
             return config.getName();
         }
-        for (Configuration child : config.getChildren()) {
-            // Skip Checker and TreeWalker, look deeper
-            if (!"Checker".equals(child.getName()) && !"TreeWalker".equals(child.getName())) {
+        for (final Configuration child : config.getChildren()) {
+            if (!CHECKER.equals(child.getName()) && !TREE_WALKER.equals(child.getName())) {
                 return child.getName();
-            } else {
-                String moduleName = getSpecificModuleName(child);
-                if (!moduleName.equals(child.getName())) {
-                    return moduleName;
-                }
+            }
+            final String moduleName = getSpecificModuleName(child);
+            if (!moduleName.equals(child.getName())) {
+                return moduleName;
             }
         }
         return config.getName();

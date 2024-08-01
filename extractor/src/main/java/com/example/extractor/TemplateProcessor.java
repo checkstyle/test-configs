@@ -1,16 +1,34 @@
 package com.example.extractor;
 
-public class TemplateProcessor {
+/**
+ * Utility class for processing templates and replacing placeholders.
+ * This class provides methods to replace specific placeholders in templates
+ * with actual module content.
+ */
+public final class TemplateProcessor {
 
-    public static String replacePlaceholders(String template, String moduleContent, boolean isTreeWalker) {
-        if (isTreeWalker) {
-            // Replace the treewalker_module_PLACEHOLDER with the actual module content including properties
-            template = template.replace("<!-- treewalker_module_PLACEHOLDER -->", moduleContent);
-        } else {
-            // Replace the Non/TreeWalker module placeholder with the actual module content including properties
-            template = template.replace("<!-- Non/TreeWalker module placeholder -->", moduleContent);
-        }
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
+    private TemplateProcessor() {
+        // This constructor is intentionally empty. Nothing special is needed here.
+    }
 
-        return template;
+    /**
+     * Replaces placeholders in the given template with the provided module content.
+     *
+     * @param template      The original template string containing placeholders.
+     * @param moduleContent The content to replace the placeholder with.
+     * @param isTreeWalker  A flag indicating whether the module is a TreeWalker module.
+     * @return The template with placeholders replaced by the module content.
+     */
+    public static String replacePlaceholders(final String template,
+                                             final String moduleContent,
+                                             final boolean isTreeWalker) {
+        final String placeholder = isTreeWalker
+                ? "<!-- treewalker_module_PLACEHOLDER -->"
+                : "<!-- Non/TreeWalker module placeholder -->";
+
+        return template.replace(placeholder, moduleContent);
     }
 }
