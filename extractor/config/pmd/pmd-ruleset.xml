@@ -85,6 +85,7 @@
 
     <rule ref="category/java/multithreading.xml"/>
 
+
     <rule ref="category/java/performance.xml">
         <!-- AvoidInstantiatingObjectsInLoops is excluded because object creation within loops
          is sometimes necessary for functionality, and the associated performance impact
@@ -97,6 +98,13 @@
             <!-- The trust radius is set to 3 to allow for some degree of method chaining,
                  which is necessary in the context of fluent APIs and other design patterns. -->
             <property name="trustRadius" value="3" />
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock">
+        <properties>
+            <property name="allowCommentedBlocks" value="true" />
+            <property name="allowExceptionNameRegex" value="^(ignored|expected)$" />
         </properties>
     </rule>
 
