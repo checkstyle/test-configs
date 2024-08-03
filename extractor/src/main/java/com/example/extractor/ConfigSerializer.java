@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -71,8 +70,7 @@ public final class ConfigSerializer {
      * @return Serialized configuration as a string
      * @throws Exception If an Exception occurs
      */
-    public static String serializeAllInOneConfigToString(final String[] exampleFilePaths, final String templateFilePath)
-            throws Exception{
+    public static String serializeAllInOneConfigToString(final String[] exampleFilePaths, final String templateFilePath) throws Exception {
         final List<Configuration> combinedChildren = new ArrayList<>();
         boolean isTreeWalker = true;
 
@@ -81,64 +79,44 @@ public final class ConfigSerializer {
             final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
             final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
             final Configuration targetModule = getTargetModule(xmlConfig);
+
             if (targetModule != null) {
                 isTreeWalker &= isTreeWalkerConfig(xmlConfig);
                 for (final Configuration child : targetModule.getChildren()) {
-                    final Configuration modifiedChild = addIdProperty(child, "example" + (i + 1));
-                    combinedChildren.add(modifiedChild);
+                    final MultiPropertyConfiguration newChild = copyConfiguration(child);
+                    setIdProperty(newChild, "example" + (i + 1));
+                    combinedChildren.add(newChild);
                 }
             }
         }
 
         final String baseIndent = isTreeWalker ? TREE_WALKER_INDENT : NON_TREE_WALKER_INDENT;
         final String combinedModuleContent = buildCombinedModuleChildren(combinedChildren, baseIndent);
-
         final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+
         return TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
     }
 
-    private static Configuration addIdProperty(final Configuration config, final String idValue) {
-        return new Configuration() {
-            @Override
-            public String getName() {
-                return config.getName();
-            }
-
-            @Override
-            public Map<String, String> getMessages() {
-                return Collections.emptyMap();
-            }
-
-            @Override
-            public String[] getAttributeNames() {
-                return new String[0];
-            }
-
-            @Override
-            public String getAttribute(final String name) {
-                return null;
-            }
-
-            @Override
-            public String[] getPropertyNames() {
-                final List<String> propertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
-                propertyNames.add("id");
-                return propertyNames.toArray(new String[0]);
-            }
-
-            @Override
-            public String getProperty(final String name) throws CheckstyleException {
-                if ("id".equals(name)) {
-                    return idValue;
+    private static MultiPropertyConfiguration copyConfiguration(final Configuration config) throws CheckstyleException {
+        final MultiPropertyConfiguration newConfig = new MultiPropertyConfiguration(config.getName());
+        for (final String propertyName : config.getPropertyNames()) {
+            final String propertyValue = config.getProperty(propertyName);
+            if ("id".equals(propertyName)) {
+                for (final String value : propertyValue.split(",")) {
+                    newConfig.addMultiProperty(propertyName, value.trim());
                 }
-                return config.getProperty(name);
+            } else {
+                newConfig.addProperty(propertyName, propertyValue);
             }
+        }
+        for (final Configuration child : config.getChildren()) {
+            newConfig.addChild(copyConfiguration(child));
+        }
+        return newConfig;
+    }
 
-            @Override
-            public Configuration[] getChildren() {
-                return config.getChildren();
-            }
-        };
+    private static void setIdProperty(final MultiPropertyConfiguration config, final String idValue) {
+        config.addMultiProperty("id", idValue);
     }
 
     private static String buildCombinedModuleChildren(final List<Configuration> children, final String indent)
@@ -161,19 +139,31 @@ public final class ConfigSerializer {
 
     private static String buildProperties(final Configuration config, final String indent) throws CheckstyleException {
         final String[] propertyNames = config.getPropertyNames();
-        // Estimate 50 characters per property (name, value, XML tags)
         final StringBuilder builder = new StringBuilder(propertyNames.length * 50);
         final List<String> sortedPropertyNames = new ArrayList<>(Arrays.asList(propertyNames));
         Collections.sort(sortedPropertyNames);
+
         for (final String propertyName : sortedPropertyNames) {
             final String propertyValue = config.getProperty(propertyName);
-            if (builder.length() > 0) {
-                builder.append('\n');
+            if ("id".equals(propertyName)) {
+                final List<String> idValues = new ArrayList<>(Arrays.asList(propertyValue.split(",")));
+                Collections.sort(idValues);  // Sort the id values
+                for (final String value : idValues) {
+                    appendProperty(builder, indent, propertyName, value.trim());
+                }
+            } else {
+                appendProperty(builder, indent, propertyName, propertyValue);
             }
-            builder.append(indent).append("<property name=\"").append(propertyName)
-                    .append("\" value=\"").append(propertyValue).append("\"/>");
         }
         return builder.toString();
+    }
+
+    private static void appendProperty(final StringBuilder builder, final String indent, final String name, final String value) {
+        if (builder.length() > 0) {
+            builder.append('\n');
+        }
+        builder.append(indent).append("<property name=\"").append(name)
+                .append("\" value=\"").append(value).append("\"/>");
     }
 
     private static Configuration getTargetModule(final Configuration config) {

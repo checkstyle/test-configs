@@ -53,14 +53,14 @@
         </module>
 
         <module name="IllegalType">
-            <property name="id" value="example7"/>
+            <property name="id" value="IllegalTypeOptionalAsField"/>
             <property name="id" value="example7"/>
             <property name="illegalClassNames" value="java.util.Optional"/>
             <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
         <module name="SuppressionXpathSingleFilter">
-            <property name="id" value="example7"/>
+            <property name="id" value="IllegalTypeOptionalAsField"/>
             <property name="id" value="example7"/>
             <property name="query" value="//METHOD_DEF//*"/>
         </module>
