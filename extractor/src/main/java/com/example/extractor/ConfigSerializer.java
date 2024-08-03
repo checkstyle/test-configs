@@ -265,8 +265,7 @@ public final class ConfigSerializer {
      */
     public static String serializeAllInOneConfigToString(
             final String[] exampleFilePaths,
-            final String templateFilePath)
-            throws Exception {
+            final String templateFilePath) throws Exception {
         final List<Configuration> combinedChildren = new ArrayList<>();
         boolean isTreeWalker = true;
 
@@ -279,9 +278,10 @@ public final class ConfigSerializer {
             if (targetModule != null) {
                 isTreeWalker &= isTreeWalkerConfig(xmlConfig);
                 for (final Configuration child : targetModule.getChildren()) {
-                    final Configuration modifiedChild =
-                            addIdProperty(child, "example" + (index + 1));
-                    combinedChildren.add(modifiedChild);
+                    // Use the new copyConfiguration method
+                    final Configuration newChild =
+                            copyConfiguration(child, "example" + (index + 1));
+                    combinedChildren.add(newChild);
                 }
             }
         }
@@ -300,6 +300,33 @@ public final class ConfigSerializer {
                 Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
 
         return TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
+    }
+
+    /**
+     * Creates a deep copy of the given configuration.
+     *
+     * @param config the configuration to copy
+     * @param newId the new ID to assign to the copied configuration
+     * @return a new {@link Configuration} that is a deep copy of the provided configuration
+     * @throws CheckstyleException if copying fails
+     */
+    private static Configuration copyConfiguration(final Configuration config, final String newId) {
+        final DefaultConfiguration newConfig = new DefaultConfiguration(config.getName());
+
+        for (final String name : config.getPropertyNames()) {
+            try {
+                final String value = config.getProperty(name);
+                newConfig.addProperty(name, value);
+            }
+            catch (CheckstyleException ex) {
+                // Property not found, skipping
+            }
+        }
+
+        // Set the new ID
+        newConfig.addProperty("id", newId);
+
+        return newConfig;
     }
 
     /**
@@ -346,19 +373,42 @@ public final class ConfigSerializer {
             final Configuration config,
             final String indent) throws CheckstyleException {
         final String[] propertyNames = config.getPropertyNames();
-        // Estimate 50 characters per property (name, value, XML tags)
         final StringBuilder builder = new StringBuilder(propertyNames.length * 50);
         final List<String> sortedPropertyNames = new ArrayList<>(Arrays.asList(propertyNames));
         Collections.sort(sortedPropertyNames);
+
         for (final String propertyName : sortedPropertyNames) {
             final String propertyValue = config.getProperty(propertyName);
-            if (builder.length() > 0) {
-                builder.append('\n');
+            if ("id".equals(propertyName)) {
+                final List<String> idValues =
+                        new ArrayList<>(Arrays.asList(propertyValue.split(",")));
+                Collections.sort(idValues);
+                for (final String value : idValues) {
+                    appendProperty(builder, indent, propertyName, value.trim());
+                }
             }
-            builder.append(indent).append("<property name=\"").append(propertyName)
-                    .append("\" value=\"").append(propertyValue).append("\"/>");
+            else {
+                appendProperty(builder, indent, propertyName, propertyValue);
+            }
         }
         return builder.toString();
+    }
+
+    /**
+     * Appends a property in XML format to the provided StringBuilder.
+     *
+     * @param builder the StringBuilder to append to
+     * @param indent the indentation to apply before the property tag
+     * @param name the name of the property
+     * @param value the value of the property
+     */
+    private static void appendProperty(final StringBuilder builder, final String indent,
+                                       final String name, final String value) {
+        if (builder.length() > 0) {
+            builder.append('\n');
+        }
+        builder.append(indent).append("<property name=\"").append(name)
+                .append("\" value=\"").append(value).append("\"/>");
     }
 
     /**
@@ -483,95 +533,5 @@ public final class ConfigSerializer {
         }
 
         return result;
-    }
-
-    /**
-     * Adds an "id" property to the given configuration.
-     *
-     * @param config  The original configuration to be modified.
-     * @param idValue The value of the "id" property to be added.
-     * @return A new configuration with the added "id" property.
-     */
-    private static Configuration addIdProperty(final Configuration config, final String idValue) {
-        return new IdPropertyAddingConfiguration(config, idValue);
-    }
-
-    /**
-     * This class is a decorator for the Configuration object.
-     * It adds an "id" property to the existing Configuration.
-     */
-    private static class IdPropertyAddingConfiguration implements Configuration {
-        /**
-         * Identifier for serialized class version.
-         */
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * The original Configuration object that is being decorated.
-         */
-        private final Configuration config;
-
-        /**
-         * The value of the "id" property to be added.
-         */
-        private final String idValue;
-
-        /**
-         * Constructs an IdPropertyAddingConfiguration instance.
-         *
-         * @param config  The original Configuration object to be decorated.
-         * @param idValue The value of the "id" property to be added.
-         */
-        IdPropertyAddingConfiguration(final Configuration config, final String idValue) {
-            this.config = config;
-            this.idValue = idValue;
-        }
-
-        @Override
-        public String getName() {
-            return config.getName();
-        }
-
-        @Override
-        public Map<String, String> getMessages() {
-            return Collections.emptyMap();
-        }
-
-        @Override
-        public String[] getAttributeNames() {
-            return new String[0];
-        }
-
-        @Override
-        public String getAttribute(final String name) {
-            return null;
-        }
-
-        @Override
-        public String[] getPropertyNames() {
-            final List<String> propertyNames =
-                    new ArrayList<>(Arrays.asList(config.getPropertyNames()));
-            propertyNames.add("id");
-            return propertyNames.toArray(new String[0]);
-        }
-
-        @Override
-        public String getProperty(final String name) throws CheckstyleException {
-            final String propertyValue;
-
-            if ("id".equals(name)) {
-                propertyValue = idValue;
-            }
-            else {
-                propertyValue = config.getProperty(name);
-            }
-
-            return propertyValue;
-        }
-
-        @Override
-        public Configuration[] getChildren() {
-            return config.getChildren();
-        }
     }
 }
