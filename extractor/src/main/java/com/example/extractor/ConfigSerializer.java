@@ -106,30 +106,38 @@ public final class ConfigSerializer {
 
             @Override
             public Map<String, String> getMessages() {
-                return Collections.emptyMap();
+                return config.getMessages();
             }
 
             @Override
             public String[] getAttributeNames() {
-                return new String[0];
+                return config.getAttributeNames();
             }
 
             @Override
-            public String getAttribute(final String name) {
-                return null;
+            public String getAttribute(final String name) throws CheckstyleException {
+                return config.getAttribute(name);
             }
 
             @Override
             public String[] getPropertyNames() {
                 final List<String> propertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
-                propertyNames.add("id");
+                if (!propertyNames.contains("id")) {
+                    propertyNames.add("id");
+                }
                 return propertyNames.toArray(new String[0]);
             }
 
             @Override
             public String getProperty(final String name) throws CheckstyleException {
                 if ("id".equals(name)) {
-                    return idValue;
+                    String existingId = null;
+                    try {
+                        existingId = config.getProperty(name);
+                    } catch (CheckstyleException e) {
+                        // No existing id property
+                    }
+                    return existingId == null ? idValue : existingId + "," + idValue;
                 }
                 return config.getProperty(name);
             }
@@ -161,19 +169,31 @@ public final class ConfigSerializer {
 
     private static String buildProperties(final Configuration config, final String indent) throws CheckstyleException {
         final String[] propertyNames = config.getPropertyNames();
-        // Estimate 50 characters per property (name, value, XML tags)
         final StringBuilder builder = new StringBuilder(propertyNames.length * 50);
         final List<String> sortedPropertyNames = new ArrayList<>(Arrays.asList(propertyNames));
         Collections.sort(sortedPropertyNames);
+
         for (final String propertyName : sortedPropertyNames) {
             final String propertyValue = config.getProperty(propertyName);
-            if (builder.length() > 0) {
-                builder.append('\n');
+            if ("id".equals(propertyName)) {
+                final List<String> idValues = new ArrayList<>(Arrays.asList(propertyValue.split(",")));
+                Collections.sort(idValues);  // Sort the id values
+                for (final String value : idValues) {
+                    appendProperty(builder, indent, propertyName, value.trim());
+                }
+            } else {
+                appendProperty(builder, indent, propertyName, propertyValue);
             }
-            builder.append(indent).append("<property name=\"").append(propertyName)
-                    .append("\" value=\"").append(propertyValue).append("\"/>");
         }
         return builder.toString();
+    }
+
+    private static void appendProperty(final StringBuilder builder, final String indent, final String name, final String value) {
+        if (builder.length() > 0) {
+            builder.append('\n');
+        }
+        builder.append(indent).append("<property name=\"").append(name)
+                .append("\" value=\"").append(value).append("\"/>");
     }
 
     private static Configuration getTargetModule(final Configuration config) {
