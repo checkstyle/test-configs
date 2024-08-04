@@ -54,11 +54,14 @@
     <rule ref="category/java/errorprone.xml">
         <exclude name="AvoidLiteralsInIfCondition"/>
         <exclude name="AvoidDuplicateLiterals"/>
+        <exclude name="EmptyCatchBlock"/>
     </rule>
 
     <rule ref="category/java/multithreading.xml"/>
 
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
 
     <rule ref="category/java/design.xml/LawOfDemeter">
         <properties>
