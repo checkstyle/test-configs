@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /**
  * This class generates README files for test configurations.
@@ -37,7 +38,7 @@ public final class ReadmeGenerator {
         }
 
         final String folderName = fileName.toString();
-        final String readmeContent = String.format(
+        final String readmeContent = String.format(Locale.US,
                 "# %s Configs%n" +
                         "Make comment in PR:%n" +
                         "```%n" +
@@ -76,7 +77,7 @@ public final class ReadmeGenerator {
             throw new IllegalArgumentException("allInOneFolder and moduleName must not be null");
         }
 
-        final String readmeContent = String.format(
+        final String readmeContent = String.format(Locale.US,
                 "# All Examples in One Configs%n" +
                         "Make comment in PR:%n" +
                         "```%n" +
