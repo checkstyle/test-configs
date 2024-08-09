@@ -1,8 +1,11 @@
 package com.example.extractor;
 
+import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
+import com.puppycrawl.tools.checkstyle.bdd.ModuleInputConfiguration;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
 import java.nio.charset.StandardCharsets;
@@ -13,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * Utility class for serializing Checkstyle configurations.
@@ -39,6 +41,97 @@ public final class ConfigSerializer {
 
     private ConfigSerializer() {
         // Private constructor to prevent instantiation
+    }
+
+    /**
+     * Serializes a configuration to a string from a non-XML format input file.
+     *
+     * @param inputFilePath Path to the input file
+     * @param templateFilePath Path to the template file
+     * @return Serialized configuration as a string
+     * @throws Exception If an Exception occurs
+     */
+    public static String serializeNonXmlConfigToString(final String inputFilePath, final String templateFilePath)
+            throws Exception {
+        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parse(inputFilePath);
+        final List<ModuleInputConfiguration> modules = testInputConfiguration.getChildrenModules();
+
+        if (modules.isEmpty()) {
+            throw new IllegalArgumentException("No modules found in the input file");
+        }
+
+        final ModuleInputConfiguration mainModule = modules.get(0);
+        final String moduleName = extractSimpleModuleName(mainModule.getModuleName());
+        final Map<String, String> properties = mainModule.getNonDefaultProperties();
+
+        final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+
+        final Configuration moduleConfig = createConfigurationFromModule(moduleName, properties);
+        final boolean isTreeWalker = isTreeWalkerCheck(mainModule.getModuleName());
+        final String baseIndent = isTreeWalker ? TREE_WALKER_INDENT : NON_TREE_WALKER_INDENT;
+        final String moduleContent = buildSingleModuleContent(moduleConfig, baseIndent);
+
+        return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalker);
+    }
+
+    /**
+     * Determines if a given module name corresponds to a TreeWalker check.
+     *
+     * @param moduleName The name of the module to check
+     * @return true if the module is a TreeWalker check, false otherwise
+     */
+    public static boolean isTreeWalkerCheck(final String moduleName) {
+        try {
+            final Class<?> moduleClass = Class.forName(moduleName);
+            return AbstractCheck.class.isAssignableFrom(moduleClass);
+        } catch (ClassNotFoundException e) {
+            // If the class is not found, we can't determine if it's a TreeWalker check
+            // You might want to log this or handle it differently
+            return false;
+        }
+    }
+
+    private static String buildSingleModuleContent(final Configuration config, final String indent) throws CheckstyleException {
+        final StringBuilder builder = new StringBuilder();
+        builder.append(MODULE_TAG).append(config.getName()).append("\">\n");
+        final String properties = buildProperties(config, indent + "    ");
+        if (properties.isEmpty()) {
+            // If there are no properties, we can use a self-closing tag
+            builder.setLength(builder.length() - 2); // Remove the ">\n"
+            builder.append("/>");
+        } else {
+            builder.append(properties)
+                    .append('\n')
+                    .append(indent)
+                    .append("</module>");
+        }
+        return builder.toString();
+    }
+
+    private static String extractSimpleModuleName(final String fullModuleName) {
+        final int lastDotIndex = fullModuleName.lastIndexOf('.');
+        final String simpleModuleName;
+
+        if (lastDotIndex == -1) {
+            simpleModuleName = fullModuleName;
+        } else {
+            simpleModuleName = fullModuleName.substring(lastDotIndex + 1);
+        }
+
+        // Remove the "Check" suffix if present
+        if (simpleModuleName.endsWith("Check")) {
+            return simpleModuleName.substring(0, simpleModuleName.length() - 5);
+        }
+
+        return simpleModuleName;
+    }
+
+    private static Configuration createConfigurationFromModule(final String moduleName, final Map<String, String> properties) {
+        final DefaultConfiguration config = new DefaultConfiguration(moduleName);
+        for (final Map.Entry<String, String> entry : properties.entrySet()) {
+            config.addProperty(entry.getKey(), entry.getValue());
+        }
+        return config;
     }
 
     /**

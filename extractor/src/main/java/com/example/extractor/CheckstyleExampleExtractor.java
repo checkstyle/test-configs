@@ -2,6 +2,7 @@ package com.example.extractor;
 
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
+import com.puppycrawl.tools.checkstyle.bdd.ModuleInputConfiguration;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
 import javax.naming.ConfigurationException;
@@ -24,6 +25,8 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+
+import static com.example.extractor.ConfigSerializer.isTreeWalkerCheck;
 
 /**
  * CheckstyleExampleExtractor class for extracting and processing Checkstyle examples.
@@ -63,18 +66,74 @@ public final class CheckstyleExampleExtractor {
      */
     public static void main(final String[] args) throws Exception {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Base path for Checkstyle repo must be provided as argument.");
+            throw new IllegalArgumentException("Usage: <checkstyle repo path> [--input-config <config content> <output file path>]");
         }
 
-        final String checkstyleRepoPath = args[0];
-        final List<Path> allExampleDirs = findAllExampleDirs(checkstyleRepoPath);
-        final Map<String, List<Path>> moduleExamples = processExampleDirs(allExampleDirs);
+        if (args.length == 4 && "--input-file".equals(args[1])) {
+            // New functionality: process single input file
+            final String inputFilePath = args[2];  // Changed from args[1]
+            final String outputFilePath = args[3]; // Changed from args[2]
+            processInputFile(Paths.get(inputFilePath), Paths.get(outputFilePath));
+        } else {
+            // Functionality: process all examples
+            final String checkstyleRepoPath = args[0];
+            final List<Path> allExampleDirs = findAllExampleDirs(checkstyleRepoPath);
+            final Map<String, List<Path>> moduleExamples = processExampleDirs(allExampleDirs);
 
-        YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
+            YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
 
-        for (final Map.Entry<String, List<Path>> entry : moduleExamples.entrySet()) {
-            generateAllInOneConfig(entry.getKey(), entry.getValue());
-            generateReadmes(entry.getKey(), entry.getValue());
+            for (final Map.Entry<String, List<Path>> entry : moduleExamples.entrySet()) {
+                generateAllInOneConfig(entry.getKey(), entry.getValue());
+                generateReadmes(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Processes an input file and generates an output file.
+     *
+     * @param inputFile  The path to the input file
+     * @param outputFile The path to the output file
+     * @throws Exception If an error occurs during processing
+     */
+    public static void processInputFile(final Path inputFile, final Path outputFile) throws Exception {
+        // Check if the input file exists
+        if (!Files.exists(inputFile)) {
+            LOGGER.severe("Input file does not exist: " + inputFile);
+            throw new IOException("Input file does not exist: " + inputFile);
+        }
+
+        // Get the template file path and serialize the configuration
+        final String templateFilePath = getTemplateFilePathForInputFile(inputFile.toString());
+        final String generatedContent = ConfigSerializer.serializeNonXmlConfigToString(inputFile.toString(), templateFilePath);
+
+        // Write the generated content to the output file
+        Files.writeString(outputFile, generatedContent, StandardCharsets.UTF_8);
+
+        LOGGER.info("Generated configuration at " + outputFile);
+    }
+
+    /**
+     * Retrieves the template file path based on the input file path.
+     *
+     * @param inputFilePath The path to the input file
+     * @return The template file path
+     */
+    public static String getTemplateFilePathForInputFile(final String inputFilePath) {
+        try {
+            final TestInputConfiguration testInputConfiguration = InlineConfigParser.parse(inputFilePath);
+            final List<ModuleInputConfiguration> modules = testInputConfiguration.getChildrenModules();
+
+            final ModuleInputConfiguration mainModule = modules.get(0);
+            final String moduleName = mainModule.getModuleName();
+
+            final boolean isTreeWalker = isTreeWalkerCheck(moduleName);
+
+            final String resourceName = isTreeWalker ? "config-template-treewalker.xml" : "config-template-non-treewalker.xml";
+            return ResourceLoader.getResourcePath(resourceName);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error getting template file path for input file: " + inputFilePath, e);
+            return null;
         }
     }
 
@@ -178,7 +237,7 @@ public final class CheckstyleExampleExtractor {
         }
 
         try {
-            final String templateFilePath = getTemplateFilePath(exampleFile);
+            final String templateFilePath = getTemplateFilePathForExamples(exampleFile);
             if (templateFilePath == null) {
                 LOGGER.log(Level.WARNING, "Unable to get template file path for: " + exampleFile);
                 return;
@@ -258,7 +317,7 @@ public final class CheckstyleExampleExtractor {
     }
 
     private static void generateAllInOneContent(final List<String> allExampleFiles, final Path allInOneSubfolderPath) throws Exception {
-        final String templateFilePath = getTemplateFilePath(allExampleFiles.get(0));
+        final String templateFilePath = getTemplateFilePathForExamples(allExampleFiles.get(0));
         final Path outputFilePath = allInOneSubfolderPath.resolve("config.xml");
 
         final String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
@@ -342,7 +401,7 @@ public final class CheckstyleExampleExtractor {
         }
     }
 
-    private static String getTemplateFilePath(final String exampleFilePath) {
+    private static String getTemplateFilePathForExamples(final String exampleFilePath) {
         try {
             final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
             final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
@@ -354,7 +413,6 @@ public final class CheckstyleExampleExtractor {
             return null;
         }
     }
-
     private static int extractExampleNumber(final String filename) {
         final Matcher matcher = Pattern.compile("Example(\\d+)\\.(java|txt)").matcher(filename);
         return matcher.find() ? Integer.parseInt(matcher.group(1)) : Integer.MAX_VALUE;
