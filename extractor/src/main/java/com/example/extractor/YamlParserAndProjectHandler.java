@@ -1,7 +1,5 @@
 package com.example.extractor;
 
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -11,15 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.yaml.snakeyaml.Yaml;
+
 /**
  * Utility class for handling YAML parsing and project file processing.
  */
 public final class YamlParserAndProjectHandler {
-
-    /**
-     * Path to the YAML file containing project configurations.
-     */
-    private static final String YAML_FILE_PATH = "src/main/resources/projects-for-example.yml";
 
     /**
      * Path to the properties file containing all projects.
@@ -40,7 +35,14 @@ public final class YamlParserAndProjectHandler {
                     "# Please note that bash comments work in this file\n\n";
 
     /**
+     * Path to the YAML file containing project configurations.
+     */
+    private static final String YAML_FILE_PATH = "src/main/resources/projects-for-example.yml";
+
+    /**
      * Private constructor to prevent instantiation of this utility class.
+     *
+     * @throws UnsupportedOperationException if an attempt is made to instantiate this class
      */
     private YamlParserAndProjectHandler() {
         throw new UnsupportedOperationException("Utility class");
@@ -87,6 +89,7 @@ public final class YamlParserAndProjectHandler {
             return new Yaml().load(inputStream);
         }
     }
+
     /**
      * Creates a project properties file for a specific example.
      *
@@ -152,6 +155,7 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectLines the list of all project lines
      * @param fileContents    the file contents to which project information will be added
      * @param context         the context of the example or check
+     * @throws IllegalArgumentException
      */
     private static void addProjectInfos(final List<String> projectNames,
                                         final List<String> allProjectLines,
