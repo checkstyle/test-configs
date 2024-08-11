@@ -7,6 +7,10 @@ import java.io.IOException;
  * Utility class for loading resources.
  */
 final class ResourceLoader {
+
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private ResourceLoader() {
         // Utility class, no instances
     }
@@ -23,10 +27,10 @@ final class ResourceLoader {
         if (classLoader == null) {
             throw new IOException("Class loader not found");
         }
-        final java.net.URL resourceURL = classLoader.getResource(resourceName);
-        if (resourceURL == null) {
+        final java.net.URL resourceUrl = classLoader.getResource(resourceName);
+        if (resourceUrl == null) {
             throw new IOException("Resource not found: " + resourceName);
         }
-        return resourceURL.getPath();
+        return resourceUrl.getPath();
     }
 }

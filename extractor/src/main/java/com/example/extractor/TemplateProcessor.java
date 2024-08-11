@@ -25,9 +25,13 @@ public final class TemplateProcessor {
     public static String replacePlaceholders(final String template,
                                              final String moduleContent,
                                              final boolean isTreeWalker) {
-        final String placeholder = isTreeWalker
-                ? "<!-- treewalker_module_PLACEHOLDER -->"
-                : "<!-- Non/TreeWalker module placeholder -->";
+        final String placeholder;
+
+        if (isTreeWalker) {
+            placeholder = "<!-- treewalker_module_PLACEHOLDER -->";
+        } else {
+            placeholder = "<!-- Non/TreeWalker module placeholder -->";
+        }
 
         return template.replace(placeholder, moduleContent);
     }

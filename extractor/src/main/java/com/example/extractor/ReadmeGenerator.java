@@ -15,7 +15,11 @@ public final class ReadmeGenerator {
      */
     private static final String GITHUB_RAW_URL = "https://raw.githubusercontent.com/checkstyle/test-configs/main/";
 
-    // Private constructor to prevent instantiation
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     *
+     * @throws UnsupportedOperationException If this constructor is invoked.
+     */
     private ReadmeGenerator() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
@@ -26,6 +30,7 @@ public final class ReadmeGenerator {
      * @param exampleFolder The folder containing the example.
      * @param moduleName The name of the module.
      * @throws IOException If an I/O error occurs.
+     * @throws IllegalArgumentException if the argument is invalid.
      */
     public static void generateIndividualReadme(final Path exampleFolder, final String moduleName) throws IOException {
         if (exampleFolder == null || moduleName == null) {
@@ -71,6 +76,7 @@ public final class ReadmeGenerator {
      * @param allInOneFolder The folder containing all examples.
      * @param moduleName The name of the module.
      * @throws IOException If an I/O error occurs.
+     * @throws IllegalArgumentException if the argument is invalid.
      */
     public static void generateAllInOneReadme(final Path allInOneFolder, final String moduleName) throws IOException {
         if (allInOneFolder == null || moduleName == null) {

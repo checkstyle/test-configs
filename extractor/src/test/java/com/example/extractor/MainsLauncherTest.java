@@ -1,7 +1,8 @@
 package com.example.extractor;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,9 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.google.common.truth.Truth.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Test class for MainsLauncher.
@@ -27,7 +27,6 @@ class MainsLauncherTest {
     /**
      * Tests the main method of CheckstyleExampleExtractor.
      * This test ensures that the main method runs without throwing any exceptions.
-
      */
     @Test
     void testMain() {
@@ -52,10 +51,10 @@ class MainsLauncherTest {
         final Path outputFile = tempDir.resolve("output-config.xml");
 
         assertDoesNotThrow(() -> CheckstyleExampleExtractor.main(new String[]{
-                CHECKSTYLE_REPO_PATH,
-                "--input-file",
-                inputFilePath,
-                outputFile.toString()
+            CHECKSTYLE_REPO_PATH,
+            "--input-file",
+            inputFilePath,
+            outputFile.toString(),
         }));
 
         assertTrue(Files.exists(outputFile), "Output file should be created");
@@ -69,7 +68,7 @@ class MainsLauncherTest {
      *
      */
     @Test
-    void testGetTemplateFilePathForInputFile() {
+    void testGetTemplateFilePathForInputFile() throws Exception {
         // The input file path is declared as final because it is not modified after initialization.
         final String inputFilePath = "src/test/resources/com.puppycrawl.tools.checkstyle.checks.whitespace.methodparampad.InputFile/InputMethodParamPadWhitespaceAround.java";
 
