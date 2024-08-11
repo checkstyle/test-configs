@@ -23,16 +23,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="RedundantModifier">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="RedundantModifier">
-            <property name="id" value="example2"/>
-            <property name="tokens" value="METHOD_DEF"/>
-        </module>
-
-        <module name="RedundantModifier">
-            <property name="id" value="example3"/>
             <property name="jdkVersion" value="11"/>
         </module>
 
