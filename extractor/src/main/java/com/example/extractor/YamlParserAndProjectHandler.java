@@ -1,3 +1,22 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+// checkstyle: Checks Java source code and other text files for adherence to a set of rules.
+// Copyright (C) 2001-2024 the original author or authors.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 package com.example.extractor;
 
 import java.io.IOException;
@@ -24,15 +43,16 @@ public final class YamlParserAndProjectHandler {
     /**
      * Path to the default properties file containing a list of projects.
      */
-    public static final String DEFAULT_PROJECTS_PATH = "src/main/resources/list-of-projects.properties";
+    public static final String DEFAULT_PROJECTS_PATH =
+            "src/main/resources/list-of-projects.properties";
 
     /**
      * Default comments for the project properties file.
      */
     private static final String DEFAULT_COMMENTS =
-            "# List of GIT repositories to clone / pull for checking with Checkstyle\n" +
-                    "# File format: REPO_NAME|[local|git]|URL|[COMMIT_ID]|[EXCLUDE FOLDERS]\n" +
-                    "# Please note that bash comments work in this file\n\n";
+            "# List of GIT repositories to clone / pull for checking with Checkstyle\n"
+                  + "# File format: REPO_NAME|[local|git]|URL|[COMMIT_ID]|[EXCLUDE FOLDERS]\n"
+                  + "# Please note that bash comments work in this file\n\n";
 
     /**
      * Path to the YAML file containing project configurations.
@@ -62,16 +82,21 @@ public final class YamlParserAndProjectHandler {
             final String checkName = entry.getKey();
             final Map<String, Object> checkData = (Map<String, Object>) entry.getValue();
 
-            for (final Map.Entry<String, Object> exampleEntry : checkData.entrySet()) {
+            for (final Map.Entry<String, Object> exampleEntry
+                    : checkData.entrySet()) {
                 final String exampleName = exampleEntry.getKey();
-                final Map<String, Object> exampleData = (Map<String, Object>) exampleEntry.getValue();
-                final List<String> projectNames = (List<String>) exampleData.get("projects");
+                final Map<String, Object> exampleData =
+                        (Map<String, Object>) exampleEntry.getValue();
+                final List<String> projectNames =
+                        (List<String>) exampleData.get("projects");
 
                 final Path examplePath = Paths.get(testConfigPath, checkName, exampleName);
-                createProjectsFileForExample(examplePath, projectNames, allProjectLines, checkName);
+                createProjectsFileForExample(examplePath, projectNames,
+                        allProjectLines, checkName);
 
                 if ("all-examples-in-one".equals(exampleName)) {
-                    createAllInOneProjectsFile(Paths.get(testConfigPath, checkName), projectNames, allProjectLines, checkName);
+                    createAllInOneProjectsFile(Paths.get(testConfigPath, checkName),
+                            projectNames, allProjectLines, checkName);
                 }
             }
         }
@@ -83,7 +108,6 @@ public final class YamlParserAndProjectHandler {
      * @return a map representing the YAML data
      * @throws IOException if an I/O error occurs
      */
-    @SuppressWarnings("AvoidFileStream")
     static Map<String, Object> parseYamlFile() throws IOException {
         try (InputStream inputStream = Files.newInputStream(Paths.get(YAML_FILE_PATH))) {
             return new Yaml().load(inputStream);
@@ -111,7 +135,8 @@ public final class YamlParserAndProjectHandler {
 
         if (projectNames != null && !projectNames.isEmpty()) {
             addProjectInfos(projectNames, allProjectLines, fileContents, checkName);
-        } else {
+        }
+        else {
             fileContents.addAll(Files.readAllLines(Paths.get(DEFAULT_PROJECTS_PATH)));
         }
 
@@ -140,8 +165,10 @@ public final class YamlParserAndProjectHandler {
         fileContents.add(DEFAULT_COMMENTS);
 
         if (projectNames != null && !projectNames.isEmpty()) {
-            addProjectInfos(projectNames, allProjectLines, fileContents, checkName + ", Example: all-examples-in-one");
-        } else {
+            addProjectInfos(projectNames, allProjectLines, fileContents,
+                    checkName + ", Example: all-examples-in-one");
+        }
+        else {
             fileContents.addAll(allProjectLines);
         }
 
@@ -155,7 +182,7 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectLines the list of all project lines
      * @param fileContents    the file contents to which project information will be added
      * @param context         the context of the example or check
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if invalid argument
      */
     private static void addProjectInfos(final List<String> projectNames,
                                         final List<String> allProjectLines,
@@ -165,8 +192,14 @@ public final class YamlParserAndProjectHandler {
             final String projectInfo = findProjectInfo(projectName, allProjectLines);
             if (projectInfo != null) {
                 fileContents.add(projectInfo);
-            } else {
-                throw new IllegalArgumentException("Project not found in all-projects.properties: " + projectName + " (Context: " + context + ")");
+            }
+            else {
+                throw new IllegalArgumentException(
+                        "Project not found in all-projects.properties: "
+                                + projectName
+                                + " (Context: "
+                                + context
+                                + ")");
             }
         }
     }
@@ -179,7 +212,9 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectLines the list of all project lines
      * @return the project information line, or {@code null} if not found
      */
-    private static String findProjectInfo(final String projectName, final List<String> allProjectLines) {
+    private static String findProjectInfo(
+            final String projectName,
+            final List<String> allProjectLines) {
         return allProjectLines.stream()
                 .filter(line -> line.startsWith(projectName + "|"))
                 .findFirst()

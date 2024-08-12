@@ -85,7 +85,12 @@
 
     <rule ref="category/java/multithreading.xml"/>
 
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <!-- AvoidInstantiatingObjectsInLoops is excluded because object creation within loops
+         is sometimes necessary for functionality, and the associated performance impact
+         is considered negligible or justified in these cases. -->
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
 
     <rule ref="category/java/design.xml/LawOfDemeter">
         <properties>
