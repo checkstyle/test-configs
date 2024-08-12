@@ -1,3 +1,22 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+// checkstyle: Checks Java source code and other text files for adherence to a set of rules.
+// Copyright (C) 2001-2024 the original author or authors.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * This package contains classes and utilities for extracting and processing
  * Checkstyle configurations and examples.
@@ -13,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
@@ -59,6 +79,9 @@ public final class ConfigSerializer {
      */
     private static final int CHECK_SUFFIX_LENGTH = 5;
 
+    /** Logger for this class. */
+    private static final Logger LOGGER = Logger.getLogger(ConfigSerializer.class.getName());
+
     /**
      * Private constructor to prevent instantiation of this utility class.
      */
@@ -75,9 +98,11 @@ public final class ConfigSerializer {
      * @throws IllegalArgumentException If no modules are found in the input file
      * @throws Exception  If an unexpected error occurs
      */
-    public static String serializeNonXmlConfigToString(final String inputFilePath, final String templateFilePath)
-            throws Exception {
-        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parse(inputFilePath);
+    public static String serializeNonXmlConfigToString(
+            final String inputFilePath,
+            final String templateFilePath) throws Exception {
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parse(inputFilePath);
         final List<ModuleInputConfiguration> modules = testInputConfiguration.getChildrenModules();
 
         if (modules.isEmpty()) {
@@ -95,9 +120,12 @@ public final class ConfigSerializer {
         final String baseIndent;
         if (isTreeWalker) {
             baseIndent = TREE_WALKER_INDENT;
-        } else {
+        }
+        else {
             baseIndent = NON_TREE_WALKER_INDENT;
-        }        final String moduleContent = buildSingleModuleContent(moduleConfig, baseIndent);
+        }
+
+        final String moduleContent = buildSingleModuleContent(moduleConfig, baseIndent);
         return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalker);
     }
 
@@ -108,14 +136,15 @@ public final class ConfigSerializer {
      * @return true if the module is a TreeWalker check, false otherwise
      */
     public static boolean isTreeWalkerCheck(final String moduleName) {
+        boolean isTreeWalkerCheck = false;
         try {
             final Class<?> moduleClass = Class.forName(moduleName);
-            return AbstractCheck.class.isAssignableFrom(moduleClass);
-        } catch (ClassNotFoundException e) {
-            // If the class is not found, we can't determine if it's a TreeWalker check
-            // You might want to log this or handle it differently
-            return false;
+            isTreeWalkerCheck = AbstractCheck.class.isAssignableFrom(moduleClass);
         }
+        catch (ClassNotFoundException ex) {
+            LOGGER.severe("Class not found: " + moduleName);
+        }
+        return isTreeWalkerCheck;
     }
 
     /**
@@ -126,15 +155,17 @@ public final class ConfigSerializer {
      * @return The XML content of the module as a string.
      * @throws CheckstyleException If an error occurs while building the properties.
      */
-    private static String buildSingleModuleContent(final Configuration config, final String indent) throws CheckstyleException {
+    private static String buildSingleModuleContent(final Configuration config,
+                                                   final String indent) throws CheckstyleException {
         final StringBuilder builder = new StringBuilder();
         builder.append(MODULE_TAG).append(config.getName()).append("\">\n");
         final String properties = buildProperties(config, indent + "    ");
         if (properties.isEmpty()) {
             // If there are no properties, we can use a self-closing tag
-            builder.setLength(builder.length() - 2); // Remove the ">\n"
+            builder.setLength(builder.length() - 2);
             builder.append("/>");
-        } else {
+        }
+        else {
             builder.append(properties)
                     .append('\n')
                     .append(indent)
@@ -151,17 +182,19 @@ public final class ConfigSerializer {
      */
     private static String extractSimpleModuleName(final String fullModuleName) {
         final int lastDotIndex = fullModuleName.lastIndexOf('.');
-        final String simpleModuleName;
+        String simpleModuleName;
 
         if (lastDotIndex == -1) {
             simpleModuleName = fullModuleName;
-        } else {
+        }
+        else {
             simpleModuleName = fullModuleName.substring(lastDotIndex + 1);
         }
 
         // Remove the "Check" suffix if present
         if (simpleModuleName.endsWith("Check")) {
-            return simpleModuleName.substring(0, simpleModuleName.length() - CHECK_SUFFIX_LENGTH);
+            simpleModuleName =
+                    simpleModuleName.substring(0, simpleModuleName.length() - CHECK_SUFFIX_LENGTH);
         }
 
         return simpleModuleName;
@@ -174,7 +207,9 @@ public final class ConfigSerializer {
      * @param properties The properties to include in the configuration.
      * @return The constructed Checkstyle configuration.
      */
-    private static Configuration createConfigurationFromModule(final String moduleName, final Map<String, String> properties) {
+    private static Configuration createConfigurationFromModule(
+            final String moduleName,
+            final Map<String, String> properties) {
         final DefaultConfiguration config = new DefaultConfiguration(moduleName);
         for (final Map.Entry<String, String> entry : properties.entrySet()) {
             config.addProperty(entry.getKey(), entry.getValue());
@@ -190,9 +225,11 @@ public final class ConfigSerializer {
      * @return Serialized configuration as a string
      * @throws Exception If an Exception occurs
      */
-    public static String serializeConfigToString(final String exampleFilePath, final String templateFilePath)
+    public static String serializeConfigToString(final String exampleFilePath,
+                                                 final String templateFilePath)
             throws Exception {
-        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
 
         final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
@@ -202,17 +239,20 @@ public final class ConfigSerializer {
         final String baseIndent;
         if (isTreeWalkerConfig(xmlConfig)) {
             baseIndent = TREE_WALKER_INDENT;
-        } else {
+        }
+        else {
             baseIndent = NON_TREE_WALKER_INDENT;
         }
 
         final String moduleContent;
         if (targetModule != null) {
             moduleContent = buildModuleContent(targetModule, baseIndent);
-        } else {
+        }
+        else {
             moduleContent = "";
         }
-        return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalkerConfig(xmlConfig));
+        return TemplateProcessor.replacePlaceholders(template, moduleContent,
+                isTreeWalkerConfig(xmlConfig));
     }
 
     /**
@@ -223,20 +263,24 @@ public final class ConfigSerializer {
      * @return Serialized configuration as a string
      * @throws Exception If an Exception occurs
      */
-    public static String serializeAllInOneConfigToString(final String[] exampleFilePaths, final String templateFilePath)
+    public static String serializeAllInOneConfigToString(
+            final String[] exampleFilePaths,
+            final String templateFilePath)
             throws Exception {
         final List<Configuration> combinedChildren = new ArrayList<>();
         boolean isTreeWalker = true;
 
         for (int index = 0; index < exampleFilePaths.length; index++) {
             final String exampleFilePath = exampleFilePaths[index];
-            final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+            final TestInputConfiguration testInputConfiguration =
+                    InlineConfigParser.parseWithXmlHeader(exampleFilePath);
             final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
             final Configuration targetModule = getTargetModule(xmlConfig);
             if (targetModule != null) {
                 isTreeWalker &= isTreeWalkerConfig(xmlConfig);
                 for (final Configuration child : targetModule.getChildren()) {
-                    final Configuration modifiedChild = addIdProperty(child, "example" + (index + 1));
+                    final Configuration modifiedChild =
+                            addIdProperty(child, "example" + (index + 1));
                     combinedChildren.add(modifiedChild);
                 }
             }
@@ -245,12 +289,16 @@ public final class ConfigSerializer {
         final String baseIndent;
         if (isTreeWalker) {
             baseIndent = TREE_WALKER_INDENT;
-        } else {
+        }
+        else {
             baseIndent = NON_TREE_WALKER_INDENT;
         }
 
-        final String combinedModuleContent = buildCombinedModuleChildren(combinedChildren, baseIndent);
-        final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+        final String combinedModuleContent =
+                buildCombinedModuleChildren(combinedChildren, baseIndent);
+        final String template =
+                Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+
         return TemplateProcessor.replacePlaceholders(template, combinedModuleContent, isTreeWalker);
     }
 
@@ -262,15 +310,21 @@ public final class ConfigSerializer {
      * @return The combined XML content of the module children as a string.
      * @throws CheckstyleException If an error occurs while building the properties.
      */
-    private static String buildCombinedModuleChildren(final List<Configuration> children, final String indent)
+    private static String buildCombinedModuleChildren(
+            final List<Configuration> children,
+            final String indent)
             throws CheckstyleException {
         final StringBuilder builder = new StringBuilder(children.size() * 300);
 
         for (final Configuration child : children) {
             final String childProperties = buildProperties(child, indent + "    ");
             if (childProperties.isEmpty()) {
-                builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\"/>\n\n");
-            } else {
+                builder.append(indent)
+                        .append(MODULE_TAG)
+                        .append(child.getName())
+                        .append("\"/>\n\n");
+            }
+            else {
                 builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\">\n")
                         .append(childProperties).append('\n')
                         .append(indent).append("</module>\n\n");
@@ -288,7 +342,9 @@ public final class ConfigSerializer {
      * @return The XML content of the properties as a string.
      * @throws CheckstyleException If an error occurs while retrieving properties.
      */
-    private static String buildProperties(final Configuration config, final String indent) throws CheckstyleException {
+    private static String buildProperties(
+            final Configuration config,
+            final String indent) throws CheckstyleException {
         final String[] propertyNames = config.getPropertyNames();
         // Estimate 50 characters per property (name, value, XML tags)
         final StringBuilder builder = new StringBuilder(propertyNames.length * 50);
@@ -313,13 +369,17 @@ public final class ConfigSerializer {
      * @return The TreeWalker module if present, otherwise the original configuration.
      */
     private static Configuration getTargetModule(final Configuration config) {
-        final Configuration treeWalkerModule = getTreeWalkerModule(config);
+        final Configuration targetModule;
 
+        final Configuration treeWalkerModule = getTreeWalkerModule(config);
         if (treeWalkerModule == null) {
-            return config;
-        } else {
-            return treeWalkerModule;
+            targetModule = config;
         }
+        else {
+            targetModule = treeWalkerModule;
+        }
+
+        return targetModule;
     }
 
     /**
@@ -329,12 +389,16 @@ public final class ConfigSerializer {
      * @return The TreeWalker module if found, otherwise null.
      */
     private static Configuration getTreeWalkerModule(final Configuration config) {
+        Configuration treeWalkerModule = null;
+
         for (final Configuration child : config.getChildren()) {
             if (TREE_WALKER.equals(child.getName())) {
-                return child;
+                treeWalkerModule = child;
+                break;
             }
         }
-        return null;
+
+        return treeWalkerModule;
     }
 
     /**
@@ -355,13 +419,20 @@ public final class ConfigSerializer {
      * @return The XML content of the module and its children as a string.
      * @throws CheckstyleException If an error occurs while building the properties.
      */
-    private static String buildModuleContent(final Configuration config, final String indent) throws CheckstyleException {
+    private static String buildModuleContent(
+            final Configuration config,
+            final String indent)
+            throws CheckstyleException {
         final StringBuilder builder = new StringBuilder();
         for (final Configuration child : config.getChildren()) {
             final String childProperties = buildProperties(child, indent + "    ");
             if (childProperties.isEmpty()) {
-                builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\"/>\n\n");
-            } else {
+                builder.append(indent)
+                        .append(MODULE_TAG)
+                        .append(child.getName())
+                        .append("\"/>\n\n");
+            }
+            else {
                 builder.append(indent).append(MODULE_TAG).append(child.getName()).append("\">\n")
                         .append(childProperties).append('\n')
                         .append(indent).append("</module>\n\n");
@@ -378,32 +449,40 @@ public final class ConfigSerializer {
      * @throws Exception If an Exception occurs
      */
     public static String extractModuleName(final String exampleFilePath) throws Exception {
-        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
         return getSpecificModuleName(xmlConfig);
     }
 
     /**
      * Recursively retrieves the specific module name from the configuration.
-     * It skips "Checker" and "TreeWalker" modules and returns the name of the first specific module found.
+     * It skips "Checker" and "TreeWalker" modules
+     * and returns the name of the first specific module found.
      *
      * @param config The configuration to search for the specific module name.
-     * @return The name of the specific module, or the name of the given configuration if no specific module is found.
+     * @return The name of the specific module, or the name of the given configuration
+     *         if no specific module is found.
      */
     private static String getSpecificModuleName(final Configuration config) {
-        if (config.getChildren().length == 0) {
-            return config.getName();
-        }
-        for (final Configuration child : config.getChildren()) {
-            if (!CHECKER.equals(child.getName()) && !TREE_WALKER.equals(child.getName())) {
-                return child.getName();
+        String result = config.getName();
+
+        if (config.getChildren().length > 0) {
+            for (final Configuration child : config.getChildren()) {
+                if (!CHECKER.equals(child.getName()) && !TREE_WALKER.equals(child.getName())) {
+                    result = child.getName();
+                    break;
+                }
+
+                final String moduleName = getSpecificModuleName(child);
+                if (!moduleName.equals(child.getName())) {
+                    result = moduleName;
+                    break;
+                }
             }
-            final String moduleName = getSpecificModuleName(child);
-            if (!moduleName.equals(child.getName())) {
-                return moduleName;
-            }
         }
-        return config.getName();
+
+        return result;
     }
 
     /**
@@ -443,7 +522,7 @@ public final class ConfigSerializer {
          * @param config  The original Configuration object to be decorated.
          * @param idValue The value of the "id" property to be added.
          */
-        public IdPropertyAddingConfiguration(final Configuration config, final String idValue) {
+        IdPropertyAddingConfiguration(final Configuration config, final String idValue) {
             this.config = config;
             this.idValue = idValue;
         }
@@ -470,17 +549,24 @@ public final class ConfigSerializer {
 
         @Override
         public String[] getPropertyNames() {
-            final List<String> propertyNames = new ArrayList<>(Arrays.asList(config.getPropertyNames()));
+            final List<String> propertyNames =
+                    new ArrayList<>(Arrays.asList(config.getPropertyNames()));
             propertyNames.add("id");
             return propertyNames.toArray(new String[0]);
         }
 
         @Override
         public String getProperty(final String name) throws CheckstyleException {
+            final String propertyValue;
+
             if ("id".equals(name)) {
-                return idValue;
+                propertyValue = idValue;
             }
-            return config.getProperty(name);
+            else {
+                propertyValue = config.getProperty(name);
+            }
+
+            return propertyValue;
         }
 
         @Override

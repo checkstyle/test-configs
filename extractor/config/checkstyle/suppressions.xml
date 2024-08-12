@@ -5,87 +5,10 @@
     "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-
-  <suppress checks="MultipleVariableDeclarations"/>
-  <suppress checks="MutableException"/>
-  <suppress checks="NeedBraces"/>
-  <suppress checks="NestedForDepth"/>
-  <suppress checks="NestedIfDepth"/>
-  <suppress checks="NestedTryDepth"/>
-  <suppress checks="NewlineAtEndOfFile"/>
-  <suppress checks="NoArrayTrailingComma"/>
-  <suppress checks="NoClone"/>
-  <suppress checks="NoCodeInFile"/>
-  <suppress checks="NoFinalizer"/>
-  <suppress checks="NoLineWrap"/>
-  <suppress checks="NonEmptyAtclauseDescription"/>
-  <suppress checks="NoEnumTrailingComma"/>
-  <suppress checks="NoWhitespaceAfter"/>
-  <suppress checks="NoWhitespaceBefore"/>
-  <suppress checks="NoWhitespaceBeforeCaseDefaultColon"/>
-  <suppress checks="NPathComplexity"/>
-  <suppress checks="OneTopLevelClass"/>
-  <suppress checks="OperatorWrap"/>
-  <suppress checks="OrderedProperties"/>
-  <suppress checks="OuterTypeFilename"/>
-  <suppress checks="OuterTypeNumber"/>
-  <suppress checks="OverloadMethodsDeclarationOrder"/>
-  <suppress checks="PackageAnnotation"/>
-  <suppress checks="PackageDeclaration"/>
-  <suppress checks="PackageName"/>
-  <suppress checks="ParameterAssignment"/>
-  <suppress checks="ParameterName"/>
-  <suppress checks="ParameterNumber"/>
-  <suppress checks="ParenPad"/>
-  <suppress checks="PatternVariableName"/>
-  <suppress checks="RecordComponentNumber"/>
-  <suppress checks="RecordComponentName"/>
-  <suppress checks="RecordTypeParameterName"/>
-  <suppress checks="RedundantImport"/>
-  <suppress checks="RedundantModifier"/>
-  <suppress checks="Regexp"/>
-  <suppress checks="RegexpHeader"/>
-  <suppress checks="RegexpMultiline"/>
-  <suppress checks="RegexpOnFilename"/>
-  <suppress checks="RegexpSingleline"/>
-  <suppress checks="RegexpSinglelineJava"/>
-  <suppress checks="RequireThis"/>
-  <suppress checks="ReturnCount"/>
-  <suppress checks="RightCurly"/>
-  <suppress checks="SeparatorWrap"/>
-  <suppress checks="SimplifyBooleanExpression"/>
-  <suppress checks="SimplifyBooleanReturn"/>
-  <suppress checks="SingleLineJavadoc"/>
-  <suppress checks="RequireEmptyLineBeforeBlockTagGroup"/>
-  <suppress checks="SingleSpaceSeparator"/>
-  <suppress checks="StaticVariableName"/>
-  <suppress checks="StringLiteralEquality"/>
-  <suppress checks="SummaryJavadoc"/>
-  <suppress checks="SuperClone"/>
-  <suppress checks="SuperFinalize"/>
-  <suppress checks="SuppressWarnings"/>
-  <suppress checks="ThrowsCount"/>
-  <suppress checks="TodoComment"/>
-  <suppress checks="TrailingComment"/>
-  <suppress checks="Translation"/>
-  <suppress checks="TypecastParenPad"/>
-  <suppress checks="TypeName"/>
-  <suppress checks="UncommentedMain"/>
-  <suppress checks="UniqueProperties"/>
-  <suppress checks="UnnecessaryParentheses"/>
-  <suppress checks="UnnecessarySemicolonInEnumeration"/>
-  <suppress checks="UnnecessarySemicolonInTryWithResources"/>
-  <suppress checks="UnnecessarySemicolonAfterOuterTypeDeclaration"/>
-  <suppress checks="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
-  <suppress checks="UnusedImports"/>
-  <suppress checks="UpperEll"/>
-  <suppress checks="UnusedLocalVariable"/>
-  <suppress checks="VariableDeclarationUsageDistance"/>
-  <suppress checks="VisibilityModifier"/>
-  <suppress checks="WhitespaceAfter"/>
-  <suppress checks="WhitespaceAround"/>
-  <suppress checks="WriteTag"/>
-  <suppress checks="LineLength"/>
+  <!-- Suppress MultipleStringLiterals check because the repeated strings are necessary
+       for consistent indentation and formatting in the code. -->
   <suppress checks="MultipleStringLiterals"/>
 
+  <!-- Suppress UncommentedMain check for the specific class -->
+  <suppress checks="UncommentedMain" files="com/example/extractor/CheckstyleExampleExtractor.java"/>
 </suppressions>

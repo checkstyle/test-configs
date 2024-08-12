@@ -1,3 +1,22 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+// checkstyle: Checks Java source code and other text files for adherence to a set of rules.
+// Copyright (C) 2001-2024 the original author or authors.
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 package com.example.extractor;
 
 import java.io.IOException;
@@ -25,13 +44,13 @@ import com.puppycrawl.tools.checkstyle.bdd.InlineConfigParser;
 import com.puppycrawl.tools.checkstyle.bdd.ModuleInputConfiguration;
 import com.puppycrawl.tools.checkstyle.bdd.TestInputConfiguration;
 
-
 /**
  * CheckstyleExampleExtractor class for extracting and processing Checkstyle examples.
  */
 public final class CheckstyleExampleExtractor {
     /** Logger for this class. */
-    private static final Logger LOGGER = Logger.getLogger(CheckstyleExampleExtractor.class.getName());
+    private static final Logger LOGGER =
+            Logger.getLogger(CheckstyleExampleExtractor.class.getName());
 
     /** The root directory of the project. */
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
@@ -40,11 +59,13 @@ public final class CheckstyleExampleExtractor {
     private static final String PROJECT_PROPERTIES_FILENAME = "list-of-projects.properties";
 
     /** The file path for project properties. */
-    private static final String PROJECT_PROPERTIES_FILE_PATH = "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
+    private static final String PROJECT_PROPERTIES_FILE_PATH =
+            "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
 
     /** The regular expression pattern for excluded file paths. */
     private static final String EXCLUDED_FILE_PATTERN =
-            "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/regexp/regexpmultiline/Example7.txt";
+            "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/regexp/"
+                    + "regexpmultiline/Example7.txt";
 
     /** The regular expression pattern for example files. */
     private static final String EXAMPLE_FILE_PATTERN = "Example\\d+\\.(java|txt)";
@@ -88,15 +109,20 @@ public final class CheckstyleExampleExtractor {
      */
     public static void main(final String[] args) throws Exception {
         if (args.length < 1) {
-            throw new IllegalArgumentException("Usage: <checkstyle repo path> [--input-config <config content> <output file path>]");
+            throw new IllegalArgumentException(
+                    "Usage: <checkstyle repo path> [--input-config <config content> "
+                            + "<output file path>]"
+            );
         }
 
-        if (args.length == SINGLE_INPUT_FILE_ARG_COUNT && "--input-file".equals(args[INPUT_FILE_FLAG_INDEX])) {
+        if (args.length == SINGLE_INPUT_FILE_ARG_COUNT
+                && "--input-file".equals(args[INPUT_FILE_FLAG_INDEX])) {
             // New functionality: process single input file
             final String inputFilePath = args[INPUT_FILE_PATH_INDEX];
             final String outputFilePath = args[OUTPUT_FILE_PATH_INDEX];
             processInputFile(Paths.get(inputFilePath), Paths.get(outputFilePath));
-        } else {
+        }
+        else {
             // Functionality: process all examples
             final String checkstyleRepoPath = args[0];
             final List<Path> allExampleDirs = findAllExampleDirs(checkstyleRepoPath);
@@ -119,7 +145,10 @@ public final class CheckstyleExampleExtractor {
      * @throws Exception If an error occurs during processing
      * @throws IOException if the argument is invalid.
      */
-    public static void processInputFile(final Path inputFile, final Path outputFile) throws Exception {
+    public static void processInputFile(
+            final Path inputFile,
+            final Path outputFile)
+            throws Exception {
         // Check if the input file exists
         if (!Files.exists(inputFile)) {
             LOGGER.severe("Input file does not exist: " + inputFile);
@@ -128,7 +157,10 @@ public final class CheckstyleExampleExtractor {
 
         // Get the template file path and serialize the configuration
         final String templateFilePath = getTemplateFilePathForInputFile(inputFile.toString());
-        final String generatedContent = ConfigSerializer.serializeNonXmlConfigToString(inputFile.toString(), templateFilePath);
+        final String generatedContent = ConfigSerializer.serializeNonXmlConfigToString(
+                inputFile.toString(),
+                templateFilePath
+        );
 
         // Write the generated content to the output file
         Files.writeString(outputFile, generatedContent, StandardCharsets.UTF_8);
@@ -143,9 +175,12 @@ public final class CheckstyleExampleExtractor {
      * @return The template file path
      * @throws Exception if an unexpected error occurs.
      */
-    public static String getTemplateFilePathForInputFile(final String inputFilePath) throws Exception {
-        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parse(inputFilePath);
-        final List<ModuleInputConfiguration> modules = testInputConfiguration.getChildrenModules();
+    public static String getTemplateFilePathForInputFile(final String inputFilePath)
+            throws Exception {
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parse(inputFilePath);
+        final List<ModuleInputConfiguration> modules =
+                testInputConfiguration.getChildrenModules();
 
         final ModuleInputConfiguration mainModule = modules.get(0);
         final String moduleName = mainModule.getModuleName();
@@ -156,7 +191,8 @@ public final class CheckstyleExampleExtractor {
 
         if (isTreeWalker) {
             resourceName = "config-template-treewalker.xml";
-        } else {
+        }
+        else {
             resourceName = "config-template-non-treewalker.xml";
         }
 
@@ -170,10 +206,22 @@ public final class CheckstyleExampleExtractor {
      * @return A list of paths to the example directories.
      * @throws IOException If an I/O error occurs.
      */
-    private static List<Path> findAllExampleDirs(final String checkstyleRepoPath) throws IOException {
+    private static List<Path> findAllExampleDirs(final String checkstyleRepoPath)
+            throws IOException {
         final List<Path> allExampleDirs = new ArrayList<>();
-        allExampleDirs.addAll(findNonFilterExampleDirs(Paths.get(checkstyleRepoPath, "src", "xdocs-examples", "resources")));
-        allExampleDirs.addAll(findNonFilterExampleDirs(Paths.get(checkstyleRepoPath, "src", "xdocs-examples", "resources-noncompilable")));
+        allExampleDirs.addAll(
+                findNonFilterExampleDirs(
+                        Paths.get(checkstyleRepoPath,
+                                "src", "xdocs-examples", "resources")
+                )
+        );
+
+        allExampleDirs.addAll(
+                findNonFilterExampleDirs(
+                        Paths.get(checkstyleRepoPath,
+                                "src", "xdocs-examples", "resources-noncompilable")
+                )
+        );
         return allExampleDirs;
     }
 
@@ -184,13 +232,14 @@ public final class CheckstyleExampleExtractor {
      * @return A map associating module names with their example directories.
      * @throws Exception If an unexpected error occurs.
      */
-    @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    private static Map<String, List<Path>> processExampleDirs(final List<Path> allExampleDirs) throws Exception {
+    private static Map<String, List<Path>> processExampleDirs(
+            final List<Path> allExampleDirs)
+            throws Exception {
         final Map<String, List<Path>> moduleExamples = new ConcurrentHashMap<>();
         for (final Path dir : allExampleDirs) {
             final String moduleName = processDirectory(dir.toString());
             if (moduleName != null) {
-                moduleExamples.computeIfAbsent(moduleName, k -> new ArrayList<>()).add(dir);
+                moduleExamples.computeIfAbsent(moduleName, moduleKey -> new ArrayList<>()).add(dir);
             }
         }
         return moduleExamples;
@@ -208,7 +257,10 @@ public final class CheckstyleExampleExtractor {
             return pathStream
                     .filter(Files::isDirectory)
                     .filter(path -> !path.toString().contains("suppresswarningsholder"))
-                    .filter(path -> !path.toString().contains("filters") && !path.toString().contains("filfilters"))
+                    .filter(path -> {
+                        return !path.toString().contains("filters")
+                                && !path.toString().contains("filfilters");
+                    })
                     .filter(CheckstyleExampleExtractor::containsExampleFile)
                     .collect(Collectors.toList());
         }
@@ -221,12 +273,16 @@ public final class CheckstyleExampleExtractor {
      * @return true if the path contains example files; false otherwise.
      */
     private static boolean containsExampleFile(final Path path) {
+        boolean result = false;
         try (Stream<Path> files = Files.list(path)) {
-            return files.anyMatch(file -> file.getFileName().toString().matches(EXAMPLE_FILE_PATTERN));
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error listing files in directory: " + path, e);
-            return false;
+            result = files.anyMatch(file -> {
+                return file.getFileName().toString().matches(EXAMPLE_FILE_PATTERN);
+            });
         }
+        catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "Error listing files in directory: " + path, ex);
+        }
+        return result;
     }
 
     /**
@@ -237,6 +293,8 @@ public final class CheckstyleExampleExtractor {
      * @throws Exception If an I/O error occurs
      */
     public static String processDirectory(final String inputDir) throws Exception {
+        String moduleName = null;
+
         final Path inputPath = Paths.get(inputDir);
         try (Stream<Path> paths = Files.list(inputPath)) {
             final List<Path> exampleFiles = paths
@@ -245,25 +303,21 @@ public final class CheckstyleExampleExtractor {
                     .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATTERN))
                     .collect(Collectors.toList());
 
-            if (exampleFiles.isEmpty()) {
-                return null;
+            if (!exampleFiles.isEmpty()) {
+                final Path firstExampleFile = exampleFiles.get(0);
+                moduleName = ConfigSerializer.extractModuleName(firstExampleFile.toString());
+                if (moduleName != null) {
+                    final Path outputPath = PROJECT_ROOT.resolve(moduleName);
+                    Files.createDirectories(outputPath);
+
+                    for (final Path exampleFile : exampleFiles) {
+                        processExampleFile(exampleFile, outputPath);
+                    }
+                }
             }
-
-            final Path firstExampleFile = exampleFiles.get(0);
-            final String moduleName = ConfigSerializer.extractModuleName(firstExampleFile.toString());
-            if (moduleName == null) {
-                return null;
-            }
-
-            final Path outputPath = PROJECT_ROOT.resolve(moduleName);
-            Files.createDirectories(outputPath);
-
-            for (final Path exampleFile : exampleFiles) {
-                processExampleFile(exampleFile, outputPath);
-            }
-
-            return moduleName;
         }
+
+        return moduleName;
     }
 
     /**
@@ -273,7 +327,10 @@ public final class CheckstyleExampleExtractor {
      * @param outputPath  The path where the processed file's subfolder will be created.
      * @throws Exception If an unexpected error occurs.
      */
-    private static void processExampleFile(final Path exampleFile, final Path outputPath) throws Exception {
+    private static void processExampleFile(
+            final Path exampleFile,
+            final Path outputPath)
+            throws Exception {
         final Path fileName = exampleFile.getFileName();
         if (fileName != null) {
             final String fileNameStr = fileName.toString().replaceFirst("\\.(java|txt)$", "");
@@ -290,35 +347,46 @@ public final class CheckstyleExampleExtractor {
      * @param outputPath  The path where the generated content will be stored.
      * @throws Exception If an unexpected error occurs.
      */
-    private static void processFile(final String exampleFile, final Path outputPath) throws Exception {
-        if (exampleFile == null || outputPath == null || exampleFile.endsWith(EXCLUDED_FILE_PATTERN)) {
-            return;
-        }
-
-        try {
-            final String templateFilePath = getTemplateFilePathForExamples(exampleFile);
-            if (templateFilePath == null) {
-                LOGGER.log(Level.WARNING, "Unable to get template file path for: " + exampleFile);
-                return;
+    private static void processFile(
+            final String exampleFile,
+            final Path outputPath)
+            throws Exception {
+        if (exampleFile != null
+                && outputPath != null
+                && !exampleFile.endsWith(EXCLUDED_FILE_PATTERN)) {
+            try {
+                final String templateFilePath = getTemplateFilePathForExamples(exampleFile);
+                if (templateFilePath != null) {
+                    final String generatedContent =
+                            ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
+                    writeConfigFile(outputPath, generatedContent);
+                    copyPropertiesFile(outputPath);
+                    generateReadme(outputPath);
+                }
+                else {
+                    LOGGER.log(Level.WARNING,
+                            "Unable to get template file path for: "
+                                    + exampleFile);
+                }
             }
-
-            final String generatedContent = ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
-            writeConfigFile(outputPath, generatedContent);
-            copyPropertiesFile(outputPath);
-            generateReadme(outputPath);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading or processing the file: " + exampleFile, e);
+            catch (IOException ex) {
+                LOGGER.log(Level.SEVERE,
+                        "Error reading or processing the file: "
+                                + exampleFile, ex);
+            }
         }
     }
 
     /**
-     * Writes the serialized configuration content to a config.xml file in the specified output path.
+     * Writes the serialized configuration content to a config.xml.
      *
      * @param outputPath The path where the config.xml file will be created.
      * @param content    The serialized configuration content to write.
      * @throws IOException If an I/O error occurs.
      */
-    private static void writeConfigFile(final Path outputPath, final String content) throws IOException {
+    private static void writeConfigFile(
+            final Path outputPath,
+            final String content) throws IOException {
         final Path outputFilePath = outputPath.resolve("config.xml");
         Files.writeString(outputFilePath, content, StandardCharsets.UTF_8);
     }
@@ -359,21 +427,27 @@ public final class CheckstyleExampleExtractor {
      * @param exampleDirs List of example directories
      * @throws Exception If an I/O error occurs during generation
      */
-    public static void generateAllInOneConfig(final String moduleName, final List<Path> exampleDirs) throws Exception {
+    public static void generateAllInOneConfig(
+            final String moduleName,
+            final List<Path> exampleDirs)
+            throws Exception {
         final List<String> allExampleFiles = getAllExampleFiles(exampleDirs);
-        if (allExampleFiles.isEmpty()) {
-            return;
+        final boolean shouldProceed = !allExampleFiles.isEmpty();
+
+        if (shouldProceed) {
+            Collections.sort(
+                    allExampleFiles,
+                    Comparator.comparingInt(CheckstyleExampleExtractor::extractExampleNumber)
+            );
+
+            final Path outputPath = PROJECT_ROOT.resolve(moduleName);
+            final Path allInOneSubfolderPath = outputPath.resolve(ALL_IN_ONE_SUBFOLDER);
+            Files.createDirectories(allInOneSubfolderPath);
+
+            generateAllInOneContent(allExampleFiles, allInOneSubfolderPath);
+            handleAllExamplesInOne(moduleName, allInOneSubfolderPath);
+            generateAllInOneReadme(allInOneSubfolderPath, moduleName);
         }
-
-        Collections.sort(allExampleFiles, Comparator.comparingInt(CheckstyleExampleExtractor::extractExampleNumber));
-
-        final Path outputPath = PROJECT_ROOT.resolve(moduleName);
-        final Path allInOneSubfolderPath = outputPath.resolve(ALL_IN_ONE_SUBFOLDER);
-        Files.createDirectories(allInOneSubfolderPath);
-
-        generateAllInOneContent(allExampleFiles, allInOneSubfolderPath);
-        handleAllExamplesInOne(moduleName, allInOneSubfolderPath);
-        generateAllInOneReadme(allInOneSubfolderPath, moduleName);
     }
 
     /**
@@ -383,7 +457,8 @@ public final class CheckstyleExampleExtractor {
      * @return A list of paths to the example files.
      * @throws IOException If an I/O error occurs during file operations.
      */
-    private static List<String> getAllExampleFiles(final List<Path> exampleDirs) throws IOException {
+    private static List<String> getAllExampleFiles(final List<Path> exampleDirs)
+            throws IOException {
         final List<String> allExampleFiles = new ArrayList<>();
         for (final Path dir : exampleDirs) {
             try (Stream<Path> paths = Files.list(dir)) {
@@ -404,7 +479,10 @@ public final class CheckstyleExampleExtractor {
      * @param allInOneSubfolderPath The path where the "all-in-one" content will be stored.
      * @throws Exception If an unexpected error occurs during generation.
      */
-    private static void generateAllInOneContent(final List<String> allExampleFiles, final Path allInOneSubfolderPath) throws Exception {
+    private static void generateAllInOneContent(
+            final List<String> allExampleFiles,
+            final Path allInOneSubfolderPath)
+            throws Exception {
         final String templateFilePath = getTemplateFilePathForExamples(allExampleFiles.get(0));
         final Path outputFilePath = allInOneSubfolderPath.resolve("config.xml");
 
@@ -419,22 +497,35 @@ public final class CheckstyleExampleExtractor {
      * @param moduleName             The name of the module.
      * @param allInOneSubfolderPath  The path to the "all-examples-in-one" subfolder.
      */
-    private static void handleAllExamplesInOne(final String moduleName, final Path allInOneSubfolderPath) {
+    private static void handleAllExamplesInOne(
+            final String moduleName,
+            final Path allInOneSubfolderPath) {
         try {
             final Map<String, Object> yamlData = YamlParserAndProjectHandler.parseYamlFile();
             final Map<String, Object> moduleConfig = (Map<String, Object>) yamlData.get(moduleName);
 
             if (moduleConfig != null && moduleConfig.containsKey(ALL_IN_ONE_SUBFOLDER)) {
-                final Map<String, Object> allInOneConfig = (Map<String, Object>) moduleConfig.get(ALL_IN_ONE_SUBFOLDER);
-                final List<String> projectNames = (List<String>) allInOneConfig.get("projects");
-                YamlParserAndProjectHandler.createProjectsFileForExample(allInOneSubfolderPath, projectNames,
-                        Files.readAllLines(Paths.get(YamlParserAndProjectHandler.ALL_PROJECTS_PATH)),
-                        moduleName);
-            } else {
+                final Map<String, Object> allInOneConfig =
+                        (Map<String, Object>) moduleConfig.get(ALL_IN_ONE_SUBFOLDER);
+                final List<String> projectNames =
+                        (List<String>) allInOneConfig.get("projects");
+                YamlParserAndProjectHandler.createProjectsFileForExample(
+                        allInOneSubfolderPath,
+                        projectNames,
+                        Files.readAllLines(
+                                Paths.get(YamlParserAndProjectHandler.ALL_PROJECTS_PATH)
+                        ),
+                        moduleName
+                );
+            }
+            else {
                 copyDefaultPropertiesFile(allInOneSubfolderPath);
             }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error processing YAML file for all-examples-in-one: " + e.getMessage(), e);
+        }
+        catch (IOException ex) {
+            LOGGER.log(Level.SEVERE,
+                    "Error processing YAML file for all-examples-in-one: "
+                            + ex.getMessage(), ex);
             copyDefaultPropertiesFile(allInOneSubfolderPath);
         }
     }
@@ -446,11 +537,17 @@ public final class CheckstyleExampleExtractor {
      */
     private static void copyDefaultPropertiesFile(final Path allInOneSubfolderPath) {
         try {
-            final Path sourcePropertiesPath = Paths.get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_PATH).toAbsolutePath();
-            final Path targetPropertiesPath = allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
-            Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error copying default properties file", e);
+            final Path sourcePropertiesPath = Paths
+                    .get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_PATH)
+                    .toAbsolutePath();
+            final Path targetPropertiesPath =
+                    allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
+            Files.copy(sourcePropertiesPath,
+                    targetPropertiesPath,
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Error copying default properties file", ex);
         }
     }
 
@@ -461,7 +558,10 @@ public final class CheckstyleExampleExtractor {
      * @param moduleName            The name of the module.
      * @throws IOException If an I/O error occurs during README generation.
      */
-    private static void generateAllInOneReadme(final Path allInOneSubfolderPath, final String moduleName) throws IOException {
+    private static void generateAllInOneReadme(
+            final Path allInOneSubfolderPath,
+            final String moduleName)
+            throws IOException {
         ReadmeGenerator.generateAllInOneReadme(allInOneSubfolderPath, moduleName);
     }
 
@@ -472,7 +572,10 @@ public final class CheckstyleExampleExtractor {
      * @param exampleDirs The directories containing the examples.
      * @throws IOException If an I/O error occurs during README generation.
      */
-    private static void generateReadmes(final String moduleName, final List<Path> exampleDirs) throws IOException {
+    private static void generateReadmes(
+            final String moduleName,
+            final List<Path> exampleDirs)
+            throws IOException {
         final Path outputPath = PROJECT_ROOT.resolve(moduleName);
 
         for (final Path dir : exampleDirs) {
@@ -480,7 +583,9 @@ public final class CheckstyleExampleExtractor {
                 paths.filter(Files::isRegularFile)
                         .filter(path -> path.getFileName().toString().matches(EXAMPLE_FILE_PATTERN))
                         .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATTERN))
-                        .forEach(exampleFile -> generateIndividualReadme(exampleFile, outputPath, moduleName));
+                        .forEach(exampleFile -> {
+                            generateIndividualReadme(exampleFile, outputPath, moduleName);
+                        });
             }
         }
 
@@ -495,7 +600,10 @@ public final class CheckstyleExampleExtractor {
      * @param outputPath  The path where the README file will be generated.
      * @param moduleName  The name of the module.
      */
-    private static void generateIndividualReadme(final Path exampleFile, final Path outputPath, final String moduleName) {
+    private static void generateIndividualReadme(
+            final Path exampleFile,
+            final Path outputPath,
+            final String moduleName) {
         Optional.ofNullable(exampleFile)
                 .map(Path::getFileName)
                 .map(Path::toString)
@@ -504,8 +612,10 @@ public final class CheckstyleExampleExtractor {
                     final Path subfolderPath = outputPath.resolve(fileName);
                     try {
                         ReadmeGenerator.generateIndividualReadme(subfolderPath, moduleName);
-                    } catch (IOException e) {
-                        LOGGER.log(Level.SEVERE, "Error generating individual README for: " + subfolderPath, e);
+                    }
+                    catch (IOException ex) {
+                        LOGGER.log(Level.SEVERE,
+                                "Error generating individual README for: " + subfolderPath, ex);
                     }
                 });
 
@@ -524,15 +634,19 @@ public final class CheckstyleExampleExtractor {
      * @return The template file path.
      * @throws Exception If an unexpected error occurs.
      */
-    private static String getTemplateFilePathForExamples(final String exampleFilePath) throws Exception {
-        final TestInputConfiguration testInputConfiguration = InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+    private static String getTemplateFilePathForExamples(
+            final String exampleFilePath)
+            throws Exception {
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parseWithXmlHeader(exampleFilePath);
         final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
         final boolean isTreeWalker = ConfigSerializer.isTreeWalkerConfig(xmlConfig);
 
         final String resourceName;
         if (isTreeWalker) {
             resourceName = "config-template-treewalker.xml";
-        } else {
+        }
+        else {
             resourceName = "config-template-non-treewalker.xml";
         }
 
@@ -551,7 +665,8 @@ public final class CheckstyleExampleExtractor {
 
         if (matcher.find()) {
             exampleNumber = Integer.parseInt(matcher.group(1));
-        } else {
+        }
+        else {
             exampleNumber = Integer.MAX_VALUE;
         }
 
