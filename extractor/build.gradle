@@ -5,6 +5,7 @@ plugins {
     id 'com.github.spotbugs' version '6.0.19'
     id 'de.thetaphi.forbiddenapis' version '3.7'
     id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '7.1.2' // Add Shadow plugin
 }
 
 repositories {
@@ -89,3 +90,8 @@ tasks.withType(com.github.spotbugs.snom.SpotBugsTask) { it.enabled = true }
 tasks.withType(Checkstyle) { it.enabled = true }
 tasks.withType(Pmd) { it.enabled = true }
 tasks.withType(de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis) { it.enabled = true }
+
+// Shadow JAR Configuration
+shadowJar {
+    archiveClassifier.set('all')
+}
