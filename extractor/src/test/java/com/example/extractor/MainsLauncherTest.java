@@ -21,9 +21,11 @@ package com.example.extractor;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +52,11 @@ class MainsLauncherTest {
             "com/puppycrawl/tools/checkstyle/checks";
 
     /**
+     * The constant for default projects file.
+     */
+    private static final String DEFAULT_PROJECTS_FILE = "list-of-projects.properties";
+
+    /**
      * Tests the main method of CheckstyleExampleExtractor.
      * This test ensures that the main method runs without throwing any exceptions.
      */
@@ -69,31 +76,48 @@ class MainsLauncherTest {
      */
     @Test
     void testMainWithInputFile(@TempDir final Path tempDir) throws Exception {
-        final String inputFilePath = "src/test/resources/"
-                + CHECKSTYLE_CHECKS_BASE_PATH
+        final String inputFilePath = "src/test/resources/" + CHECKSTYLE_CHECKS_BASE_PATH
                 + "/whitespace/methodparampad/InputFile/InputMethodParamPadWhitespaceAround.java";
-
-        final String expectedInputFilePath = "src/test/resources/"
-                + CHECKSTYLE_CHECKS_BASE_PATH
+        final String expectedInputFilePath = "src/test/resources/" + CHECKSTYLE_CHECKS_BASE_PATH
                 + "/whitespace/methodparampad/Config/expected-config.xml";
-
         final String expectedContent = loadToString(expectedInputFilePath);
+        final String expectedProjectsContent = loadDefaultProjectsList();
 
-        final Path outputFile = tempDir.resolve("output-config.xml");
+        final Path outputConfigFile = tempDir.resolve("output-config.xml");
+        final Path outputProjectsFile = tempDir.resolve("output-projects.properties");
 
         assertDoesNotThrow(() -> {
             CheckstyleExampleExtractor.main(new String[]{
                 CHECKSTYLE_REPO_PATH,
                 "--input-file",
                 inputFilePath,
-                outputFile.toString(),
+                outputConfigFile.toString(),
+                outputProjectsFile.toString(),
             });
         });
 
-        assertTrue(Files.exists(outputFile), "Output file should be created");
-        final String generatedContent = Files.readString(outputFile);
+        assertTrue(Files.exists(outputConfigFile), "Config output file should be created");
+        assertTrue(Files.exists(outputProjectsFile), "Projects output file should be created");
 
-        assertThat(generatedContent).isEqualTo(expectedContent);
+        final String generatedConfigContent = Files.readString(outputConfigFile);
+        assertThat(generatedConfigContent).isEqualTo(expectedContent);
+
+        final String generatedProjectsContent = Files.readString(outputProjectsFile);
+        assertFalse(generatedProjectsContent.isEmpty(), "Projects file should not be empty");
+        assertThat(generatedProjectsContent).isEqualTo(expectedProjectsContent);
+    }
+
+    /**
+     * Loads the default projects list from the resource file.
+     *
+     * @return the content of the projects list as a string.
+     * @throws IOException if an error occurs while reading the resource.
+     */
+    private String loadDefaultProjectsList() throws IOException {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream(DEFAULT_PROJECTS_FILE)) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 
     /**
