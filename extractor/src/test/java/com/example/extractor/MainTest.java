@@ -45,10 +45,16 @@ class MainTest {
             "src/main/resources/config-template-treewalker.xml";
 
     /**
-     * The constant for non-Treewalker template file.
+     * The constant for Treewalker template file for input java file conditions.
      */
-    private static final String NON_TREEWALKER_TEMPLATE_FILE =
-            "src/main/resources/config-template-non-treewalker.xml";
+    private static final String TW_TEMPLATE_FILE_INPUT_JAVA =
+            "config-template-treewalker.xml";
+
+    /**
+     * The constant for non-Treewalker template file for input java file conditions.
+     */
+    private static final String NTW_TEMPLATE_FILE_INPUT_JAVA =
+            "config-template-non-treewalker.xml";
 
     /**
      * The constant for base path of test resources.
@@ -255,7 +261,7 @@ class MainTest {
                 + "/whitespace/methodparampad/Config/expected-config.xml";
 
         final String generatedContent = ConfigSerializer.serializeNonXmlConfigToString(
-                inputFilePath, TREEWALKER_TEMPLATE_FILE);
+                inputFilePath, TW_TEMPLATE_FILE_INPUT_JAVA);
         final String expectedContent = loadToString(expectedInputFilePath);
         assertThat(generatedContent).isEqualTo(expectedContent);
     }
@@ -274,7 +280,7 @@ class MainTest {
                 + "/whitespace/filetabcharacter/Config/expected-config.xml";
 
         final String generatedContent = ConfigSerializer.serializeNonXmlConfigToString(
-                inputFilePath, NON_TREEWALKER_TEMPLATE_FILE);
+                inputFilePath, NTW_TEMPLATE_FILE_INPUT_JAVA);
         final String expectedContent = loadToString(expectedInputFilePath);
         assertThat(generatedContent).isEqualTo(expectedContent);
     }

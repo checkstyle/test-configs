@@ -24,6 +24,10 @@
 
 package com.example.extractor;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
@@ -93,30 +98,36 @@ public final class ConfigSerializer {
      * Serializes a configuration to a string from a non-XML format input file.
      *
      * @param inputFilePath    Path to the input file
-     * @param templateFilePath Path to the template file
+     * @param templateFileName Path to the template file
      * @return Serialized configuration as a string
      * @throws IllegalArgumentException If no modules are found in the input file
      * @throws Exception  If an unexpected error occurs
      */
     public static String serializeNonXmlConfigToString(
             final String inputFilePath,
-            final String templateFilePath) throws Exception {
-        final TestInputConfiguration testInputConfiguration =
-                InlineConfigParser.parse(inputFilePath);
-        final List<ModuleInputConfiguration> modules = testInputConfiguration.getChildrenModules();
-
-        if (modules.isEmpty()) {
-            throw new IllegalArgumentException("No modules found in the input file");
+            final String templateFileName) throws Exception {
+        if (inputFilePath == null || templateFileName == null) {
+            throw new IllegalArgumentException(
+                    "Input file path and template resource name must not be null"
+            );
         }
 
-        final ModuleInputConfiguration mainModule = modules.get(0);
+        final ModuleInputConfiguration mainModule = parseAndValidateInputFile(inputFilePath);
+
         final String moduleName = extractSimpleModuleName(mainModule.getModuleName());
         final Map<String, String> properties = mainModule.getNonDefaultProperties();
 
-        final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
+        LOGGER.info("Reading template resource: " + templateFileName);
+        final String template = readResourceAsString(templateFileName);
+        if (template == null || template.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Failed to read template resource: " + templateFileName
+            );
+        }
 
         final Configuration moduleConfig = createConfigurationFromModule(moduleName, properties);
         final boolean isTreeWalker = isTreeWalkerCheck(mainModule.getModuleName());
+
         final String baseIndent;
         if (isTreeWalker) {
             baseIndent = TREE_WALKER_INDENT;
@@ -126,7 +137,65 @@ public final class ConfigSerializer {
         }
 
         final String moduleContent = buildSingleModuleContent(moduleConfig, baseIndent);
-        return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalker);
+        return TemplateProcessor.replacePlaceholders(template, moduleContent, isTreeWalker) + "\n";
+    }
+
+    /**
+     * Parses and validates the input file to extract the main module configuration.
+     *
+     * @param inputFilePath the path to the input file.
+     * @return the main {@link ModuleInputConfiguration} extracted from the input file.
+     * @throws IllegalArgumentException if parsing fails or no valid modules are found.
+     * @throws Exception if an unexpected error occurs.
+     */
+    private static ModuleInputConfiguration parseAndValidateInputFile(final String inputFilePath)
+            throws Exception {
+        LOGGER.info("Parsing input file: " + inputFilePath);
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parse(inputFilePath);
+
+        if (testInputConfiguration == null) {
+            throw new IllegalArgumentException("Failed to parse input file: " + inputFilePath);
+        }
+
+        final List<ModuleInputConfiguration> modules = testInputConfiguration.getChildrenModules();
+
+        if (modules == null || modules.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "No modules found in the input file: " + inputFilePath
+            );
+        }
+
+        final ModuleInputConfiguration mainModule = modules.get(0);
+        if (mainModule == null) {
+            throw new IllegalArgumentException(
+                    "Main module is null in the input file: " + inputFilePath
+            );
+        }
+
+        return mainModule;
+    }
+
+    /**
+     * Reads the content of a resource file as a string.
+     *
+     * @param resourceName the name of the resource to be read.
+     * @return the content of the resource file as a string.
+     * @throws IOException if the resource is not found or if an I/O error occurs.
+     */
+    private static String readResourceAsString(final String resourceName) throws IOException {
+        try (InputStream inputStream = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(resourceName)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + resourceName);
+            }
+            try (BufferedReader reader =
+                         new BufferedReader(new InputStreamReader(inputStream,
+                                 StandardCharsets.UTF_8))) {
+                return reader.lines().collect(Collectors.joining("\n"));
+            }
+        }
     }
 
     /**

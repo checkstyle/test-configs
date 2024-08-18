@@ -20,6 +20,8 @@
 package com.example.extractor;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,7 +78,7 @@ public final class CheckstyleExampleExtractor {
     /**
      * Number of expected arguments when processing a single input file.
      */
-    private static final int SINGLE_INPUT_FILE_ARG_COUNT = 4;
+    private static final int SINGLE_INPUT_FILE_ARG_COUNT = 5;
 
     /**
      * Index of the "--input-file" flag in the argument array.
@@ -92,6 +94,16 @@ public final class CheckstyleExampleExtractor {
      * Index of the output file path in the argument array.
      */
     private static final int OUTPUT_FILE_PATH_INDEX = 3;
+
+    /**
+     * Index of the output file path in the argument array.
+     */
+    private static final int PROJECT_OUTPUT_PATH_INDEX = 4;
+
+    /**
+     * The buffer size for reading and writing files.
+     */
+    private static final int BUFFER_SIZE = 1024;
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -119,8 +131,14 @@ public final class CheckstyleExampleExtractor {
                 && "--input-file".equals(args[INPUT_FILE_FLAG_INDEX])) {
             // New functionality: process single input file
             final String inputFilePath = args[INPUT_FILE_PATH_INDEX];
-            final String outputFilePath = args[OUTPUT_FILE_PATH_INDEX];
-            processInputFile(Paths.get(inputFilePath), Paths.get(outputFilePath));
+            final String configOutputPath = args[OUTPUT_FILE_PATH_INDEX];
+            final String projectsOutputPath = args[PROJECT_OUTPUT_PATH_INDEX];
+
+            // Process input file and generate config
+            processInputFile(Paths.get(inputFilePath), Paths.get(configOutputPath));
+
+            // Output default projects list
+            outputDefaultProjectsList(projectsOutputPath);
         }
         else {
             // Functionality: process all examples
@@ -138,12 +156,36 @@ public final class CheckstyleExampleExtractor {
     }
 
     /**
+     * Writes the default projects list to the specified file.
+     *
+     * @param outputPath the file path to write the list.
+     * @throws IllegalStateException if I/O error occurs while readin or writing to file
+     */
+    public static void outputDefaultProjectsList(final String outputPath) {
+        try (InputStream inputStream = CheckstyleExampleExtractor.class
+                .getResourceAsStream("/list-of-projects.properties");
+             OutputStream outputStream = Files.newOutputStream(Path.of(outputPath))) {
+
+            final byte[] buffer = new byte[BUFFER_SIZE];
+            int length = inputStream.read(buffer);
+            while (length > 0) {
+                outputStream.write(buffer, 0, length);
+                length = inputStream.read(buffer);
+            }
+        }
+        catch (IOException ex) {
+            throw new IllegalStateException("Error outputting default projects list", ex);
+        }
+    }
+
+    /**
      * Processes an input file and generates an output file.
      *
      * @param inputFile  The path to the input file
      * @param outputFile The path to the output file
      * @throws Exception If an error occurs during processing
-     * @throws IOException if the argument is invalid.
+     * @throws IllegalArgumentException if the argument is invalid.
+     * @throws IOException if resource not found
      */
     public static void processInputFile(
             final Path inputFile,
@@ -155,11 +197,33 @@ public final class CheckstyleExampleExtractor {
             throw new IOException("Input file does not exist: " + inputFile);
         }
 
-        // Get the template file path and serialize the configuration
-        final String templateFilePath = getTemplateFilePathForInputFile(inputFile.toString());
+        // Parse the input file to determine if it's a TreeWalker check
+        final TestInputConfiguration testInputConfiguration =
+                InlineConfigParser.parse(inputFile.toString());
+        final List<ModuleInputConfiguration> modules =
+                testInputConfiguration.getChildrenModules();
+
+        if (modules.isEmpty()) {
+            throw new IllegalArgumentException("No modules found in the input file");
+        }
+
+        final ModuleInputConfiguration mainModule = modules.get(0);
+        final String moduleName = mainModule.getModuleName();
+        final boolean isTreeWalker = ConfigSerializer.isTreeWalkerCheck(moduleName);
+
+        // Get the template file name based on whether it's a TreeWalker check or not
+        final String templateFileName;
+        if (isTreeWalker) {
+            templateFileName = "config-template-treewalker.xml";
+        }
+        else {
+            templateFileName = "config-template-non-treewalker.xml";
+        }
+
+        // Serialize the configuration
         final String generatedContent = ConfigSerializer.serializeNonXmlConfigToString(
                 inputFile.toString(),
-                templateFilePath
+                templateFileName
         );
 
         // Write the generated content to the output file
