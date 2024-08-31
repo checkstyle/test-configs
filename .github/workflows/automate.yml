@@ -1,0 +1,51 @@
+name: Java CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '21'
+
+    - name: Run setup script
+      run: ./setup.sh
+
+    - name: Build and Test with Gradle
+      run: |
+        cd extractor
+        ./gradlew clean build test run --args="../.ci-temp/checkstyle" --info --stacktrace --console=plain \
+          -Dorg.gradle.logging.level=DEBUG \
+          -Dtest.single=MainsLauncherTest
+
+    - name: Check for changes
+      id: git-check
+      run: |
+        chmod +x ./.github/workflows/workflow-command.sh
+        ./.github/workflows/workflow-command.sh git_check_changes
+
+    - name: Commit changes
+      if: steps.git-check.outputs.changes == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Automated changes" -a
+
+    - name: Push changes
+      if: steps.git-check.outputs.changes == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
