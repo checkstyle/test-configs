@@ -36,7 +36,8 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add .
-        git commit -m "Update from extractor auto execution" -a
+        # Check if there are any changes, if so commit them
+        git diff --staged --exit-code || git commit -m "Update from extractor auto execution"
 
     - name: Push changes
       uses: ad-m/github-push-action@master
