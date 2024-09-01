@@ -32,7 +32,6 @@ jobs:
           -Dtest.single=MainsLauncherTest
 
     - name: Commit changes
-      if: steps.git-check.outputs.changes == 'true'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -40,7 +39,6 @@ jobs:
         git commit -m "Update from extractor auto execution" -a
 
     - name: Push changes
-      if: steps.git-check.outputs.changes == 'true'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
