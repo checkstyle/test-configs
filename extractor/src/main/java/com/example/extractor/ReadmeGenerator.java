@@ -78,6 +78,7 @@ public final class ReadmeGenerator {
             + "OR as alternate:%n"
             + "Paste below given to PR description to use such test configs:%n"
             + "```%n"
+            + "Report label: %s/%s%n"
             + "Diff Regression config: %s%n"
             + "Diff Regression projects: %s%n"
             + "```%n"
@@ -85,6 +86,8 @@ public final class ReadmeGenerator {
             + "```%n"
             + "Github, generate report%n"
             + "```%n",
+                folderName,
+                moduleName,
                 folderName,
                 moduleName,
                 folderName,
@@ -121,6 +124,7 @@ public final class ReadmeGenerator {
             + "OR as alternate:%n"
             + "Paste below given to PR description to use such test configs:%n"
             + "```%n"
+            + "Report label: %s/all-examples-in-one%n"
             + "Diff Regression config: %s%n"
             + "Diff Regression projects: %s%n"
             + "```%n"
@@ -128,6 +132,7 @@ public final class ReadmeGenerator {
             + "```%n"
             + "Github, generate report%n"
             + "```%n",
+                moduleName,
                 moduleName,
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/config.xml",
                 GITHUB_RAW_URL + moduleName + "/all-examples-in-one/list-of-projects.properties"
