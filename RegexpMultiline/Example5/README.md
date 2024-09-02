@@ -6,6 +6,7 @@ Github, generate report for RegexpMultiline/Example5
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: RegexpMultiline/Example5
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/RegexpMultiline/Example5/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/RegexpMultiline/Example5/list-of-projects.properties
 ```

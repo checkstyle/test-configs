@@ -6,6 +6,7 @@ Github, generate report for UnnecessarySemicolonInEnumeration/all-examples-in-on
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: UnnecessarySemicolonInEnumeration/all-examples-in-one
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnnecessarySemicolonInEnumeration/all-examples-in-one/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnnecessarySemicolonInEnumeration/all-examples-in-one/list-of-projects.properties
 ```

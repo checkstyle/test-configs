@@ -6,6 +6,7 @@ Github, generate report for LeftCurly/Example3
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: LeftCurly/Example3
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/LeftCurly/Example3/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/LeftCurly/Example3/list-of-projects.properties
 ```

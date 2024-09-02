@@ -6,6 +6,7 @@ Github, generate report for Indentation/Example3
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: Indentation/Example3
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/Indentation/Example3/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/Indentation/Example3/list-of-projects.properties
 ```

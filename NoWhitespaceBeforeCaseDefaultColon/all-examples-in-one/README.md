@@ -6,6 +6,7 @@ Github, generate report for NoWhitespaceBeforeCaseDefaultColon/all-examples-in-o
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: NoWhitespaceBeforeCaseDefaultColon/all-examples-in-one
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/NoWhitespaceBeforeCaseDefaultColon/all-examples-in-one/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/NoWhitespaceBeforeCaseDefaultColon/all-examples-in-one/list-of-projects.properties
 ```

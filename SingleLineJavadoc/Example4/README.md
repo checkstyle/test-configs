@@ -6,6 +6,7 @@ Github, generate report for SingleLineJavadoc/Example4
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: SingleLineJavadoc/Example4
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/SingleLineJavadoc/Example4/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/SingleLineJavadoc/Example4/list-of-projects.properties
 ```

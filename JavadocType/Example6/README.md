@@ -6,6 +6,7 @@ Github, generate report for JavadocType/Example6
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: JavadocType/Example6
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/JavadocType/Example6/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/JavadocType/Example6/list-of-projects.properties
 ```

@@ -6,6 +6,7 @@ Github, generate report for TypecastParenPad/Example2
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: TypecastParenPad/Example2
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/TypecastParenPad/Example2/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/TypecastParenPad/Example2/list-of-projects.properties
 ```

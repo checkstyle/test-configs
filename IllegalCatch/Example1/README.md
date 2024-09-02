@@ -6,6 +6,7 @@ Github, generate report for IllegalCatch/Example1
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: IllegalCatch/Example1
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/IllegalCatch/Example1/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/IllegalCatch/Example1/list-of-projects.properties
 ```
