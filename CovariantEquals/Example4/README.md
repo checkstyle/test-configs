@@ -6,6 +6,7 @@ Github, generate report for CovariantEquals/Example4
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: CovariantEquals/Example4
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/CovariantEquals/Example4/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/CovariantEquals/Example4/list-of-projects.properties
 ```

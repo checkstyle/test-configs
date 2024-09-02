@@ -6,6 +6,7 @@ Github, generate report for UnusedLambdaParameterShouldBeUnnamed/all-examples-in
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: UnusedLambdaParameterShouldBeUnnamed/all-examples-in-one
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnusedLambdaParameterShouldBeUnnamed/all-examples-in-one/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnusedLambdaParameterShouldBeUnnamed/all-examples-in-one/list-of-projects.properties
 ```

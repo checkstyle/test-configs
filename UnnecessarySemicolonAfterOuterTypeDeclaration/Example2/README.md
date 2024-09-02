@@ -6,6 +6,7 @@ Github, generate report for UnnecessarySemicolonAfterOuterTypeDeclaration/Exampl
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: UnnecessarySemicolonAfterOuterTypeDeclaration/Example2
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnnecessarySemicolonAfterOuterTypeDeclaration/Example2/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnnecessarySemicolonAfterOuterTypeDeclaration/Example2/list-of-projects.properties
 ```

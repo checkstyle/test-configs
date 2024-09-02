@@ -6,6 +6,7 @@ Github, generate report for UnusedImports/all-examples-in-one
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: UnusedImports/all-examples-in-one
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnusedImports/all-examples-in-one/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/UnusedImports/all-examples-in-one/list-of-projects.properties
 ```

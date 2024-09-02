@@ -6,6 +6,7 @@ Github, generate report for FallThrough/Example1
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: FallThrough/Example1
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/FallThrough/Example1/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/FallThrough/Example1/list-of-projects.properties
 ```

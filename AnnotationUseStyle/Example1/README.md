@@ -6,6 +6,7 @@ Github, generate report for AnnotationUseStyle/Example1
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: AnnotationUseStyle/Example1
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/AnnotationUseStyle/Example1/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/AnnotationUseStyle/Example1/list-of-projects.properties
 ```

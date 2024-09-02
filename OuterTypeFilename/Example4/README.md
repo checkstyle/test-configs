@@ -6,6 +6,7 @@ Github, generate report for OuterTypeFilename/Example4
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: OuterTypeFilename/Example4
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/OuterTypeFilename/Example4/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/OuterTypeFilename/Example4/list-of-projects.properties
 ```

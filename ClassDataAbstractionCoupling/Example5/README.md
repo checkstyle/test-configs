@@ -6,6 +6,7 @@ Github, generate report for ClassDataAbstractionCoupling/Example5
 OR as alternate:
 Paste below given to PR description to use such test configs:
 ```
+Report label: ClassDataAbstractionCoupling/Example5
 Diff Regression config: https://raw.githubusercontent.com/checkstyle/test-configs/main/ClassDataAbstractionCoupling/Example5/config.xml
 Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-configs/main/ClassDataAbstractionCoupling/Example5/list-of-projects.properties
 ```
