@@ -27,7 +27,7 @@
         </module>
 
         <module name="TodoComment">
-            <property name="format" value="(TODO)|(FIXME)"/>
+            <property name="format" value="(?i)(TODO)|(FIXME)"/>
             <property name="id" value="example2"/>
         </module>
 

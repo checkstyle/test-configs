@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="TodoComment">
-            <property name="format" value="(TODO)|(FIXME)"/>
+            <property name="format" value="(?i)(TODO)|(FIXME)"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
