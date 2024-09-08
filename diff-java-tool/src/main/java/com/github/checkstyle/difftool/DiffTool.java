@@ -89,13 +89,29 @@ public class DiffTool {
     protected void runGradleExecutionInternal(String srcDir, String excludes, String checkstyleConfig,
                                               String checkstyleVersion, String extraRegressionOptions)
             throws IOException, InterruptedException {
-        System.out.println("Running 'gradle clean' on " + srcDir + " ...");
-        String gradleClean = "gradle clean";
-        executeGradleCommand(gradleClean);
+        File gradleProjectDir = new File(new File(srcDir).getParentFile(), "checkstyle-tester");
+        if (!gradleProjectDir.exists()) {
+            gradleProjectDir.mkdirs();
+            createGradleFiles(gradleProjectDir);
+        }
+
+        // Copy the Checkstyle configuration file to the project directory
+        File configFile = new File(checkstyleConfig);
+        File destConfigFile = new File(gradleProjectDir, "checkstyle.xml");
+        Files.copy(configFile.toPath(), destConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        // Initialize Gradle wrapper
+        System.out.println("Initializing Gradle wrapper in " + gradleProjectDir + " ...");
+        executeGradleCommand("gradle wrapper", gradleProjectDir);
+
+        System.out.println("Running './gradlew clean' in " + gradleProjectDir + " ...");
+        String gradleClean = "./gradlew clean";
+        executeGradleCommand(gradleClean, gradleProjectDir);
 
         System.out.println("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
-        StringBuilder gradleCheck = new StringBuilder("gradle check -Dcheckstyle.config.location=" + checkstyleConfig +
-                " -Dcheckstyle.excludes=" + excludes);
+        StringBuilder gradleCheck = new StringBuilder("./gradlew checkstyleMain")
+                .append(" -Dcheckstyle.config.location=").append(destConfigFile.getAbsolutePath())
+                .append(" -Dcheckstyle.excludes=").append(excludes);
         if (checkstyleVersion != null && !checkstyleVersion.isEmpty()) {
             gradleCheck.append(" -Dcheckstyle.version=").append(checkstyleVersion);
         }
@@ -103,9 +119,31 @@ public class DiffTool {
             gradleCheck.append(" ").append(extraRegressionOptions);
         }
         System.out.println(gradleCheck);
-        executeGradleCommand(gradleCheck.toString());
+        executeGradleCommand(gradleCheck.toString(), gradleProjectDir);
 
         System.out.println("Running Checkstyle on " + srcDir + " - finished");
+    }
+
+    private void executeGradleCommand(String command, File workingDir) throws IOException, InterruptedException {
+        String osSpecificCommand = isWindows() ? "cmd /c " + command : command;
+        ProcessBuilder pb = new ProcessBuilder(osSpecificCommand.split("\\s+"));
+        pb.directory(workingDir);
+        pb.inheritIO();
+        Process process = pb.start();
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            throw new RuntimeException("Error: Gradle command execution failed with exit code " + exitCode);
+        }
+    }
+
+    private File findGradleProjectRoot(File dir) {
+        while (dir != null) {
+            if (new File(dir, "build.gradle").exists() || new File(dir, "build.gradle.kts").exists()) {
+                return dir;
+            }
+            dir = dir.getParentFile();
+        }
+        return null;
     }
 
     protected void executeGradleCommand(String command) throws IOException, InterruptedException {
@@ -242,11 +280,14 @@ public class DiffTool {
     }
 
     private static void copyConfigFilesAndUpdatePaths(List<String> configFilesList) throws IOException {
-        // Remove boolean values
-        configFilesList.removeIf(file -> file == null || file.isEmpty());
+        // Create a mutable copy of the list
+        List<String> mutableList = new ArrayList<>(configFilesList);
+
+        // Remove null or empty values
+        mutableList.removeIf(file -> file == null || file.isEmpty());
 
         // Remove duplicates
-        Set<String> uniqueFiles = new LinkedHashSet<>(configFilesList);
+        Set<String> uniqueFiles = new LinkedHashSet<>(mutableList);
         for (String filename : uniqueFiles) {
             if (filename != null && !filename.isEmpty()) {
                 Path sourceFile = Paths.get(filename);
@@ -322,6 +363,40 @@ public class DiffTool {
             );
         }
         return reportInfo;
+    }
+
+
+    private void createGradleFiles(File dir) throws IOException {
+        File buildGradle = new File(dir, "build.gradle");
+        if (!buildGradle.exists()) {
+            Files.writeString(buildGradle.toPath(),
+                    "plugins {\n" +
+                            "    id 'java'\n" +
+                            "    id 'checkstyle'\n" +
+                            "}\n\n" +
+                            "repositories {\n" +
+                            "    mavenCentral()\n" +
+                            "}\n\n" +
+                            "checkstyle {\n" +
+                            "    toolVersion = '8.41'\n" +
+                            "    configFile = file(findProperty('checkstyle.config.location') ?: 'checkstyle.xml')\n" +
+                            "}\n\n" +
+                            "tasks.withType(Checkstyle) {\n" +
+                            "    reports {\n" +
+                            "        xml.required = true\n" +
+                            "        html.required = false\n" +
+                            "    }\n" +
+                            "    reports.xml.setDestinationDir(file(\"${buildDir}/reports/checkstyle\"))\n" +
+                            "}\n"
+            );
+        }
+
+        File settingsGradle = new File(dir, "settings.gradle");
+        if (!settingsGradle.exists()) {
+            Files.writeString(settingsGradle.toPath(), "rootProject.name = 'checkstyle-tester'\n");
+        }
+
+        System.out.println("Gradle files verified in " + dir.getAbsolutePath());
     }
 
     private static void generateCheckstyleReport(Map<String, Object> cfg) throws InterruptedException {
