@@ -79,42 +79,7 @@ public class DiffTool {
         }
     }
 
-
-    public static void runGradleExecution(String srcDir, String excludes, String checkstyleConfig,
-                                          String checkstyleVersion, String extraRegressionOptions)
-            throws IOException, InterruptedException {
-        new DiffTool().runGradleExecutionInternal(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraRegressionOptions);
-    }
-
-    protected void runGradleExecutionInternal(String srcDir, String excludes, String checkstyleConfig,
-                                              String checkstyleVersion, String extraRegressionOptions)
-            throws IOException, InterruptedException {
-        System.out.println("Running 'gradle clean' on " + srcDir + " ...");
-        String gradleClean = "gradle clean";
-        executeGradleCommand(gradleClean);
-
-        System.out.println("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
-        StringBuilder gradleCheck = new StringBuilder("gradle check -Dcheckstyle.config.location=" + checkstyleConfig +
-                " -Dcheckstyle.excludes=" + excludes);
-        if (checkstyleVersion != null && !checkstyleVersion.isEmpty()) {
-            gradleCheck.append(" -Dcheckstyle.version=").append(checkstyleVersion);
-        }
-        if (extraRegressionOptions != null && !extraRegressionOptions.isEmpty()) {
-            gradleCheck.append(" ").append(extraRegressionOptions);
-        }
-        System.out.println(gradleCheck);
-        executeGradleCommand(gradleCheck.toString());
-
-        System.out.println("Running Checkstyle on " + srcDir + " - finished");
-    }
-
-    protected void executeGradleCommand(String command) throws IOException, InterruptedException {
-        executeCommand(command);
-    }
-
-
-
-    public static CommandLine getCliOptions(String[] args) {
+    private static CommandLine getCliOptions(String[] args) {
         Options options = new Options();
         options.addOption("r", "localGitRepo", true, "Path to local git repository (required)");
         options.addOption("b", "baseBranch", true, "Base branch name. Default is master (optional, default is master)");
@@ -242,11 +207,14 @@ public class DiffTool {
     }
 
     private static void copyConfigFilesAndUpdatePaths(List<String> configFilesList) throws IOException {
-        // Remove boolean values
-        configFilesList.removeIf(file -> file == null || file.isEmpty());
+        // Create a mutable copy of the list
+        List<String> mutableList = new ArrayList<>(configFilesList);
+
+        // Remove null or empty values
+        mutableList.removeIf(file -> file == null || file.isEmpty());
 
         // Remove duplicates
-        Set<String> uniqueFiles = new LinkedHashSet<>(configFilesList);
+        Set<String> uniqueFiles = new LinkedHashSet<>(mutableList);
         for (String filename : uniqueFiles) {
             if (filename != null && !filename.isEmpty()) {
                 Path sourceFile = Paths.get(filename);
@@ -377,7 +345,7 @@ public class DiffTool {
                         }
                         copyDir(getOsSpecificPath(reposDir, repoName), getOsSpecificPath(srcDir, repoName));
                     }
-                    runGradleExecution(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraMvnRegressionOptions);
+                    runMavenExecution(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraMvnRegressionOptions);
                     String repoPath = repoUrl;
                     if (!"local".equals(repoType)) {
                         repoPath = new File(getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
@@ -811,37 +779,28 @@ public class DiffTool {
         return projectsStatistic;
     }
 
-//    public static void runMavenExecution(String srcDir, String excludes, String checkstyleConfig,
-//                                         String checkstyleVersion, String extraMvnRegressionOptions)
-//            throws IOException, InterruptedException {
-//        new DiffTool().runMavenExecutionInternal(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraMvnRegressionOptions);
-//    }
-//
-//    protected void runMavenExecutionInternal(String srcDir, String excludes, String checkstyleConfig,
-//                                             String checkstyleVersion, String extraMvnRegressionOptions)
-//            throws IOException, InterruptedException {
-//        System.out.println("Running 'mvn clean' on " + srcDir + " ...");
-//        String mvnClean = "mvn -e --no-transfer-progress --batch-mode clean";
-//        executeMavenCommand(mvnClean);
-//
-//        System.out.println("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
-//        StringBuilder mvnSite = new StringBuilder("mvn -e --no-transfer-progress --batch-mode site " +
-//                "-Dcheckstyle.config.location=" + checkstyleConfig + " -Dcheckstyle.excludes=" + excludes);
-//        if (checkstyleVersion != null && !checkstyleVersion.isEmpty()) {
-//            mvnSite.append(" -Dcheckstyle.version=").append(checkstyleVersion);
-//        }
-//        if (extraMvnRegressionOptions != null && !extraMvnRegressionOptions.isEmpty()) {
-//            mvnSite.append(" ");
-//            if (!extraMvnRegressionOptions.startsWith("-")) {
-//                mvnSite.append("-");
-//            }
-//            mvnSite.append(extraMvnRegressionOptions);
-//        }
-//        System.out.println(mvnSite);
-//        executeMavenCommand(mvnSite.toString());
-//
-//        System.out.println("Running Checkstyle on " + srcDir + " - finished");
-//    }
+    private static void runMavenExecution(String srcDir, String excludes, String checkstyleConfig,
+                                          String checkstyleVersion, String extraMvnRegressionOptions) throws IOException, InterruptedException {
+        System.out.println("Running 'mvn clean' on " + srcDir + " ...");
+        String mvnClean = "mvn -e --no-transfer-progress --batch-mode clean";
+        executeCmd(mvnClean);
+        System.out.println("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
+        StringBuilder mvnSite = new StringBuilder("mvn -e --no-transfer-progress --batch-mode site " +
+                "-Dcheckstyle.config.location=" + checkstyleConfig + " -Dcheckstyle.excludes=" + excludes);
+        if (checkstyleVersion != null && !checkstyleVersion.isEmpty()) {
+            mvnSite.append(" -Dcheckstyle.version=").append(checkstyleVersion);
+        }
+        if (extraMvnRegressionOptions != null && !extraMvnRegressionOptions.isEmpty()) {
+            mvnSite.append(" ");
+            if (!extraMvnRegressionOptions.startsWith("-")) {
+                mvnSite.append("-");
+            }
+            mvnSite.append(extraMvnRegressionOptions);
+        }
+        System.out.println(mvnSite);
+        executeCmd(mvnSite.toString());
+        System.out.println("Running Checkstyle on " + srcDir + " - finished");
+    }
 
     private static void postProcessCheckstyleReport(String targetDir, String repoName, String repoPath) throws IOException {
         Path reportPath = Paths.get(targetDir, "checkstyle-result.xml");
@@ -871,9 +830,29 @@ public class DiffTool {
     }
 
     private static void moveDir(String source, String destination) throws IOException {
-        Files.move(Paths.get(source), Paths.get(destination), StandardCopyOption.REPLACE_EXISTING);
-    }
+        Path sourcePath = Paths.get(source);
+        Path destinationPath = Paths.get(destination);
 
+        // Create the destination directory if it doesn't exist
+        Files.createDirectories(destinationPath);
+
+        if (Files.exists(sourcePath)) {
+            // If source exists, move its contents
+            try (Stream<Path> stream = Files.list(sourcePath)) {
+                stream.forEach(file -> {
+                    try {
+                        Files.move(file, destinationPath.resolve(sourcePath.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        System.err.println("Error moving file " + file + ": " + e.getMessage());
+                    }
+                });
+            }
+            // Delete the now-empty source directory
+            Files.deleteIfExists(sourcePath);
+        } else {
+            System.out.println("Source directory " + source + " does not exist. Skipping move operation.");
+        }
+    }
     private static void deleteDir(String dir) throws IOException {
         Path directory = Paths.get(dir);
         if (Files.exists(directory)) {
@@ -893,10 +872,6 @@ public class DiffTool {
         }
     }
 
-    public static void executeCmd(String cmd) throws IOException, InterruptedException {
-        executeCmd(cmd, new File("").getAbsoluteFile());
-    }
-
     private static void executeCmd(String cmd, File dir) throws IOException, InterruptedException {
         System.out.println("Running command: " + cmd);
         ProcessBuilder pb = new ProcessBuilder(getOsSpecificCmd(cmd).split("\\s+"));
@@ -907,6 +882,10 @@ public class DiffTool {
         if (exitCode != 0) {
             throw new RuntimeException("Error: Command execution failed with exit code " + exitCode);
         }
+    }
+
+    private static void executeCmd(String cmd) throws IOException, InterruptedException {
+        executeCmd(cmd, new File("").getAbsoluteFile());
     }
 
     private static String getOsSpecificCmd(String cmd) {
@@ -948,15 +927,6 @@ public class DiffTool {
         }
         throw new IllegalArgumentException("Error! Unknown " + repoType + " repository.");
     }
-
-    protected void executeMavenCommand(String command) throws IOException, InterruptedException {
-        executeCommand(command);
-    }
-
-    protected void executeCommand(String command) throws IOException, InterruptedException {
-        executeCmd(command);
-    }
-
 
     private static class Config {
         File localGitRepo;
