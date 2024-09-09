@@ -3,7 +3,7 @@ name: Java CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  build-extractor:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -18,12 +18,46 @@ jobs:
     - name: Run setup script
       run: ./setup.sh
 
-    - name: Build and Test with Gradle
+    - name: extractor - Build and Test with Gradle
       run: |
         cd extractor
         ./gradlew clean build test run --args="../.ci-temp/checkstyle" --info --stacktrace --console=plain \
           -Dorg.gradle.logging.level=DEBUG \
           -Dtest.single=MainsLauncherTest
+
+    - name: diff-java-tool Build and Test with Gradle
+      run: |
+        cd diff-java-tool
+        ./gradlew clean compileJava compileTestJava
+
+    - name: Check git changes
+      run: ./.github/workflows/commands.sh git-diff
+
+    - name: Upload build reports
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-reports
+        path: |
+          extractor/build/reports
+          extractor/build/test-results
+
+  build-diff-java-tool:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '21'
+
+    - name: diff-java-tool Build and Test with Gradle
+      run: |
+        cd diff-java-tool
+        ./gradlew clean compileJava compileTestJava
 
     - name: Check git changes
       run: ./.github/workflows/commands.sh git-diff
