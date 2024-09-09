@@ -541,9 +541,22 @@ public class DiffTool {
         executeCmdWithRetry(cmd, new File("").getAbsoluteFile(), 5);
     }
 
-    private static void generateDiffReport(Map<String, Object> cfg) throws IOException, InterruptedException {
+    private static void generateDiffReport(Map<String, Object> cfg) throws Exception {
         Path diffToolDir = Paths.get("").toAbsolutePath().getParent().resolve("patch-diff-report-tool");
-        executeCmd("mvn -e --no-transfer-progress --batch-mode clean package -DskipTests", diffToolDir.toFile());
+
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(diffToolDir.toFile(), "pom.xml"));
+        request.setGoals(Arrays.asList("clean", "package"));
+        request.setProfiles(Collections.singletonList("no-validations"));
+        request.setMavenOpts("-DskipTests=true");
+
+        Invoker invoker = new DefaultInvoker();
+        InvocationResult result = invoker.execute(request);
+
+        if (result.getExitCode() != 0) {
+            throw new IllegalStateException("Maven build failed");
+        }
+
         String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
 
         System.out.println("Starting diff report generation ...");
@@ -883,6 +896,7 @@ public class DiffTool {
             throw new RuntimeException("Error: Command execution failed with exit code " + exitCode);
         }
     }
+
 
     private static void executeCmd(String cmd) throws IOException, InterruptedException {
         executeCmd(cmd, new File("").getAbsoluteFile());
