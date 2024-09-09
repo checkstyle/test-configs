@@ -34,7 +34,7 @@ public class DiffTool {
     public static void main(String[] args) {
         try {
             CommandLine cliOptions = getCliOptions(args);
-            if (cliOptions != null) {
+            if (cliOptions != null && cliOptions.getOptions().length > 0) {
                 if (areValidCliOptions(cliOptions)) {
                     Config cfg = new Config(cliOptions);
                     List<String> configFilesList = Arrays.asList(cfg.getConfig(), cfg.getBaseConfig(), cfg.getPatchConfig(), cfg.getListOfProjects());
@@ -78,79 +78,6 @@ public class DiffTool {
             System.exit(1);
         }
     }
-
-
-    public static void runGradleExecution(String srcDir, String excludes, String checkstyleConfig,
-                                          String checkstyleVersion, String extraRegressionOptions)
-            throws IOException, InterruptedException {
-        new DiffTool().runGradleExecutionInternal(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraRegressionOptions);
-    }
-
-    protected void runGradleExecutionInternal(String srcDir, String excludes, String checkstyleConfig,
-                                              String checkstyleVersion, String extraRegressionOptions)
-            throws IOException, InterruptedException {
-        File gradleProjectDir = new File(new File(srcDir).getParentFile(), "checkstyle-tester");
-        if (!gradleProjectDir.exists()) {
-            gradleProjectDir.mkdirs();
-            createGradleFiles(gradleProjectDir);
-        }
-
-        // Copy the Checkstyle configuration file to the project directory
-        File configFile = new File(checkstyleConfig);
-        File destConfigFile = new File(gradleProjectDir, "checkstyle.xml");
-        Files.copy(configFile.toPath(), destConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-        // Initialize Gradle wrapper
-        System.out.println("Initializing Gradle wrapper in " + gradleProjectDir + " ...");
-        executeGradleCommand("gradle wrapper", gradleProjectDir);
-
-        System.out.println("Running './gradlew clean' in " + gradleProjectDir + " ...");
-        String gradleClean = "./gradlew clean";
-        executeGradleCommand(gradleClean, gradleProjectDir);
-
-        System.out.println("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
-        StringBuilder gradleCheck = new StringBuilder("./gradlew checkstyleMain")
-                .append(" -Dcheckstyle.config.location=").append(destConfigFile.getAbsolutePath())
-                .append(" -Dcheckstyle.excludes=").append(excludes);
-        if (checkstyleVersion != null && !checkstyleVersion.isEmpty()) {
-            gradleCheck.append(" -Dcheckstyle.version=").append(checkstyleVersion);
-        }
-        if (extraRegressionOptions != null && !extraRegressionOptions.isEmpty()) {
-            gradleCheck.append(" ").append(extraRegressionOptions);
-        }
-        System.out.println(gradleCheck);
-        executeGradleCommand(gradleCheck.toString(), gradleProjectDir);
-
-        System.out.println("Running Checkstyle on " + srcDir + " - finished");
-    }
-
-    private void executeGradleCommand(String command, File workingDir) throws IOException, InterruptedException {
-        String osSpecificCommand = isWindows() ? "cmd /c " + command : command;
-        ProcessBuilder pb = new ProcessBuilder(osSpecificCommand.split("\\s+"));
-        pb.directory(workingDir);
-        pb.inheritIO();
-        Process process = pb.start();
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new RuntimeException("Error: Gradle command execution failed with exit code " + exitCode);
-        }
-    }
-
-    private File findGradleProjectRoot(File dir) {
-        while (dir != null) {
-            if (new File(dir, "build.gradle").exists() || new File(dir, "build.gradle.kts").exists()) {
-                return dir;
-            }
-            dir = dir.getParentFile();
-        }
-        return null;
-    }
-
-    protected void executeGradleCommand(String command) throws IOException, InterruptedException {
-        executeCommand(command);
-    }
-
-
 
     public static CommandLine getCliOptions(String[] args) {
         Options options = new Options();
@@ -452,7 +379,7 @@ public class DiffTool {
                         }
                         copyDir(getOsSpecificPath(reposDir, repoName), getOsSpecificPath(srcDir, repoName));
                     }
-                    runGradleExecution(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraMvnRegressionOptions);
+                    //runGradleExecution(srcDir, excludes, checkstyleConfig, checkstyleVersion, extraMvnRegressionOptions);
                     String repoPath = repoUrl;
                     if (!"local".equals(repoType)) {
                         repoPath = new File(getOsSpecificPath(reposDir, repoName)).getAbsolutePath();

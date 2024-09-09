@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+}
+
+repositories {
+    mavenCentral()
+}
+
+checkstyle {
+    toolVersion = '8.41'
+    configFile = file(findProperty('checkstyle.config.location') ?: 'checkstyle.xml')
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = true
+        html.required = false
+    }
+    reports.xml.setDestinationDir(file("${buildDir}/reports/checkstyle"))
+}
