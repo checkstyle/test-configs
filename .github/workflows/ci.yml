@@ -57,7 +57,7 @@ jobs:
     - name: diff-java-tool Build and Test with Gradle
       run: |
         cd diff-java-tool
-        ./gradlew clean compileJava compileTestJava
+        ./gradlew clean build
 
     - name: Check git changes
       run: ./.github/workflows/commands.sh git-diff
