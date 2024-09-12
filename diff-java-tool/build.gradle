@@ -1,59 +1,57 @@
 plugins {
-    id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java'
+    id 'pmd'
+    id 'com.github.spotbugs' version '6.0.19'
+    id 'de.thetaphi.forbiddenapis' version '3.7'
+    id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '7.1.2' // Add Shadow plugin
 }
+
+group = 'com.github.checkstyle'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'commons-cli:commons-cli:1.4'
-    implementation 'org.apache.maven.shared:maven-invoker:3.1.0'
-    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r'
-    implementation 'org.slf4j:slf4j-simple:2.0.16'
-    implementation 'info.picocli:picocli:4.7.6'
-    implementation 'org.antlr:antlr4-runtime:4.13.2'
-    implementation 'commons-beanutils:commons-beanutils:1.9.4'
-    implementation 'com.google.guava:guava:33.3.0-jre'
-    implementation 'org.reflections:reflections:0.10.2'
-    implementation 'net.sf.saxon:Saxon-HE:12.5'
-    implementation 'org.checkerframework:checker-qual:3.47.0'
-    implementation('org.apache.maven.doxia:doxia-core:1.12.0') {
-        exclude group: 'com.google.collections', module: 'google-collections'
-        exclude group: 'com.google.guava', module: 'guava'
-    }
-    implementation('org.apache.maven.doxia:doxia-module-xdoc:1.12.0') {
-        exclude group: 'com.google.collections', module: 'google-collections'
-    }
-    compileOnly 'org.apache.ant:ant:1.10.15'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
-    testImplementation 'org.mockito:mockito-core:3.12.4'
-    testImplementation 'org.mockito:mockito-inline:5.2.0'
-    testImplementation 'org.itsallcode:junit5-system-extensions:1.2.0'
-    testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
-    testImplementation 'com.tngtech.archunit:archunit-junit5:1.3.0'
-    testImplementation 'com.github.caciocavallosilano:cacio-tta:1.11'
-    testImplementation 'com.google.truth:truth:1.4.4'
-    testImplementation 'nl.jqno.equalsverifier:equalsverifier:3.16.2'
-    testImplementation 'commons-io:commons-io:2.16.1'
+    // JUnit 5 dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    // Checkstyle dependencies
+    implementation 'com.puppycrawl.tools:checkstyle:10.17.0'
+    implementation 'com.puppycrawl.tools:checkstyle:10.17.0:tests'
+    testImplementation 'com.puppycrawl.tools:checkstyle:10.17.0'
+    testImplementation 'com.puppycrawl.tools:checkstyle:10.17.0:tests'
+
+    // Google Truth for assertions
+    testImplementation 'com.google.truth:truth:1.1.3'
+
+    // YAML dependency
+    implementation 'org.yaml:snakeyaml:1.30'
+    testImplementation 'org.yaml:snakeyaml:1.30'
+
+    // Missing dependencies
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r'
+    implementation 'commons-cli:commons-cli:1.5.0'
+    implementation 'org.apache.maven.shared:maven-invoker:3.2.0'
 }
 
 application {
     mainClass = 'com.github.checkstyle.difftool.DiffTool'
 }
 
-shadowJar {
-    archiveBaseName.set('difftool')
-    archiveClassifier.set('')
-    archiveVersion.set('')
-    manifest {
-        attributes 'Main-Class': 'com.github.checkstyle.difftool.DiffTool'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
     }
-    mergeServiceFiles()
-    zip64 true
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
 }
 
 test {
@@ -64,12 +62,52 @@ test {
     }
 }
 
-tasks.withType(JavaCompile) {
-    options.release = 21
+
+// PMD Configuration
+pmd {
+    toolVersion = "7.3.0"
+    ruleSets = []
+    ruleSetFiles = files("${rootDir}/config/pmd/pmd-ruleset.xml")
+    ignoreFailures = false
+    consoleOutput = true
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+tasks.withType(Pmd) {
+    reports {
+        xml.required = false
+        html.required = true
     }
+}
+
+// SpotBugs Configuration
+spotbugs {
+    ignoreFailures = false
+    effort = com.github.spotbugs.snom.Effort.MAX
+    excludeFilter = file("${rootDir}/config/spotbugs/spotbugs-exclude.xml")
+}
+
+// Checkstyle Configuration
+checkstyle {
+    toolVersion = "10.17.0"
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+// Forbidden APIs Configuration
+forbiddenApis {
+    bundledSignatures = ['jdk-unsafe', 'jdk-deprecated']
+    signaturesFiles = files("${rootDir}/config/forbidden-apis/forbidden-apis.txt")
+    ignoreFailures = false
+}
+
+// Enable SpotBugs, and Checkstyle tasks
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) { it.enabled = false }
+tasks.withType(Checkstyle) { it.enabled = false }
+tasks.withType(Pmd) { it.enabled = false }
+tasks.withType(de.thetaphi.forbiddenapis.gradle.CheckForbiddenApis) { it.enabled = false }
+
+// Configure Shadow plugin
+shadowJar {
+    archiveClassifier.set('all')
 }

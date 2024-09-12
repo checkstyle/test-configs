@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<ruleset name="Custom PMD rules"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+
+    <description>Custom PMD ruleset for the extractor project</description>
+
+    <!-- Configure JUnitTestContainsTooManyAsserts rule -->
+    <rule ref="category/java/bestpractices.xml/JUnitTestContainsTooManyAsserts">
+        <properties>
+            <!-- The extractor project allows up to 6 asserts in a single test method
+                 due to the complexity of certain test cases. -->
+            <property name="maximumAsserts" value="6"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/bestpractices.xml">
+        <!-- GuardLogStatement is excluded as our logging strategy involves conditional logging
+             patterns that PMD incorrectly flags as unguarded log statements. -->
+        <exclude name="GuardLogStatement"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml">
+        <!-- LongVariable is excluded as the project favors clear and descriptive variable names,
+             even if they exceed typical length recommendations. -->
+        <exclude name="LongVariable"/>
+        <!-- CommentDefaultAccessModifier is excluded since the project prefers
+             less verbose code without redundant access modifiers. -->
+        <exclude name="CommentDefaultAccessModifier"/>
+        <!-- OnlyOneReturn is excluded because multiple return points are sometimes
+             necessary for clarity and to avoid deep nesting. -->
+        <exclude name="OnlyOneReturn"/>
+        <!-- AtLeastOneConstructor is excluded as not all utility classes
+             require a constructor, and including one would add unnecessary code. -->
+        <exclude name="AtLeastOneConstructor"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/LongVariable">
+        <properties>
+            <!-- Variables with a length of up to 30 characters are acceptable,
+                 as they remain within a reasonable length while promoting readability. -->
+            <property name="minimum" value="30"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml">
+        <!-- SignatureDeclareThrowsException is excluded as the project needs flexibility
+             in specifying exceptions for certain methods, particularly those interacting with external APIs. -->
+        <exclude name="SignatureDeclareThrowsException"/>
+        <!-- GodClass is excluded as some classes necessarily manage complex functionalities,
+             and attempts to refactor would decrease cohesion and increase coupling. -->
+        <exclude name="GodClass"/>
+        <!-- TooManyMethods is excluded because some classes require multiple methods
+             due to the breadth of their responsibilities, particularly in utility or service classes. -->
+        <exclude name="TooManyMethods"/>
+        <!-- AvoidCatchingGenericException is excluded to allow for broad exception handling
+             in certain scenarios where specific exceptions are not easily anticipated. -->
+        <exclude name="AvoidCatchingGenericException"/>
+        <!-- ExcessiveImports is excluded as the project has a large Groovy script (diff.groovy)
+             and a single Java class that needs to handle a variety of functionalities,
+             leading to a large number of imports. -->
+        <exclude name="ExcessiveImports"/>
+        <!-- CouplingBetweenObjects is excluded as the project has a single Java class managing many functionalities.
+             This inherently increases coupling between various objects and refactoring might lead to
+             unnecessary complexity without significant benefit. -->
+        <exclude name="CouplingBetweenObjects"/>
+        <!-- CyclomaticComplexity is excluded as the project is a conversion of a large Groovy script (diff.groovy)
+             into a single Java class (DiffTool.java). The intention was to replicate the structure of the original
+             Groovy script, leading to a naturally higher complexity, which would be difficult to refactor
+             without deviating from the original design. -->
+        <exclude name="CyclomaticComplexity"/>
+    </rule>
+
+    <rule ref="category/java/documentation.xml">
+        <!-- CommentSize is excluded as the project documentation often includes
+             detailed explanations that exceed typical line limits for comments. -->
+        <exclude name="CommentSize"/>
+    </rule>
+
+    <rule ref="category/java/documentation.xml/CommentSize">
+        <properties>
+            <!-- To accommodate more detailed explanations, a maximum of 20 lines per comment
+                 and 120 characters per line are allowed. -->
+            <property name="maxLines" value="20"/>
+            <property name="maxLineLength" value="120"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
+        <!-- AvoidLiteralsInIfCondition is excluded because literals are sometimes necessary
+             for clarity and to prevent the introduction of unnecessary constants. -->
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <!-- AvoidDuplicateLiterals is excluded as it may lead to overly complex refactoring,
+             which can negatively impact readability and maintainability. -->
+        <exclude name="AvoidDuplicateLiterals"/>
+    </rule>
+
+    <rule ref="category/java/multithreading.xml"/>
+
+
+    <rule ref="category/java/performance.xml">
+        <!-- AvoidInstantiatingObjectsInLoops is excluded because object creation within loops
+         is sometimes necessary for functionality, and the associated performance impact
+         is considered negligible or justified in these cases. -->
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+
+    <rule ref="category/java/design.xml/LawOfDemeter">
+        <properties>
+            <!-- The trust radius is set to 3 to allow for some degree of method chaining,
+                 which is necessary in the context of fluent APIs and other design patterns. -->
+            <property name="trustRadius" value="3" />
+        </properties>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock">
+        <properties>
+            <property name="allowCommentedBlocks" value="true" />
+            <property name="allowExceptionNameRegex" value="^(ignored|expected)$" />
+        </properties>
+    </rule>
+
+</ruleset>
