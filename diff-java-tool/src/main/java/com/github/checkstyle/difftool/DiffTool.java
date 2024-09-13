@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -29,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -75,7 +78,7 @@ public final class DiffTool {
             }
 
             final Config cfg = new Config(cliOptions);
-            final List<String> configFilesList = Arrays.asList(cfg.getConfig(), cfg.getBaseConfig(), cfg.getPatchConfig(), cfg.getListOfProjects());
+            final List<String> configFilesList = Arrays.asList(cfg.getConfigFile(), cfg.getBaseConfig(), cfg.getPatchConfig(), cfg.getListOfProjects());
             copyConfigFilesAndUpdatePaths(configFilesList);
 
             if (cfg.getLocalGitRepo() != null && hasUnstagedChanges(cfg.getLocalGitRepo())) {
@@ -110,7 +113,14 @@ public final class DiffTool {
         }
     }
 
-    public static CommandLine getCliOptions(final String[] args) {
+    /**
+     * Parses command line arguments and returns a CommandLine object.
+     *
+     * @param args Command line arguments
+     * @return CommandLine object containing parsed options
+     * @throws IllegalArgumentException if parsing fails
+     */
+    public static CommandLine getCliOptions(final String... args) {
         final Options options = new Options();
         options.addOption("r", "localGitRepo", true, "Path to local git repository (required)");
         options.addOption("b", "baseBranch", true, "Base branch name. Default is master (optional, default is master)");
@@ -127,17 +137,15 @@ public final class DiffTool {
 
         final CommandLineParser parser = new DefaultParser();
         final HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd = null;
 
         try {
-            cmd = parser.parse(options, args);
-        } catch (ParseException e) {
+            return parser.parse(options, args);
+        }
+        catch (ParseException e) {
             LOGGER.info(e.getMessage());
             formatter.printHelp("DiffTool", options);
-            System.exit(1);
+            throw new IllegalArgumentException("Failed to parse command line arguments", e);
         }
-
-        return cmd;
     }
 
     private static boolean areValidCliOptions(final CommandLine cliOptions) {
@@ -238,18 +246,25 @@ public final class DiffTool {
     }
 
     private static void copyConfigFilesAndUpdatePaths(final List<String> configFilesList) throws IOException {
+        if (configFilesList == null) {
+            throw new IllegalArgumentException("configFilesList is null");
+        }
         final Set<String> uniqueFiles = new LinkedHashSet<>();
         for (final String filename : configFilesList) {
             if (filename != null && !filename.isEmpty()) {
                 uniqueFiles.add(filename);
             }
         }
-
         final File checkstyleTesterDir = new File("").getCanonicalFile();
         for (final String filename : uniqueFiles) {
             final Path sourceFile = Paths.get(filename);
-            final Path destFile = Paths.get(checkstyleTesterDir.getPath(), sourceFile.getFileName().toString());
-            Files.copy(sourceFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+            final Path fileName = sourceFile.getFileName();
+            if (fileName != null) {
+                final Path destFile = Paths.get(checkstyleTesterDir.getPath(), fileName.toString());
+                Files.copy(sourceFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                LOGGER.error("Skipping invalid file path: " + filename);
+            }
         }
     }
 
@@ -262,9 +277,14 @@ public final class DiffTool {
             if (exitCode == 0) {
                 return false;
             } else {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while (true) {
+                        line = reader.readLine();
+                        if (line == null) {
+                            break;
+                        }
                         LOGGER.info(line);
                     }
                 }
@@ -384,8 +404,11 @@ public final class DiffTool {
                 }
             }
 
-            // restore empty_file to make src directory tracked by git
-            new File(getOsSpecificPath(srcDir, "empty_file")).createNewFile();
+            // Restore empty_file to make src directory tracked by git
+            final File emptyFile = new File(getOsSpecificPath(srcDir, "empty_file"));
+            if (!emptyFile.createNewFile()) {
+                LOGGER.warn("Failed to create or already existing 'empty_file' in " + srcDir);
+            }
         } catch (IOException e) {
             LOGGER.error("Error processing projects: " + e.getMessage());
         }
@@ -393,11 +416,24 @@ public final class DiffTool {
 
     private static String getLastCheckstyleCommitSha(final File gitRepo, final String branch)
             throws IOException, InterruptedException {
+        // Checkout the specified branch
         executeCmd("git checkout " + branch, gitRepo);
+
         try {
-            final Process process = Runtime.getRuntime().exec("git rev-parse HEAD", null, gitRepo);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                return reader.readLine().trim();
+            final ProcessBuilder processBuilder = new ProcessBuilder("git", "rev-parse", "HEAD");
+            processBuilder.directory(gitRepo);
+            processBuilder.redirectErrorStream(true);
+            final Process process = processBuilder.start();
+
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                final String line = reader.readLine();
+                if (line != null) {
+                    return line.trim();
+                } else {
+                    LOGGER.error("No output from git rev-parse HEAD");
+                    return "";
+                }
             }
         } catch (IOException e) {
             LOGGER.error("Error getting last commit SHA: " + e.getMessage());
@@ -405,13 +441,25 @@ public final class DiffTool {
         }
     }
 
+
     private static String getLastCommitMsg(final File gitRepo, final String branch)
             throws IOException, InterruptedException {
         executeCmd("git checkout " + branch, gitRepo);
+
         try {
-            final Process process = Runtime.getRuntime().exec("git log -1 --pretty=%B", null, gitRepo);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                return reader.readLine().trim();
+            final ProcessBuilder processBuilder = new ProcessBuilder("git", "log", "-1", "--pretty=%B");
+            processBuilder.directory(gitRepo);
+            processBuilder.redirectErrorStream(true);
+            final Process process = processBuilder.start();
+
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                final String line = reader.readLine();
+                if (line != null) {
+                    return line.trim();
+                } else {
+                    return "";
+                }
             }
         } catch (IOException e) {
             LOGGER.error("Error getting last commit message: " + e.getMessage());
@@ -419,13 +467,25 @@ public final class DiffTool {
         }
     }
 
+
     private static String getLastCommitTime(final File gitRepo, final String branch)
             throws IOException, InterruptedException {
         executeCmd("git checkout " + branch, gitRepo);
+
         try {
-            final Process process = Runtime.getRuntime().exec("git log -1 --format=%cd", null, gitRepo);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                return reader.readLine().trim();
+            final ProcessBuilder processBuilder = new ProcessBuilder("git", "log", "-1", "--format=%cd");
+            processBuilder.directory(gitRepo);
+            processBuilder.redirectErrorStream(true);
+            final Process process = processBuilder.start();
+
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                final String line = reader.readLine();
+                if (line != null) {
+                    return line.trim();
+                } else {
+                    return "";
+                }
             }
         } catch (IOException e) {
             LOGGER.error("Error getting last commit time: " + e.getMessage());
@@ -433,19 +493,24 @@ public final class DiffTool {
         }
     }
 
-    private static String getCommitSha(final String commitId, final String repoType,
-                                       final String srcDestinationDir) {
-        String cmd;
-        switch (repoType) {
-            case "git":
-                cmd = "git rev-parse " + commitId;
-                break;
-            default:
-                throw new IllegalArgumentException("Error! Unknown " + repoType + " repository.");
+
+    private static String getCommitSha(final String commitId, final String repoType, final String srcDestinationDir) {
+        final String cmd;
+        if ("git".equals(repoType)) {
+            cmd = "git rev-parse " + commitId;
+        } else {
+            throw new IllegalArgumentException("Error! Unknown " + repoType + " repository.");
         }
+
         try {
-            final Process process = Runtime.getRuntime().exec(cmd, null, new File(srcDestinationDir));
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            // Use ProcessBuilder instead of Runtime#exec
+            final ProcessBuilder processBuilder = new ProcessBuilder(cmd.split("\\s+"));
+            processBuilder.directory(new File(srcDestinationDir));
+            processBuilder.redirectErrorStream(true); // Redirect error stream to output stream
+            final Process process = processBuilder.start();
+
+            // Use InputStreamReader with explicit charset
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 final String sha = reader.readLine();
                 return sha != null ? sha.replace("\n", "") : "";
             }
@@ -511,8 +576,8 @@ public final class DiffTool {
     }
 
     private static void fetchAdditionalData(final String repoType, final String srcDestinationDir,
-                        final String commitId) throws IOException, InterruptedException {
-        String fetchCmd;
+                                            final String commitId) throws IOException, InterruptedException {
+        final String fetchCmd;
         if ("git".equals(repoType)) {
             if (isGitSha(commitId)) {
                 fetchCmd = "git fetch";
@@ -533,8 +598,14 @@ public final class DiffTool {
 
     private static boolean isTag(final String commitId, final File gitRepo) {
         try {
-            final Process process = Runtime.getRuntime().exec("git tag -l " + commitId, null, gitRepo);
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            // Use ProcessBuilder instead of Runtime#exec
+            final ProcessBuilder processBuilder = new ProcessBuilder("git", "tag", "-l", commitId);
+            processBuilder.directory(gitRepo);
+            processBuilder.redirectErrorStream(true); // Redirect error stream to output stream
+            final Process process = processBuilder.start();
+
+            // Use InputStreamReader with explicit charset
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 final String result = reader.readLine();
                 return result != null && result.trim().equals(commitId);
             }
@@ -552,32 +623,26 @@ public final class DiffTool {
     private static void executeCmdWithRetry(final String cmd, final File dir, final int retry) {
         final String osSpecificCmd = getOsSpecificCmd(cmd);
         int left = retry;
-        while (true) {
+        while (left > 0) {
             try {
                 final ProcessBuilder processBuilder = new ProcessBuilder(osSpecificCmd.split("\\s+"));
                 processBuilder.directory(dir);
                 processBuilder.inheritIO();
                 final Process process = processBuilder.start();
                 final int exitCode = process.waitFor();
-                if (exitCode != 0) {
-                    if (left <= 0) {
-                        throw new RuntimeException("Error executing command: " + cmd);
-                    } else {
-                        Thread.sleep(15000);
-                        left--;
-                    }
-                } else {
-                    break;
+                if (exitCode == 0) {
+                    return;
+                }
+                left--;
+                if (left > 0) {
+                    TimeUnit.SECONDS.sleep(15);
                 }
             } catch (IOException | InterruptedException e) {
                 LOGGER.error("Error executing command: " + e.getMessage());
-                if (left <= 0) {
-                    throw new RuntimeException("Error executing command: " + cmd, e);
-                } else {
-                    left--;
-                }
+                left--;
             }
         }
+        throw new IllegalStateException("Error executing command: " + cmd);
     }
 
     private static void executeCmdWithRetry(final String cmd) {
@@ -585,62 +650,91 @@ public final class DiffTool {
     }
 
     private static void generateDiffReport(final Map<String, Object> cfg) throws Exception {
-        final Path diffToolDir = Paths.get("").toAbsolutePath().getParent().resolve("patch-diff-report-tool");
-
-        final InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File(diffToolDir.toFile(), "pom.xml"));
-        request.setGoals(Arrays.asList("clean", "package"));
-        request.setProfiles(Collections.singletonList("no-validations"));
-        request.setMavenOpts("-DskipTests=true");
-
-        final Invoker invoker = new DefaultInvoker();
-        final InvocationResult result = invoker.execute(request);
-
+        final Path currentDir = Paths.get("").toAbsolutePath();
+        final Path parentDir = currentDir.getParent();
+        if (parentDir == null) {
+            throw new IllegalStateException("Unable to locate parent directory");
+        }
+        final Path diffToolDir = parentDir.resolve("patch-diff-report-tool");
+        final InvocationResult result = executeMavenBuild(diffToolDir);
         if (result.getExitCode() != 0) {
             throw new IllegalStateException("Maven build failed");
         }
 
         final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
+        // The null check here is removed as getPathToDiffToolJar should throw an exception if the JAR is not found
+
+        final String patchReportsDir = (String) cfg.get("patchReportsDir");
+        if (patchReportsDir == null) {
+            throw new IllegalArgumentException("Patch reports directory path is not provided in the configuration.");
+        }
 
         LOGGER.info("Starting diff report generation ...");
-
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get((String) cfg.get("patchReportsDir")))) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(patchReportsDir))) {
             for (final Path path : stream) {
                 if (Files.isDirectory(path)) {
-                    final String projectName = path.getFileName().toString();
-                    final File patchReportDir = new File((String) cfg.get("patchReportsDir"), projectName);
-                    if (patchReportDir.exists()) {
-                        final String patchReport = Paths.get((String) cfg.get("patchReportsDir"), projectName, "checkstyle-result.xml").toString();
-                        final String outputDir = Paths.get((String) cfg.get("reportsDir"), "diff", projectName).toString();
-
-                        // Log the config contents
-                        logConfigContents((String) cfg.get("patchConfig"));
-                        if ("diff".equals(cfg.get("mode"))) {
-                            logConfigContents((String) cfg.get("baseConfig"));
-                        }
-
-                        String diffCmd = String.format(
-                                "java -jar %s --patchReport %s --output %s --patchConfig %s",
-                                diffToolJarPath, patchReport, outputDir, new File((String) cfg.get("patchConfig")).getName()
-                        );
-
-                        if ("diff".equals(cfg.get("mode"))) {
-                            final String baseReport = Paths.get((String) cfg.get("masterReportsDir"), projectName, "checkstyle-result.xml").toString();
-                            diffCmd += String.format(" --baseReport %s --baseConfig %s", baseReport, new File((String) cfg.get("baseConfig")).getName());
-                        }
-
-                        if ((boolean) cfg.get("shortFilePaths")) {
-                            diffCmd += " --shortFilePaths";
-                        }
-
-                        executeCmd(diffCmd);
-                    } else {
-                        throw new FileNotFoundException("Error: patch report for project " + projectName + " is not found!");
-                    }
+                    processProjectDirectory(cfg, diffToolJarPath, path);
                 }
             }
+        } catch (IOException ex) {
+            LOGGER.error("Failed to read the patch reports directory: " + ex.getMessage());
+            throw ex;
         }
         LOGGER.info("Diff report generation finished ...");
+    }
+
+    private static InvocationResult executeMavenBuild(final Path diffToolDir) throws Exception {
+        final InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(diffToolDir.toFile(), "pom.xml"));
+        request.setGoals(Collections.singletonList("package"));
+        request.setProfiles(Collections.singletonList("no-validations"));
+        request.setMavenOpts("-DskipTests=true");
+
+        final Invoker invoker = new DefaultInvoker();
+        return invoker.execute(request);
+    }
+
+    private static void processProjectDirectory(final Map<String, Object> cfg, final String diffToolJarPath, final Path path) throws Exception {
+        final Path fileNamePath = path.getFileName();
+        if (fileNamePath != null) {
+            final String projectName = fileNamePath.toString();
+            final File patchReportDir = new File((String) cfg.get("patchReportsDir"), projectName);
+            if (patchReportDir.exists()) {
+                generateProjectDiffReport(cfg, diffToolJarPath, projectName);
+            } else {
+                throw new FileNotFoundException("Error: patch report for project " + projectName + " is not found!");
+            }
+        } else {
+            throw new FileNotFoundException("Error: Path does not have a file name.");
+        }
+    }
+
+
+    private static void generateProjectDiffReport(final Map<String, Object> cfg, final String diffToolJarPath, final String projectName) throws Exception {
+        final String patchReport = Paths.get((String) cfg.get("patchReportsDir"), projectName, "checkstyle-result.xml").toString();
+        final String outputDir = Paths.get((String) cfg.get("reportsDir"), "diff", projectName).toString();
+
+        logConfigContents((String) cfg.get("patchConfig"));
+        if ("diff".equals(cfg.get("mode"))) {
+            logConfigContents((String) cfg.get("baseConfig"));
+        }
+
+        // Specify the locale explicitly (Locale.getDefault() or a specific one like Locale.US)
+        final StringBuilder diffCmdBuilder = new StringBuilder(String.format(Locale.getDefault(),
+                "java -jar %s --patchReport %s --output %s --patchConfig %s",
+                diffToolJarPath, patchReport, outputDir, new File((String) cfg.get("patchConfig")).getName()));
+
+        if ("diff".equals(cfg.get("mode"))) {
+            final String baseReport = Paths.get((String) cfg.get("masterReportsDir"), projectName, "checkstyle-result.xml").toString();
+            diffCmdBuilder.append(String.format(Locale.getDefault(),
+                    " --baseReport %s --baseConfig %s", baseReport, new File((String) cfg.get("baseConfig")).getName()));
+        }
+
+        if ((boolean) cfg.get("shortFilePaths")) {
+            diffCmdBuilder.append(" --shortFilePaths");
+        }
+
+        executeCmd(diffCmdBuilder.toString());
     }
 
     // Method to log the contents of config files
@@ -656,40 +750,54 @@ public final class DiffTool {
 
     private static String getPathToDiffToolJar(final File diffToolDir) throws IOException {
         final Path targetDir = Paths.get(diffToolDir.getAbsolutePath(), "target");
+        if (!Files.exists(targetDir)) {
+            throw new FileNotFoundException("Error: target directory does not exist!");
+        }
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetDir)) {
             for (final Path path : stream) {
-                final String fileName = path.getFileName().toString();
-                if (fileName.matches("patch-diff-report-tool-.*.jar-with-dependencies.jar")) {
-                    return path.toAbsolutePath().toString();
+                final Path fileNamePath = path.getFileName();
+                if (fileNamePath != null) {
+                    final String fileName = fileNamePath.toString();
+                    if (fileName.matches("patch-diff-report-tool-.*.jar-with-dependencies.jar")) {
+                        return path.toAbsolutePath().toString();
+                    }
                 }
             }
         }
         throw new FileNotFoundException("Error: diff tool jar file is not found!");
     }
 
-    private static Object getTextTransform() {
+    private static Object getTextTransform() throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        final Path currentDir = Paths.get("").toAbsolutePath();
+        final Path parentDir = currentDir.getParent();
+        if (parentDir == null) {
+            LOGGER.error("Unable to locate parent directory");
+            return null;
+        }
+
+        final Path diffToolDir = parentDir.resolve("patch-diff-report-tool");
+        final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
+
         try {
-            final Path diffToolDir = Paths.get("").toAbsolutePath().getParent().resolve("patch-diff-report-tool");
-            final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
-            final URL[] urls = { new URL("file:" + diffToolJarPath) };
+            final URL[] urls = { URI.create("file:" + diffToolJarPath).toURL() };
             try (URLClassLoader classLoader = new URLClassLoader(urls)) {
                 final Class<?> clazz = classLoader.loadClass("com.github.checkstyle.site.TextTransform");
                 return clazz.getDeclaredConstructor().newInstance();
             }
-        } catch (Exception e) {
-            LOGGER.error("Error loading TextTransform: " + e.getMessage());
+        } catch (IOException | NoSuchMethodException ex) {
+            LOGGER.error("Error loading TextTransform: " + ex.getMessage());
             return null;
         }
     }
 
     private static void generateSummaryIndexHtml(final String diffDir, final CheckstyleReportInfo checkstyleBaseReportInfo,
                                                  final CheckstyleReportInfo checkstylePatchReportInfo, final List<String> configFilesList,
-                                                 final boolean allowExcludes) throws IOException {
+                                                 final boolean allowExcludes) throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         LOGGER.info("Starting creating report summary page ...");
         final Map<String, int[]> projectsStatistic = getProjectsStatistic(diffDir);
-        final File summaryIndexHtml = new File(diffDir, "index.html");
+        final Path summaryIndexHtmlPath = Paths.get(diffDir, "index.html");
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(summaryIndexHtml))) {
+        try (BufferedWriter writer = Files.newBufferedWriter(summaryIndexHtmlPath, StandardCharsets.UTF_8)) {
             writer.write("<html><head>");
             writer.write("<link rel=\"icon\" href=\"https://checkstyle.org/images/favicon.png\" type=\"image/x-icon\" />");
             writer.write("<title>Checkstyle Tester Report Diff Summary</title>");
@@ -714,11 +822,11 @@ public final class DiffTool {
                 writer.write("<a href='" + project + "/index.html'>" + project + "</a>");
                 if (diffCount[0] != 0) {
                     if (diffCount[1] == 0) {
-                        writer.write(String.format(" ( &#177;%d, <span style=\"color: red;\">-%d</span> )", diffCount[0], diffCount[2]));
+                        writer.write(String.format(Locale.getDefault(), " ( &#177;%d, <span style=\"color: red;\">-%d</span> )", diffCount[0], diffCount[2]));
                     } else if (diffCount[2] == 0) {
-                        writer.write(String.format(" ( &#177;%d, <span style=\"color: green;\">+%d</span> )", diffCount[0], diffCount[1]));
+                        writer.write(String.format(Locale.getDefault(), " ( &#177;%d, <span style=\"color: green;\">+%d</span> )", diffCount[0], diffCount[1]));
                     } else {
-                        writer.write(String.format(" ( &#177;%d, <span style=\"color: red;\">-%d</span>, <span style=\"color: green;\">+%d</span> )",
+                        writer.write(String.format(Locale.getDefault(), " ( &#177;%d, <span style=\"color: red;\">-%d</span>, <span style=\"color: green;\">+%d</span> )",
                                 diffCount[0], diffCount[2], diffCount[1]));
                     }
                 }
@@ -732,7 +840,7 @@ public final class DiffTool {
     }
 
     private static void printConfigSection(final String diffDir, final List<String> configFilesList,
-                        final BufferedWriter summaryIndexHtml) throws IOException {
+                        final BufferedWriter summaryIndexHtml) throws IOException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         final Object textTransform = getTextTransform();
         final Set<String> processedConfigs = new HashSet<>();
         for (final String filename : configFilesList) {
@@ -759,7 +867,6 @@ public final class DiffTool {
                         .invoke(textTransform, configFile.getAbsolutePath(), configFileHtml.getAbsolutePath(), Locale.ENGLISH, "UTF-8", "UTF-8");
             } catch (Exception e) {
                 LOGGER.error("Error transforming config file: " + e.getMessage());
-                e.printStackTrace();
             }
         } else {
             LOGGER.error("TextTransform object is null. Skipping transformation.");
@@ -781,19 +888,22 @@ public final class DiffTool {
     }
 
     private static void makeWorkDirsIfNotExist(final String srcDirPath,
-                        final String repoDirPath, final String reportsDirPath) {
+                                               final String repoDirPath, final String reportsDirPath) {
         final File srcDir = new File(srcDirPath);
-        if (!srcDir.exists()) {
-            srcDir.mkdirs();
-        }
+            if (!srcDir.mkdirs()) {
+                LOGGER.error("Failed to create source directory: " + srcDirPath);
+                // Optionally throw an exception or handle the error
+            }
         final File repoDir = new File(repoDirPath);
-        if (!repoDir.exists()) {
-            repoDir.mkdir();
-        }
+            if (!repoDir.mkdir()) {
+                LOGGER.error("Failed to create repository directory: " + repoDirPath);
+                // Optionally throw an exception or handle the error
+            }
         final File reportsDir = new File(reportsDirPath);
-        if (!reportsDir.exists()) {
-            reportsDir.mkdir();
-        }
+            if (!reportsDir.mkdir()) {
+                LOGGER.error("Failed to create reports directory: " + reportsDirPath);
+                // Optionally throw an exception or handle the error
+            }
     }
 
     private static void printReportInfoSection(final BufferedWriter summaryIndexHtml, final CheckstyleReportInfo checkstyleBaseReportInfo,
@@ -830,62 +940,72 @@ public final class DiffTool {
 
     private static Map<String, int[]> getProjectsStatistic(final String diffDir) throws IOException {
         final Map<String, int[]> projectsStatistic = new ConcurrentHashMap<>();
-        int totalDiff = 0;
-        int addedDiff = 0;
-        int removedDiff = 0;
 
-        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(diffDir))) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(diffDir))) {
             for (final Path path : stream) {
                 if (Files.isDirectory(path)) {
-                    final String projectName = path.getFileName().toString();
-                    final File indexHtmlFile = new File(path.toFile(), "index.html");
-                    if (indexHtmlFile.exists()) {
-                        final List<String> lines = Files.readAllLines(indexHtmlFile.toPath());
-                        for (final String line : lines) {
-                            final Pattern totalPatch = Pattern.compile("id=\"totalPatch\">[0-9]++");
-                            final Matcher totalPatchMatcher = totalPatch.matcher(line);
-                            if (totalPatchMatcher.find()) {
-                                final Pattern removedPatchLinePattern = Pattern.compile("(?<totalRemoved>[0-9]++) removed");
-                                final Matcher removedPatchLineMatcher = removedPatchLinePattern.matcher(line);
-                                if (removedPatchLineMatcher.find()) {
-                                    removedDiff = Integer.parseInt(removedPatchLineMatcher.group("totalRemoved"));
-                                } else {
-                                    removedDiff = 0;
-                                }
-
-                                final Pattern addPatchLinePattern = Pattern.compile("(?<totalAdd>[0-9]++) added");
-                                final Matcher addPatchLineMatcher = addPatchLinePattern.matcher(line);
-                                if (addPatchLineMatcher.find()) {
-                                    addedDiff = Integer.parseInt(addPatchLineMatcher.group("totalAdd"));
-                                } else {
-                                    addedDiff = 0;
-                                }
-                            }
-
-                            final Pattern linePattern = Pattern.compile("totalDiff\">(?<totalDiff>[0-9]++)");
-                            final Matcher lineMatcher = linePattern.matcher(line);
-                            if (lineMatcher.find()) {
-                                totalDiff = Integer.parseInt(lineMatcher.group("totalDiff"));
-                                final int[] diffSummary = {totalDiff, addedDiff, removedDiff};
-                                projectsStatistic.put(projectName, diffSummary);
-                            }
-                        }
-                    }
+                    processProjectStatistics(path, projectsStatistic);
                 }
             }
         }
         return projectsStatistic;
     }
 
-    private static void runMavenExecution(final String srcDir, final String excludes,
-            final String checkstyleConfig, final String checkstyleVersion, final String extraMvnRegressionOptions)
-            throws IOException, InterruptedException {
+    private static void processProjectStatistics(final Path path, final Map<String, int[]> projectsStatistic) throws IOException {
+        final Path fileNamePath = path.getFileName();
+        if (fileNamePath != null) {
+            final String projectName = fileNamePath.toString();
+            final File indexHtmlFile = new File(path.toFile(), "index.html");
+            if (indexHtmlFile.exists()) {
+                final List<String> lines = Files.readAllLines(indexHtmlFile.toPath());
+                final int[] diffStats = extractDiffStats(lines);
+                if (diffStats != null) {
+                    projectsStatistic.put(projectName, diffStats);
+                }
+            }
+        }
+    }
+
+
+    private static int[] extractDiffStats(final List<String> lines) {
+        int addedDiff = 0;
+        int removedDiff = 0;
+        int totalDiff = 0;
+        boolean totalDiffFound = false;
+        for (final String line : lines) {
+            if (line.contains("id=\"totalPatch\"")) {
+                addedDiff = extractDiffCount(line, "(?<totalAdd>[0-9]++) added");
+                removedDiff = extractDiffCount(line, "(?<totalRemoved>[0-9]++) removed");
+            } else if (line.contains("totalDiff")) {
+                totalDiff = extractTotalDiff(line);
+                totalDiffFound = true;
+                break;
+            }
+        }
+        return totalDiffFound ? new int[]{totalDiff, addedDiff, removedDiff} : new int[]{0, 0, 0};
+    }
+
+    private static int extractDiffCount(final String line, final String regex) {
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(line);
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : 0;
+    }
+
+    private static int extractTotalDiff(final String line) {
+        final Pattern linePattern = Pattern.compile("totalDiff\">(?<totalDiff>[0-9]++)");
+        final Matcher lineMatcher = linePattern.matcher(line);
+        return lineMatcher.find() ? Integer.parseInt(lineMatcher.group("totalDiff")) : 0;
+    }
+
+    private static void runMavenExecution(final String srcDir, final String excludes, final String checkstyleConfig, final String checkstyleVersion, final String extraMvnRegressionOptions) throws IOException, InterruptedException {
         LOGGER.info("Running 'mvn clean' on " + srcDir + " ...");
         final String mvnClean = "mvn -e --no-transfer-progress --batch-mode clean";
         executeCmd(mvnClean);
         LOGGER.info("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
-        final StringBuilder mvnSite = new StringBuilder("mvn -e --no-transfer-progress --batch-mode site " +
-                "-Dcheckstyle.config.location=" + checkstyleConfig + " -Dcheckstyle.excludes=" + excludes);
+        final StringBuilder mvnSite = new StringBuilder(200)
+                .append("mvn -e --no-transfer-progress --batch-mode site ")
+                .append("-Dcheckstyle.config.location=").append(checkstyleConfig)
+                .append(" -Dcheckstyle.excludes=").append(excludes);
         if (checkstyleVersion != null && !checkstyleVersion.isEmpty()) {
             mvnSite.append(" -Dcheckstyle.version=").append(checkstyleVersion);
         }
@@ -896,7 +1016,7 @@ public final class DiffTool {
             }
             mvnSite.append(extraMvnRegressionOptions);
         }
-        LOGGER.info(String.valueOf(mvnSite));
+        LOGGER.info(mvnSite.toString());
         executeCmd(mvnSite.toString());
         LOGGER.info("Running Checkstyle on " + srcDir + " - finished");
     }
@@ -904,16 +1024,16 @@ public final class DiffTool {
     private static void postProcessCheckstyleReport(final String targetDir,
                     final String repoName, final String repoPath) throws IOException {
         final Path reportPath = Paths.get(targetDir, "checkstyle-result.xml");
-        String content = new String(Files.readAllBytes(reportPath));
+        String content = new String(Files.readAllBytes(reportPath), StandardCharsets.UTF_8);
         content = content.replace(new File(getOsSpecificPath("src", "main", "java", repoName)).getAbsolutePath(),
                 getOsSpecificPath(repoPath));
-        Files.write(reportPath, content.getBytes());
+        Files.write(reportPath, content.getBytes(StandardCharsets.UTF_8));
     }
 
     private static void copyDir(final String source, final String destination) throws IOException {
         final Path sourcePath = Paths.get(source);
         final Path destinationPath = Paths.get(destination);
-        Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(sourcePath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) throws IOException {
                 final Path targetPath = destinationPath.resolve(sourcePath.relativize(dir));
@@ -957,7 +1077,7 @@ public final class DiffTool {
     private static void deleteDir(final String dir) throws IOException {
         final Path directory = Paths.get(dir);
         if (Files.exists(directory)) {
-            Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(directory, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(final Path file, BasicFileAttributes attrs) throws IOException {
                     Files.delete(file);
@@ -981,10 +1101,9 @@ public final class DiffTool {
         final Process process = processBuilder.start();
         final int exitCode = process.waitFor();
         if (exitCode != 0) {
-            throw new RuntimeException("Error: Command execution failed with exit code " + exitCode);
+            throw new CommandExecutionException("Command execution failed", exitCode);
         }
     }
-
 
     private static void executeCmd(final String cmd) throws IOException, InterruptedException {
         executeCmd(cmd, new File("").getAbsoluteFile());
@@ -1017,7 +1136,7 @@ public final class DiffTool {
             final ProcessBuilder processBuilder = new ProcessBuilder("git", "rev-parse", "HEAD");
             processBuilder.directory(new File(srcDestinationDir));
             final Process process = processBuilder.start();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 final String sha = reader.readLine();
                 process.waitFor();
                 return sha != null ? sha.trim() : "";
@@ -1064,7 +1183,7 @@ public final class DiffTool {
         private final String patchConfig;
 
         /** The general configuration setting */
-        private final String config;
+        private final String configFile;
 
         /** The directory for storing reports */
         private final String reportsDir;
@@ -1103,7 +1222,7 @@ public final class DiffTool {
         private final boolean useShallowClone;
 
         Config(final CommandLine cliOptions) {
-            localGitRepo = cliOptions.hasOption("localGitRepo") ? new File(cliOptions.getOptionValue("localGitRepo")) : null;
+            localGitRepo = cliOptions.hasOption("localGitRepo") ? new File(cliOptions.getOptionValue("localGitRepo")) : new File("");
             shortFilePaths = cliOptions.hasOption("shortFilePaths");
             listOfProjects = cliOptions.getOptionValue("listOfProjects");
             extraMvnRegressionOptions = cliOptions.getOptionValue("extraMvnRegressionOptions");
@@ -1115,7 +1234,7 @@ public final class DiffTool {
             patchBranch = cliOptions.getOptionValue("patchBranch");
             baseConfig = cliOptions.getOptionValue("baseConfig");
             patchConfig = cliOptions.getOptionValue("patchConfig");
-            config = cliOptions.getOptionValue("config");
+            configFile = cliOptions.getOptionValue("config");
 
             reportsDir = "reports";
             masterReportsDir = reportsDir + "/" + baseBranch;
@@ -1136,7 +1255,7 @@ public final class DiffTool {
         public String getPatchBranch() { return patchBranch; }
         public String getBaseConfig() { return baseConfig; }
         public String getPatchConfig() { return patchConfig; }
-        public String getConfig() { return config; }
+        public String getConfigFile() { return configFile; }
         public String getReportsDir() { return reportsDir; }
         public String getMasterReportsDir() { return masterReportsDir; }
         public String getPatchReportsDir() { return patchReportsDir; }
@@ -1150,6 +1269,12 @@ public final class DiffTool {
         public boolean isAllowExcludes() { return allowExcludes; }
         public boolean isUseShallowClone() { return useShallowClone; }
 
+
+        /**
+         * Checks if the tool is in "diff" mode.
+         *
+         * @return true if mode is "diff", false otherwise.
+         */
         public boolean isDiffMode() {
             return "diff".equals(mode);
         }
@@ -1215,6 +1340,12 @@ public final class DiffTool {
             return config;
         }
 
+        /**
+         * Returns a configuration map for the DiffTool.
+         * Includes report directories, configs, file paths, mode, and flags.
+         *
+         * @return map of DiffTool configuration.
+         */
         public Map<String, Object> getDiffToolConfig() {
             final Map<String, Object> config = new ConcurrentHashMap<>();
             config.put("reportsDir", reportsDir);
@@ -1259,4 +1390,20 @@ public final class DiffTool {
         public String getCommitMsg() { return commitMsg; }
         public String getCommitTime() { return commitTime; }
     }
+
+    /**
+     * Custom runtime exception for handling command execution failures.
+     * Includes the exit code in the error message.
+     */
+    public static class CommandExecutionException extends RuntimeException {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Constructs a CommandExecutionException with a message and exit code.
+         */
+        public CommandExecutionException(final String message, final int exitCode) {
+            super(message + " (Exit code: " + exitCode + ")");
+        }
+    }
 }
+
