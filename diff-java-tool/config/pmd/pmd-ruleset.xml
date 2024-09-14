@@ -117,8 +117,6 @@
         </properties>
     </rule>
 
-    <rule ref="category/java/multithreading.xml"/>
-
     <rule ref="category/java/performance.xml">
         <!-- AvoidInstantiatingObjectsInLoops is excluded because object creation within loops
          is sometimes necessary for functionality, and the associated performance impact
@@ -127,6 +125,15 @@
         <!-- ConsecutiveLiteralAppends is excluded as the project requires building multiple literals
          consecutively for readability and maintainability. -->
         <exclude name="ConsecutiveLiteralAppends"/>
+    </rule>
+
+    <rule ref="category/java/multithreading.xml">
+        <!-- UseConcurrentHashMap is excluded because the project requires flexibility in choosing
+         appropriate data structures based on specific use cases. While ConcurrentHashMap
+         is generally preferred for multithreaded environments, there are scenarios where
+         other Map implementations might be more suitable due to performance considerations
+         or when concurrent access is not a concern. -->
+        <exclude name="UseConcurrentHashMap"/>
     </rule>
 
     <rule ref="category/java/design.xml/LawOfDemeter">

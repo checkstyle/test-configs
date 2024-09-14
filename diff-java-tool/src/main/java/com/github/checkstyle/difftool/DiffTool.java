@@ -43,13 +43,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1531,7 +1531,7 @@ public final class DiffTool {
      */
     private static Map<String, int[]> getProjectsStatistic(final String diffDir)
             throws IOException {
-        final Map<String, int[]> projectsStatistic = new ConcurrentHashMap<>();
+        final Map<String, int[]> projectsStatistic = new HashMap<>();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(diffDir))) {
             for (final Path path : stream) {
@@ -1980,8 +1980,8 @@ public final class DiffTool {
             mode = cliOptions.getOptionValue("mode", "diff");
             baseBranch = cliOptions.getOptionValue("baseBranch", "master");
             patchBranch = cliOptions.getOptionValue("patchBranch");
-            baseConfig = cliOptions.getOptionValue("baseConfig");
-            patchConfig = cliOptions.getOptionValue("patchConfig");
+            baseConfig = initializeConfig(cliOptions, "baseConfig");
+            patchConfig = initializeConfig(cliOptions, "patchConfig");
             configFile = cliOptions.getOptionValue("config");
 
             reportsDir = "reports";
@@ -2203,6 +2203,23 @@ public final class DiffTool {
         }
 
         /**
+         * Initializes the configuration based on the specific type or general config.
+         *
+         * @param cliOptions  The command line options.
+         * @param configType  The specific configuration type (e.g., baseConfig, patchConfig).
+         * @return The config value or general config if the specific config is not provided.
+         */
+        private String initializeConfig(final CommandLine cliOptions, final String configType) {
+            final String config = cliOptions.getOptionValue(configType);
+            final String generalConfig = cliOptions.getOptionValue("config");
+
+            if (config == null && generalConfig != null) {
+                return generalConfig;
+            }
+            return config;
+        }
+
+        /**
          * Generates and returns the base configuration for the Checkstyle tool as a map.
          *
          * @return a map containing key-value pairs for the Checkstyle tool configuration:
@@ -2216,7 +2233,7 @@ public final class DiffTool {
          *         - useShallowClone: whether to use shallow cloning in Git operations
          */
         public Map<String, Object> getCheckstyleToolBaseConfig() {
-            final Map<String, Object> config = new ConcurrentHashMap<>();
+            final Map<String, Object> config = new HashMap<>();
             config.put("localGitRepo", localGitRepo);
             config.put("branch", baseBranch);
             config.put("checkstyleCfg", baseConfig);
@@ -2242,7 +2259,7 @@ public final class DiffTool {
          *         - useShallowClone: whether to use shallow cloning in Git operations
          */
         public Map<String, Object> getCheckstyleToolPatchConfig() {
-            final Map<String, Object> config = new ConcurrentHashMap<>();
+            final Map<String, Object> config = new HashMap<>();
             config.put("localGitRepo", localGitRepo);
             config.put("branch", patchBranch);
             config.put("checkstyleCfg", patchConfig);
@@ -2261,7 +2278,7 @@ public final class DiffTool {
          * @return map of DiffTool configuration.
          */
         public Map<String, Object> getDiffToolConfig() {
-            final Map<String, Object> config = new ConcurrentHashMap<>();
+            final Map<String, Object> config = new HashMap<>();
             config.put("reportsDir", reportsDir);
             config.put("masterReportsDir", masterReportsDir);
             config.put("patchReportsDir", patchReportsDir);
