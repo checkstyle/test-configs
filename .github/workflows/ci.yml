@@ -59,6 +59,11 @@ jobs:
         cd diff-java-tool
         ./gradlew clean build
 
+    - name: Execute diff-java-tool jar
+      run: |
+        cd diff-java-tool
+        java -jar build/libs/diff-java-tool-*.jar --help
+
     - name: Check git changes
       run: ./.github/workflows/commands.sh git-diff
 
