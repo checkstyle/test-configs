@@ -40,7 +40,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,11 +60,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.Invoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1037,11 +1031,7 @@ public final class DiffTool {
         if (parentDir == null) {
             throw new IllegalStateException("Unable to locate parent directory");
         }
-        final Path diffToolDir = parentDir.resolve("patch-diff-report-tool");
-        final InvocationResult result = executeMavenBuild(diffToolDir);
-        if (result.getExitCode() != 0) {
-            throw new IllegalStateException("Maven build failed");
-        }
+        final Path diffToolDir = parentDir.resolve("checkstyle-tester");
 
         final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
 
@@ -1065,24 +1055,6 @@ public final class DiffTool {
             throw ex;
         }
         LOGGER.info("Diff report generation finished ...");
-    }
-
-    /**
-     * Executes a Maven build with a specified goal.
-     *
-     * @param diffToolDir The directory containing the Maven project.
-     * @return The result of the Maven build execution.
-     * @throws Exception if the Maven build fails.
-     */
-    private static InvocationResult executeMavenBuild(final Path diffToolDir) throws Exception {
-        final InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File(diffToolDir.toFile(), "pom.xml"));
-        request.setGoals(Collections.singletonList("package"));
-        request.setProfiles(Collections.singletonList("no-validations"));
-        request.setMavenOpts("-DskipTests=true");
-
-        final Invoker invoker = new DefaultInvoker();
-        return invoker.execute(request);
     }
 
     /**
@@ -1151,8 +1123,8 @@ public final class DiffTool {
 
         if ("diff".equals(cfg.get("mode"))) {
             final String baseReport = Paths.get((String) cfg.get("masterReportsDir"),
-                            projectName,
-                            "checkstyle-result.xml").toString();
+                    projectName,
+                    "checkstyle-result.xml").toString();
             diffCmdBuilder.append(String.format(Locale.getDefault(),
                     " --baseReport %s --baseConfig %s",
                     baseReport,
@@ -1185,28 +1157,24 @@ public final class DiffTool {
     /**
      * Retrieves the path to the diff tool JAR file.
      *
-     * @param diffToolDir The directory containing the diff tool JAR.
+     * @param checkstyleTesterDir The directory containing the diff tool JAR.
      * @return The absolute path to the diff tool JAR file.
-     * @throws FileNotFoundException if the target directory does not exist.
-     * @throws IOException if an I/O error occurs while accessing the directory.
+     * @throws FileNotFoundException if the JAR file is not found.
      */
-    private static String getPathToDiffToolJar(final File diffToolDir) throws IOException {
-        final Path targetDir = Paths.get(diffToolDir.getAbsolutePath(), "target");
-        if (!Files.exists(targetDir)) {
-            throw new FileNotFoundException("Error: target directory does not exist!");
+    private static String getPathToDiffToolJar(final File checkstyleTesterDir)
+            throws FileNotFoundException {
+        final File jarFile = new File(
+                checkstyleTesterDir,
+                "patch-diff-report-tool-0.1-SNAPSHOT-jar-with-dependencies.jar");
+
+        if (!jarFile.exists()) {
+            throw new FileNotFoundException(
+                    "Error: patch-diff-report-tool JAR file is not found in "
+                    + checkstyleTesterDir.getAbsolutePath()
+            );
         }
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(targetDir)) {
-            for (final Path path : stream) {
-                final Path fileNamePath = path.getFileName();
-                if (fileNamePath != null) {
-                    final String fileName = fileNamePath.toString();
-                    if (fileName.matches("patch-diff-report-tool-.*.jar-with-dependencies.jar")) {
-                        return path.toAbsolutePath().toString();
-                    }
-                }
-            }
-        }
-        throw new FileNotFoundException("Error: diff tool jar file is not found!");
+
+        return jarFile.getAbsolutePath();
     }
 
     /**
@@ -1229,7 +1197,7 @@ public final class DiffTool {
             return null;
         }
 
-        final Path diffToolDir = parentDir.resolve("patch-diff-report-tool");
+        final Path diffToolDir = parentDir.resolve("checkstyle-tester");
         final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
 
         try {
