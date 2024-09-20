@@ -1,0 +1,5 @@
+projects:
+  - name: diff-java-tool
+    scm: git
+    url: file:///home/runner/work/test-configs/test-configs/diff-java-tool
+    reference: main
