@@ -1,0 +1,147 @@
+name: diff-java-tool PR checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allows manual triggering test changes in checkstyle/test-configs
+  workflow_dispatch:  
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      JAVA_VERSION: '21'
+      CONFIG_DIR: '.github/workflows'
+      DIFFTOOL_JAR: "diff-java-tool.jar"
+      PATCH_DIFF_TOOL_VERSION: "0.1-SNAPSHOT"
+      CI_TEMP_DIR: '.ci-temp'
+
+    steps:
+      - name: Create CI Temp Directory
+        run: mkdir -p "${{ env.CI_TEMP_DIR }}"
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Checkstyle Repository into CI Temp Directory
+        uses: actions/checkout@v4
+        with:
+          repository: checkstyle/checkstyle
+          path: ${{ env.CI_TEMP_DIR }}/checkstyle
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-
+
+      - name: Build diff-java-tool with Gradle
+        run: |
+          cd diff-java-tool
+          ./gradlew clean build
+
+      - name: Copy DiffTool JAR to CI Temp Directory
+        run: |
+          cp diff-java-tool/build/libs/diff-java-tool-*-all.jar "${CI_TEMP_DIR}/${DIFFTOOL_JAR}"
+
+      - name: Download patch-diff-report-tool JAR
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: "checkstyle/contribution"
+          tag: "patch-diff-report-tool-${{ env.PATCH_DIFF_TOOL_VERSION }}"
+          fileName: >-
+            patch-diff-report-tool-${{ env.PATCH_DIFF_TOOL_VERSION }}-jar-with-dependencies.jar
+          out-file-path: "${{ github.workspace }}/${{ env.CI_TEMP_DIR }}"
+
+      - name: Create Temporary Patch Branch
+        run: |
+          cd "${{ env.CI_TEMP_DIR }}/checkstyle"
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git checkout -b temp-patch-branch
+          # Optionally make a minor change to ensure reports are different
+          echo "// Temporary change" >> dummy.java
+          git add dummy.java
+          git commit -m "Temporary change for testing"
+
+      - name: Initialize git repository in 'diff-java-tool'
+        run: |
+          cd diff-java-tool
+          git init --initial-branch=main
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions"
+          git add .
+          git commit -m "Initialize diff-java-tool repository"
+
+      - name: Execute diff-java-tool.jar with config
+        env:
+          CONFIG_XML: "${{ github.workspace }}/${{ env.CONFIG_DIR }}/config.xml"
+          PROJECTS_YML: "${{ github.workspace }}/${{ env.CONFIG_DIR }}/project.yml"
+          DIFFTOOL_JAR_PATH: "${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/${{ env.DIFFTOOL_JAR }}"
+          PATCH_DIFF_TOOL_JAR_PATH: "${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/patch-diff-report-tool-${{ env.PATCH_DIFF_TOOL_VERSION }}-jar-with-dependencies.jar"
+        run: |
+          REPO="${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/checkstyle"
+          echo "Running DiffTool.jar in 'diff' mode"
+          java -jar "${DIFFTOOL_JAR_PATH}" \
+            --localGitRepo "$REPO" \
+            --baseBranch master \
+            --config "${CONFIG_XML}" \
+            --patchBranch temp-patch-branch \
+            --listOfProjects "${PROJECTS_YML}" \
+            --allowExcludes \
+            --diffToolJarPath "${PATCH_DIFF_TOOL_JAR_PATH}"
+
+      - name: Execute diff-java-tool.jar with patch config
+        env:
+          CONFIG_XML: "${{ github.workspace }}/${{ env.CONFIG_DIR }}/config.xml"
+          PATCH_CONFIG_XML: "${{ github.workspace }}/${{ env.CONFIG_DIR }}/patch-config.xml"
+          PROJECTS_YML: "${{ github.workspace }}/${{ env.CONFIG_DIR }}/project.yml"
+          DIFFTOOL_JAR_PATH: "${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/${{ env.DIFFTOOL_JAR }}"
+          PATCH_DIFF_TOOL_JAR_PATH: "${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/patch-diff-report-tool-${{ env.PATCH_DIFF_TOOL_VERSION }}-jar-with-dependencies.jar"
+        run: |
+          PR_BRANCH="temp-patch-branch"
+          REPO="${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/checkstyle"
+          echo "Running DiffTool.jar with all arguments combined"
+          java -jar "${DIFFTOOL_JAR_PATH}" \
+            --localGitRepo "$REPO" \
+            --baseBranch master \
+            --patchBranch "$PR_BRANCH" \
+            --baseConfig "${CONFIG_XML}" \
+            --patchConfig "${PATCH_CONFIG_XML}" \
+            --listOfProjects "${PROJECTS_YML}" \
+            --mode diff \
+            --shortFilePaths \
+            --extraMvnRegressionOptions "-Dmaven.test.skip=true" \
+            --allowExcludes \
+            --useShallowClone \
+            --diffToolJarPath "${PATCH_DIFF_TOOL_JAR_PATH}"
+
+      - name: Execute diff-java-tool.jar with with invalid arguments
+        env:
+          DIFFTOOL_JAR_PATH: "${{ github.workspace }}/${{ env.CI_TEMP_DIR }}/${{ env.DIFFTOOL_JAR }}"
+        run: |
+          echo "Running diff-java-tool.jar with invalid arguments"
+          # Disable 'set -e' to prevent the script from exiting on error
+          set +e
+          java -jar "${DIFFTOOL_JAR_PATH}" --invalidArg
+          EXIT_CODE=$?
+          # Re-enable 'set -e'
+          set -e
+          if [ "$EXIT_CODE" -eq 1 ]; then
+            echo "Error Exit code was expected."
+          else
+            echo "Unexpected exit code: $EXIT_CODE"
+            exit 1
+          fi
