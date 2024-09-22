@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -139,8 +138,13 @@ public final class DiffTool {
                 moveDir(cfg.getTmpReportsDir(), cfg.getReportsDir());
 
                 generateDiffReport(cfg.getDiffToolConfig());
-                generateSummaryIndexHtml(cfg.getDiffDir(), checkstyleBaseReportInfo,
-                        checkstylePatchReportInfo, configFilesList, cfg.isAllowExcludes());
+                generateSummaryIndexHtml(
+                        cfg.getDiffDir(),
+                        checkstyleBaseReportInfo,
+                        checkstylePatchReportInfo,
+                        configFilesList,
+                        cfg.isAllowExcludes(),
+                        cfg.getDiffToolJarPath());
             }
         }
         catch (IOException | InterruptedException ex) {
@@ -205,6 +209,9 @@ public final class DiffTool {
                 "Extra arguments to pass to Maven for Checkstyle Regression run (optional, "
                         + "ex: -Dmaven.prop=true)");
 
+        options.addOption("dt", "diffToolJarPath", true,
+                "Path to the patch-diff-report-tool JAR file (required)");
+
         final CommandLineParser parser = new DefaultParser();
         final HelpFormatter formatter = new HelpFormatter();
 
@@ -233,6 +240,7 @@ public final class DiffTool {
         final String baseBranch = cliOptions.getOptionValue("baseBranch");
         final File listOfProjectsFile = new File(cliOptions.getOptionValue("listOfProjects"));
         final String localGitRepo = cliOptions.getOptionValue("localGitRepo");
+        final String diffToolJarPath = cliOptions.getOptionValue("diffToolJarPath");
 
         if (toolMode != null && !("diff".equals(toolMode) || "single".equals(toolMode))) {
             LOGGER.error("Error: Invalid mode: '"
@@ -258,6 +266,19 @@ public final class DiffTool {
         if (!listOfProjectsFile.exists()) {
             LOGGER.error("Error: file " + listOfProjectsFile.getName() + " does not exist!");
             return false;
+        }
+        if (diffToolJarPath == null || diffToolJarPath.isEmpty()) {
+            LOGGER.error("Error: diffToolJarPath is required!");
+            return false;
+        }
+        else {
+            final File diffToolJarFile = new File(diffToolJarPath);
+            if (!diffToolJarFile.exists() || !diffToolJarFile.isFile()) {
+                LOGGER.error("Error: diffToolJarPath '"
+                        + diffToolJarPath
+                        + "' does not exist or is not a file!");
+                return false;
+            }
         }
 
         return true;
@@ -1031,9 +1052,6 @@ public final class DiffTool {
         if (parentDir == null) {
             throw new IllegalStateException("Unable to locate parent directory");
         }
-        final Path diffToolDir = parentDir.resolve("checkstyle-tester");
-
-        final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
 
         final String patchReportsDir = (String) cfg.get("patchReportsDir");
         if (patchReportsDir == null) {
@@ -1041,7 +1059,7 @@ public final class DiffTool {
                     "Patch reports directory path is not provided in the configuration."
             );
         }
-
+        final String diffToolJarPath = (String) cfg.get("diffToolJarPath");
         LOGGER.info("Starting diff report generation ...");
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(patchReportsDir))) {
             for (final Path path : stream) {
@@ -1155,53 +1173,20 @@ public final class DiffTool {
     }
 
     /**
-     * Retrieves the path to the diff tool JAR file.
-     *
-     * @param checkstyleTesterDir The directory containing the diff tool JAR.
-     * @return The absolute path to the diff tool JAR file.
-     * @throws FileNotFoundException if the JAR file is not found.
-     */
-    private static String getPathToDiffToolJar(final File checkstyleTesterDir)
-            throws FileNotFoundException {
-        final File jarFile = new File(
-                checkstyleTesterDir,
-                "patch-diff-report-tool-0.1-SNAPSHOT-jar-with-dependencies.jar");
-
-        if (!jarFile.exists()) {
-            throw new FileNotFoundException(
-                    "Error: patch-diff-report-tool JAR file is not found in "
-                    + checkstyleTesterDir.getAbsolutePath()
-            );
-        }
-
-        return jarFile.getAbsolutePath();
-    }
-
-    /**
      * Creates an instance of the TextTransform class from the diff tool JAR.
      *
+     * @param diffToolJarPath Path to the diff tool JAR.
      * @return An instance of the TextTransform class, or null if an error occurs.
-     * @throws IOException if an error occurs while loading the class.
      * @throws InvocationTargetException if an error occurs while invoking the constructor.
      * @throws InstantiationException if an error occurs while instantiating the class.
      * @throws IllegalAccessException if access to the class or constructor is illegal.
      * @throws ClassNotFoundException if the class cannot be found.
      */
-    private static Object getTextTransform() throws
-            IOException, InvocationTargetException,
+    private static Object getTextTransform(final String diffToolJarPath)
+                                           throws InvocationTargetException,
             InstantiationException, IllegalAccessException, ClassNotFoundException {
-        final Path currentDir = Paths.get("").toAbsolutePath();
-        final Path parentDir = currentDir.getParent();
-        if (parentDir == null) {
-            LOGGER.error("Unable to locate parent directory");
-            return null;
-        }
-
-        final Path diffToolDir = parentDir.resolve("checkstyle-tester");
-        final String diffToolJarPath = getPathToDiffToolJar(diffToolDir.toFile());
-
         try {
-            final URL[] urls = {URI.create("file:" + diffToolJarPath).toURL()};
+            final URL[] urls = {new File(diffToolJarPath).toURI().toURL()};
             try (URLClassLoader classLoader = new URLClassLoader(urls)) {
                 final Class<?> clazz =
                         classLoader.loadClass("com.github.checkstyle.site.TextTransform");
@@ -1222,6 +1207,7 @@ public final class DiffTool {
      * @param checkstylePatchReportInfo Information about the patch Checkstyle report.
      * @param configFilesList List of configuration files.
      * @param allowExcludes Whether excludes are allowed.
+     * @param diffToolJarPath patch diff tool jar path.
      * @throws IOException if an I/O error occurs while writing the summary index HTML file.
      * @throws InvocationTargetException if an error occurs while invoking methods via reflection.
      * @throws InstantiationException if an error occurs while instantiating classes via reflection.
@@ -1232,7 +1218,8 @@ public final class DiffTool {
                          final CheckstyleReportInfo checkstyleBaseReportInfo,
                          final CheckstyleReportInfo checkstylePatchReportInfo,
                          final List<String> configFilesList,
-                         final boolean allowExcludes)
+                         final boolean allowExcludes,
+                         final String diffToolJarPath)
                          throws IOException, InvocationTargetException,
                                 InstantiationException, IllegalAccessException,
                                 ClassNotFoundException {
@@ -1262,7 +1249,7 @@ public final class DiffTool {
                     checkstyleBaseReportInfo,
                     checkstylePatchReportInfo,
                     projectsStatistic);
-            printConfigSection(diffDir, configFilesList, writer);
+            printConfigSection(diffDir, configFilesList, writer, diffToolJarPath);
 
             final List<Map.Entry<String, int[]>> sortedProjects =
                     new ArrayList<>(projectsStatistic.entrySet());
@@ -1313,6 +1300,7 @@ public final class DiffTool {
     /**
      * Prints configuration sections to an HTML file.
      *
+     * @param diffToolJarPath Path to the diff tool JAR.
      * @param diffDir The directory for the HTML output.
      * @param configFilesList List of configuration files.
      * @param summaryIndexHtml Writer for the HTML summary index.
@@ -1322,12 +1310,14 @@ public final class DiffTool {
      * @throws IllegalAccessException If access to the method is illegal.
      * @throws ClassNotFoundException If the class cannot be found.
      */
-    private static void printConfigSection(final String diffDir, final List<String> configFilesList,
-                        final BufferedWriter summaryIndexHtml)
-                        throws IOException, InvocationTargetException,
-                               InstantiationException, IllegalAccessException,
-                               ClassNotFoundException {
-        final Object textTransform = getTextTransform();
+    private static void printConfigSection(final String diffDir,
+                                           final List<String> configFilesList,
+                                           final BufferedWriter summaryIndexHtml,
+                                           final String diffToolJarPath)
+                                           throws IOException, InvocationTargetException,
+                                                  InstantiationException, IllegalAccessException,
+                                                  ClassNotFoundException {
+        final Object textTransform = getTextTransform(diffToolJarPath);
         final Set<String> processedConfigs = new HashSet<>();
         for (final String filename : configFilesList) {
             if (filename != null && !filename.isEmpty() && !processedConfigs.contains(filename)) {
@@ -1929,6 +1919,9 @@ public final class DiffTool {
         /** Whether to use shallow cloning in Git operations. */
         private final boolean useShallowClone;
 
+        /** The path to path diff tool jar path. */
+        private final String diffToolJarPath;
+
         /**
          * Constructs a {@code Config} instance based on the provided command-line options.
          *
@@ -1951,6 +1944,7 @@ public final class DiffTool {
             baseConfig = initializeConfig(cliOptions, "baseConfig");
             patchConfig = initializeConfig(cliOptions, "patchConfig");
             configFile = cliOptions.getOptionValue("config");
+            diffToolJarPath = cliOptions.getOptionValue("diffToolJarPath");
 
             reportsDir = "reports";
             masterReportsDir = reportsDir + "/" + baseBranch;
@@ -1979,6 +1973,15 @@ public final class DiffTool {
          */
         public boolean isShortFilePaths() {
             return shortFilePaths;
+        }
+
+        /**
+         * Retrieves the file path of the Diff Tool JAR.
+         *
+         * @return the path to the Diff Tool JAR as a {@code String}.
+         */
+        public String getDiffToolJarPath() {
+            return diffToolJarPath;
         }
 
         /**
@@ -2256,6 +2259,7 @@ public final class DiffTool {
             config.put("mode", mode);
             config.put("allowExcludes", allowExcludes);
             config.put("useShallowClone", useShallowClone);
+            config.put("diffToolJarPath", diffToolJarPath);
             return config;
         }
     }

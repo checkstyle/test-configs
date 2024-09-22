@@ -21,6 +21,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
     // Checkstyle dependencies
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
     implementation 'com.puppycrawl.tools:checkstyle:10.17.0'
     implementation 'com.puppycrawl.tools:checkstyle:10.17.0:tests'
     testImplementation 'com.puppycrawl.tools:checkstyle:10.17.0'
