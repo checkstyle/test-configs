@@ -24,6 +24,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -1593,8 +1594,13 @@ public final class DiffTool {
                                           final String extraMvnRegressionOptions)
                                           throws IOException, InterruptedException {
         LOGGER.info("Running 'mvn clean' on " + srcDir + " ...");
+
+        // Generate the pom.xml file in the project root
+        generatePomXml(".");
+
         final String mvnClean = "mvn -e --no-transfer-progress --batch-mode clean";
-        executeCmd(mvnClean);
+        executeCmd(mvnClean, new File("."));
+
         LOGGER.info("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
         final StringBuilder mvnSite =
                 new StringBuilder(STRING_BUILDER_CAPACITY)
@@ -1612,8 +1618,36 @@ public final class DiffTool {
             mvnSite.append(extraMvnRegressionOptions);
         }
         LOGGER.info(mvnSite.toString());
-        executeCmd(mvnSite.toString());
+        executeCmd(mvnSite.toString(), new File("."));
         LOGGER.info("Running Checkstyle on " + srcDir + " - finished");
+    }
+
+    /**
+     * Generates the pom.xml file required for Maven execution.
+     *
+     * @param destinationDir The directory where the pom.xml will be created.
+     * @throws IOException If an I/O error occurs during file writing.
+     * @throws FileNotFoundException If an pom's template file not found.
+     */
+    private static void generatePomXml(final String destinationDir) throws IOException {
+        LOGGER.info("Attempting to load pom_template.xml from classpath.");
+        try (InputStream inputStream = DiffTool.class.getResourceAsStream("/pom_template.xml")) {
+            if (inputStream == null) {
+                LOGGER.error("pom_template.xml not found in classpath.");
+                throw new FileNotFoundException(
+                        "Resource 'pom_template.xml' not found in classpath"
+                );
+            }
+            LOGGER.info("pom_template.xml successfully loaded from classpath.");
+            final String pomContent =
+                    new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+            final Path pomFilePath = Paths.get(destinationDir, "pom.xml");
+            Files.writeString(pomFilePath, pomContent, StandardCharsets.UTF_8);
+
+            LOGGER.info("Generated pom.xml at " + pomFilePath.toAbsolutePath());
+            LOGGER.info("pom.xml content:\n" + pomContent);
+        }
     }
 
     /**
