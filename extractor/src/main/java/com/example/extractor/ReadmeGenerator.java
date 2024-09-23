@@ -84,6 +84,10 @@ public final class ReadmeGenerator {
             + "```%n"
             + "Make comment in PR:%n"
             + "```%n"
+            + "Github, generate report%n"
+            + "```%n"
+            + "OR%n"
+            + "```%n"
             + "Github, generate report for configs in PR description%n"
             + "```%n",
                 folderName,
