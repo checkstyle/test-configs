@@ -12,5 +12,9 @@ Diff Regression projects: https://raw.githubusercontent.com/checkstyle/test-conf
 ```
 Make comment in PR:
 ```
+Github, generate report
+```
+OR
+```
 Github, generate report for configs in PR description
 ```
