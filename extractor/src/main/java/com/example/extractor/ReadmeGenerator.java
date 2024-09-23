@@ -85,6 +85,10 @@ public final class ReadmeGenerator {
             + "Make comment in PR:%n"
             + "```%n"
             + "Github, generate report%n"
+            + "```%n"
+            + "OR%n"
+            + "```%n"
+            + "Github, generate report for configs in PR description%n"
             + "```%n",
                 folderName,
                 moduleName,
@@ -131,6 +135,10 @@ public final class ReadmeGenerator {
             + "Make comment in PR:%n"
             + "```%n"
             + "Github, generate report%n"
+            + "```%n"
+            + "OR%n"
+            + "```%n"
+            + "Github, generate report for configs in PR description%n"
             + "```%n",
                 moduleName,
                 moduleName,
