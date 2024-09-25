@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedClasses" value="HashMap, HashSet, Place"/>
+            <property name="excludedClasses" value="HashMap, HashSet, Example1"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedPackages" value="a.b"/>
+            <property name="excludedPackages" value="com.puppycrawl.tools.checkstyle.checks.metrics.classdataabstractioncoupling.ignore"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

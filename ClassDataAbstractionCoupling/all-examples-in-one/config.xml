@@ -41,12 +41,12 @@
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedClasses" value="HashMap, HashSet, Place"/>
+            <property name="excludedClasses" value="HashMap, HashSet, Example1"/>
             <property name="id" value="example5"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedClasses" value="HashMap, HashSet, Place"/>
+            <property name="excludedClasses" value="HashMap, HashSet, Example1"/>
             <property name="id" value="example6"/>
         </module>
 
@@ -71,7 +71,7 @@
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedPackages" value="a.b"/>
+            <property name="excludedPackages" value="com.puppycrawl.tools.checkstyle.checks.metrics.classdataabstractioncoupling.ignore"/>
             <property name="id" value="example11"/>
         </module>
 
