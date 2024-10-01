@@ -10,3 +10,11 @@ SummaryJavadoc/.idea/
 # Ignore build directory
 build/
 .gradle/
+
+# Ignore temporary Gradle worker files
+diff-java-tool/.tmp/
+diff-java-tool/caches/
+diff-java-tool/daemon/
+diff-java-tool/native/
+diff-java-tool/wrapper/
+diff-java-tool/jdks/
