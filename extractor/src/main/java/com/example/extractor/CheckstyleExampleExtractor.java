@@ -58,11 +58,18 @@ public final class CheckstyleExampleExtractor {
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
 
     /** The filename for project properties. */
-    private static final String PROJECT_PROPERTIES_FILENAME = "list-of-projects.properties";
+    private static final String PROJ_PROP_PROP_FILENAME = "list-of-projects.properties";
+
+    /** The filename for project yml. */
+    private static final String PROJ_YML_PROP_FILENAME = "list-of-projects.yml";
 
     /** The file path for project properties. */
-    private static final String PROJECT_PROPERTIES_FILE_PATH =
-            "src/main/resources/" + PROJECT_PROPERTIES_FILENAME;
+    private static final String PROJ_PROP_PROP_FILE_PATH =
+            "src/main/resources/" + PROJ_PROP_PROP_FILENAME;
+
+    /** The file path for project yml. */
+    private static final String PROJ_YML_PROP_FILE_PATH =
+            "src/main/resources/" + PROJ_YML_PROP_FILENAME;
 
     /** The regular expression pattern for excluded file paths. */
     private static final String EXCLUDED_FILE_PATTERN =
@@ -462,9 +469,22 @@ public final class CheckstyleExampleExtractor {
      * @throws IOException If an I/O error occurs.
      */
     private static void copyPropertiesFile(final Path outputPath) throws IOException {
-        final Path sourcePropertiesPath = Paths.get(PROJECT_PROPERTIES_FILE_PATH).toAbsolutePath();
-        final Path targetPropertiesPath = outputPath.resolve(PROJECT_PROPERTIES_FILENAME);
-        Files.copy(sourcePropertiesPath, targetPropertiesPath, StandardCopyOption.REPLACE_EXISTING);
+        final Path sourceYamlPath =
+                Paths.get(PROJ_YML_PROP_FILE_PATH).toAbsolutePath();
+        final Path sourcePropertiesPath =
+                Paths.get(PROJ_PROP_PROP_FILE_PATH).toAbsolutePath();
+
+        if (Files.exists(sourceYamlPath)) {
+            final Path targetYamlPath = outputPath.resolve("list-of-projects.yml");
+            Files.copy(sourceYamlPath, targetYamlPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        if (Files.exists(sourcePropertiesPath)) {
+            final Path targetPropertiesPath = outputPath.resolve("list-of-projects.properties");
+            Files.copy(sourcePropertiesPath,
+                    targetPropertiesPath,
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**
@@ -583,7 +603,9 @@ public final class CheckstyleExampleExtractor {
                 );
             }
             else {
+                // Copy default properties and YAML files
                 copyDefaultPropertiesFile(allInOneSubfolderPath);
+                copyDefaultYamlFile(allInOneSubfolderPath);
             }
         }
         catch (IOException ex) {
@@ -591,6 +613,7 @@ public final class CheckstyleExampleExtractor {
                     "Error processing YAML file for all-examples-in-one: "
                             + ex.getMessage(), ex);
             copyDefaultPropertiesFile(allInOneSubfolderPath);
+            copyDefaultYamlFile(allInOneSubfolderPath);
         }
     }
 
@@ -605,13 +628,32 @@ public final class CheckstyleExampleExtractor {
                     .get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_PATH)
                     .toAbsolutePath();
             final Path targetPropertiesPath =
-                    allInOneSubfolderPath.resolve(PROJECT_PROPERTIES_FILENAME);
+                    allInOneSubfolderPath.resolve(PROJ_PROP_PROP_FILENAME);
             Files.copy(sourcePropertiesPath,
                     targetPropertiesPath,
                     StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Error copying default properties file", ex);
+        }
+    }
+
+    /**
+     * Copies the default YAML file to the specified subfolder path.
+     *
+     * @param allInOneSubfolderPath the target directory to copy the YAML file into.
+     */
+    private static void copyDefaultYamlFile(final Path allInOneSubfolderPath) {
+        try {
+            final Path sourceYamlPath = Paths
+                    .get("src/main/resources/list-of-projects.yml")
+                    .toAbsolutePath();
+            final Path targetYamlPath = allInOneSubfolderPath.resolve("list-of-projects.yml");
+            Files.copy(sourceYamlPath, targetYamlPath, StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (IOException ex) {
+            LOGGER.log(Level.SEVERE,
+                    "Error copying default YAML file", ex);
         }
     }
 

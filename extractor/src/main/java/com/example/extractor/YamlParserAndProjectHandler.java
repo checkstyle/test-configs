@@ -21,12 +21,15 @@ package com.example.extractor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.yaml.snakeyaml.Yaml;
 
@@ -53,6 +56,16 @@ public final class YamlParserAndProjectHandler {
             "# List of GIT repositories to clone / pull for checking with Checkstyle\n"
                   + "# File format: REPO_NAME|[local|git]|URL|[COMMIT_ID]|[EXCLUDE FOLDERS]\n"
                   + "# Please note that bash comments work in this file\n\n";
+
+    /**
+     * The Constant REFERENCE_INDEX.
+     */
+    private static final int REFERENCE_INDEX = 3;
+
+    /**
+     * The Constant EXCLUDES_INDEX.
+     */
+    private static final int EXCLUDES_INDEX = 4;
 
     /**
      * Path to the YAML file containing project configurations.
@@ -122,25 +135,90 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectLines the list of all project lines
      * @param checkName       the name of the check
      * @throws IOException if an I/O error occurs
+     * @throws IllegalArgumentException if a project name is not found in all-projects.properties
      */
     static void createProjectsFileForExample(final Path examplePath,
                                              final List<String> projectNames,
                                              final List<String> allProjectLines,
                                              final String checkName) throws IOException {
         Files.createDirectories(examplePath);
-        final Path projectsFilePath = examplePath.resolve("list-of-projects.properties");
+        final Path projectsFilePath = examplePath.resolve("list-of-projects.yml");
 
-        final List<String> fileContents = new ArrayList<>();
-        fileContents.add(DEFAULT_COMMENTS);
+        final List<Map<String, Object>> projects;
 
         if (projectNames != null && !projectNames.isEmpty()) {
-            addProjectInfos(projectNames, allProjectLines, fileContents, checkName);
+            // **Custom Projects Specified**: Generate a custom list-of-projects.yml
+            projects = new ArrayList<>();
+            for (final String projectName : projectNames) {
+                final String projectInfo = findProjectInfo(projectName, allProjectLines);
+                if (projectInfo != null) {
+                    final Map<String, Object> projectData = parseProjectInfo(projectInfo);
+                    projects.add(projectData);
+                }
+                else {
+                    throw new IllegalArgumentException(
+                            "Project not found in all-projects.properties: "
+                                    + projectName
+                                    + " (Context: "
+                                    + checkName
+                                    + ")");
+                }
+            }
         }
         else {
-            fileContents.addAll(Files.readAllLines(Paths.get(DEFAULT_PROJECTS_PATH)));
+            // **No Custom Projects**: Use the default project list
+            projects = parseAllProjects(allProjectLines);
         }
 
-        Files.write(projectsFilePath, fileContents);
+        final Map<String, Object> yamlData = new ConcurrentHashMap<>();
+        yamlData.put("projects", projects);
+
+        final Yaml yaml = new Yaml();
+        try (Writer writer = Files.newBufferedWriter(projectsFilePath)) {
+            yaml.dump(yamlData, writer);
+        }
+    }
+
+    /**
+     * Parses a pipe-delimited project info string into a map with keys:
+     * name, scm, url, reference, and excludes.
+     *
+     * @param projectInfo the pipe-delimited project info string.
+     * @return a map of project details.
+     */
+    private static Map<String, Object> parseProjectInfo(final String projectInfo) {
+        final String[] parts = projectInfo.split("\\|", 5);
+        final Map<String, Object> projectData = new ConcurrentHashMap<>();
+        projectData.put("name", parts[0]);
+        projectData.put("scm", parts[1]);
+        projectData.put("url", parts[2]);
+        if (parts.length > REFERENCE_INDEX) {
+            projectData.put("reference", parts[REFERENCE_INDEX]);
+        }
+
+        if (parts.length > EXCLUDES_INDEX) {
+            projectData.put("excludes", Arrays.asList(parts[EXCLUDES_INDEX].split(",")));
+        }
+        return projectData;
+    }
+
+    /**
+     * Parses a list of project lines, excluding empty and commented lines,
+     * and converts them into a list of project data maps.
+     *
+     * @param allProjectLines the list of project lines to parse
+     * @return a list of maps containing project information
+     */
+    private static List<Map<String, Object>> parseAllProjects(final List<String> allProjectLines) {
+        final List<Map<String, Object>> projects = new ArrayList<>();
+        for (final String line : allProjectLines) {
+            final String trimmedLine = line.trim();
+            if (!trimmedLine.isEmpty() && !trimmedLine.startsWith("#")) {
+                final Map<String, Object> projectData = parseProjectInfo(trimmedLine);
+                projects.add(projectData);
+            }
+        }
+        return projects;
     }
 
     /**

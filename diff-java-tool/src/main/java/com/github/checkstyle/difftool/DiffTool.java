@@ -62,6 +62,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Main class for the DiffTool application.
@@ -156,6 +157,46 @@ public final class DiffTool {
             LOGGER.error("Error in application state or arguments: " + ex.getMessage(), ex);
             System.exit(1);
         }
+    }
+
+    /**
+     * Parses the YAML file containing the list of projects.
+     *
+     * @param filePath The path to the YAML file.
+     * @return A list of Project instances parsed from the YAML file.
+     * @throws IOException If an I/O error occurs while reading the file.
+     */
+    private static List<Project> parseProjectsFromYaml(final String filePath) throws IOException {
+        final Yaml yaml = new Yaml();
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
+            final Map<String, Object> yamlData = yaml.load(inputStream);
+            @SuppressWarnings("unchecked")
+            final List<Map<String, Object>> projectsData =
+                    (List<Map<String, Object>>) yamlData.get("projects");
+            final List<Project> projects = new ArrayList<>();
+            for (final Map<String, Object> projectData : projectsData) {
+                final Project project = convertYamlProjectToProject(projectData);
+                projects.add(project);
+            }
+            return projects;
+        }
+    }
+
+    /**
+     * Converts a YAML project data map into a Project instance.
+     *
+     * @param projectData The map containing project data from YAML.
+     * @return A Project instance populated with the data.
+     */
+    @SuppressWarnings("unchecked")
+    private static Project convertYamlProjectToProject(final Map<String, Object> projectData) {
+        final Project project = new Project();
+        project.setName((String) projectData.get("name"));
+        project.setScm((String) projectData.get("scm"));
+        project.setUrl((String) projectData.get("url"));
+        project.setReference((String) projectData.getOrDefault("reference", ""));
+        project.setExcludes((List<String>) projectData.getOrDefault("excludes", new ArrayList<>()));
+        return project;
     }
 
     /**
@@ -266,6 +307,11 @@ public final class DiffTool {
         }
         if (!listOfProjectsFile.exists()) {
             LOGGER.error("Error: file " + listOfProjectsFile.getName() + " does not exist!");
+            return false;
+        }
+        if (!listOfProjectsFile.getName().endsWith(".yml")
+                && !listOfProjectsFile.getName().endsWith(".yaml")) {
+            LOGGER.error("Error: file " + listOfProjectsFile.getName() + " is not a YAML file!");
             return false;
         }
         if (diffToolJarPath == null || diffToolJarPath.isEmpty()) {
@@ -534,9 +580,10 @@ public final class DiffTool {
      *
      * @param cfg The configuration map for Checkstyle.
      * @throws InterruptedException If the process is interrupted during report generation.
+     * @throws IOException If an I/O error occurs during file operations.
      */
     private static void generateCheckstyleReport(final Map<String, Object> cfg)
-            throws InterruptedException {
+            throws InterruptedException, IOException {
         LOGGER.info("Testing Checkstyle started");
 
         final String targetDir = "target";
@@ -544,12 +591,6 @@ public final class DiffTool {
         final String reposDir = "repositories";
         final String reportsDir = "reports";
         makeWorkDirsIfNotExist(srcDir, reposDir, reportsDir);
-        final int repoNameParamNo = 0;
-        final int repoTypeParamNo = 1;
-        final int repoUrlParamNo = 2;
-        final int repoCommitIdParamNo = 3;
-        final int repoExcludesParamNo = 4;
-        final int fullParamListSize = 5;
 
         final String checkstyleConfig = (String) cfg.get("checkstyleCfg");
         final String checkstyleVersion = (String) cfg.get("checkstyleVersion");
@@ -558,77 +599,46 @@ public final class DiffTool {
         final String listOfProjects = (String) cfg.get("listOfProjects");
         final String extraMvnRegressionOptions = (String) cfg.get("extraMvnRegressionOptions");
 
-        try {
-            final List<String> projects = Files.readAllLines(Paths.get(listOfProjects));
-            for (final String project : projects) {
-                if (!project.startsWith("#") && !project.isEmpty()) {
-                    final String[] params = project.split("\\|", -1);
-                    if (params.length < fullParamListSize) {
-                        throw new IllegalArgumentException("Error: line '"
-                                + project
-                                + "' in file '"
-                                + listOfProjects
-                                + "' should have "
-                                + fullParamListSize
-                                + " pipe-delimited sections!");
-                    }
+        final List<Project> projects = parseProjectsFromYaml(listOfProjects);
+        for (final Project project : projects) {
+            final String repoName = project.getName();
+            final String repoType = project.getScm();
+            final String repoUrl = project.getUrl();
+            final String commitId = project.getReference();
 
-                    final String repoName = params[repoNameParamNo];
-                    final String repoType = params[repoTypeParamNo];
-                    final String repoUrl = params[repoUrlParamNo];
-                    final String commitId = params[repoCommitIdParamNo];
+            String excludes = "";
+            if (allowExcludes && project.getExcludes() != null) {
+                excludes = String.join(",", project.getExcludes());
+            }
 
-                    String excludes = "";
-                    if (allowExcludes) {
-                        excludes = params[repoExcludesParamNo];
-                    }
-
-                    deleteDir(srcDir);
-                    if ("local".equals(repoType)) {
-                        copyDir(repoUrl, getOsSpecificPath(srcDir, repoName));
-                    }
-                    else {
-                        if (useShallowClone && !isGitSha(commitId)) {
-                            shallowCloneRepository(repoName,
-                                    repoType,
-                                    repoUrl,
-                                    commitId,
-                                    reposDir);
-                        }
-                        else {
-                            cloneRepository(repoName,
-                                    repoType,
-                                    repoUrl,
-                                    commitId,
-                                    reposDir);
-                        }
-                        copyDir(getOsSpecificPath(reposDir, repoName),
-                                getOsSpecificPath(srcDir, repoName));
-                    }
-                    runMavenExecution(srcDir,
-                            excludes,
-                            checkstyleConfig,
-                            checkstyleVersion,
-                            extraMvnRegressionOptions);
-                    String repoPath = repoUrl;
-                    if (!"local".equals(repoType)) {
-                        repoPath =
-                                new File(getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
-                    }
-                    postProcessCheckstyleReport(targetDir, repoName, repoPath);
-                    deleteDir(getOsSpecificPath(srcDir, repoName));
-                    moveDir(targetDir, getOsSpecificPath(reportsDir, repoName));
+            deleteDir(srcDir);
+            if ("local".equals(repoType)) {
+                copyDir(repoUrl, getOsSpecificPath(srcDir, repoName));
+            }
+            else {
+                if (useShallowClone && !isGitSha(commitId)) {
+                    shallowCloneRepository(repoName, repoType, repoUrl, commitId, reposDir);
                 }
+                else {
+                    cloneRepository(repoName, repoType, repoUrl, commitId, reposDir);
+                }
+                copyDir(getOsSpecificPath(reposDir, repoName), getOsSpecificPath(srcDir, repoName));
             }
-
-            // Restore empty_file to make src directory tracked by git
-            final File emptyFile = new File(getOsSpecificPath(srcDir, "empty_file"));
-            if (!emptyFile.createNewFile()) {
-                LOGGER.warn("Failed to create or already existing 'empty_file' in " + srcDir);
+            runMavenExecution(srcDir, excludes, checkstyleConfig,
+                    checkstyleVersion, extraMvnRegressionOptions);
+            String repoPath = repoUrl;
+            if (!"local".equals(repoType)) {
+                repoPath = new File(getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
             }
+            postProcessCheckstyleReport(targetDir, repoName, repoPath);
+            deleteDir(getOsSpecificPath(srcDir, repoName));
+            moveDir(targetDir, getOsSpecificPath(reportsDir, repoName));
         }
-        catch (IOException ex) {
-            LOGGER.error("Error processing projects: " + ex.getMessage());
+
+        // Restore empty_file to make src directory tracked by git
+        final File emptyFile = new File(getOsSpecificPath(srcDir, "empty_file"));
+        if (!emptyFile.createNewFile()) {
+            LOGGER.warn("Failed to create or already existing 'empty_file' in " + srcDir);
         }
     }
 
@@ -2382,6 +2392,121 @@ public final class DiffTool {
          */
         public CommandExecutionException(final String message, final int exitCode) {
             super(message + " (Exit code: " + exitCode + ")");
+        }
+    }
+
+    /**
+     * Represents a project with its SCM details and optional excludes.
+     */
+    public static class Project {
+        /** The name of the project. */
+        private String name;
+
+        /** The SCM type (e.g., git). */
+        private String scm;
+
+        /** The repository URL. */
+        private String url;
+
+        /** The branch or commit reference. */
+        private String reference;
+
+        /** The list of excludes patterns. */
+        private List<String> excludes = new ArrayList<>();
+
+        /**
+         * Gets the project name.
+         *
+         * @return the name of the project.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Sets the project name.
+         *
+         * @param name the name to set.
+         */
+        public void setName(final String name) {
+            this.name = name;
+        }
+
+        /**
+         * Gets the SCM type (e.g., git).
+         *
+         * @return the SCM type.
+         */
+        public String getScm() {
+            return scm;
+        }
+
+        /**
+         * Sets the SCM type.
+         *
+         * @param scm the SCM type to set.
+         */
+        public void setScm(final String scm) {
+            this.scm = scm;
+        }
+
+        /**
+         * Gets the repository URL.
+         *
+         * @return the repository URL.
+         */
+        public String getUrl() {
+            return url;
+        }
+
+        /**
+         * Sets the repository URL.
+         *
+         * @param url the URL to set.
+         */
+        public void setUrl(final String url) {
+            this.url = url;
+        }
+
+        /**
+         * Gets the branch or commit reference.
+         *
+         * @return the reference.
+         */
+        public String getReference() {
+            return reference;
+        }
+
+        /**
+         * Sets the branch or commit reference.
+         *
+         * @param reference the reference to set.
+         */
+        public void setReference(final String reference) {
+            this.reference = reference;
+        }
+
+        /**
+         * Gets the list of exclude patterns.
+         *
+         * @return a new list containing the exclude patterns.
+         */
+        public List<String> getExcludes() {
+            return new ArrayList<>(this.excludes);
+        }
+
+        /**
+         * Sets the list of exclude patterns.
+         *
+         * @param excludes the list of excludes to set.
+         */
+        public void setExcludes(final List<String> excludes) {
+            if (excludes != null) {
+                this.excludes = new ArrayList<>(excludes);
+            }
+            else {
+                this.excludes.clear();
+            }
         }
     }
 }
