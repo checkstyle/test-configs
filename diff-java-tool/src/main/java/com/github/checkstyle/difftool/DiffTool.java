@@ -1657,9 +1657,6 @@ public final class DiffTool {
 
             final Path pomFilePath = Paths.get(destinationDir, "pom.xml");
             Files.writeString(pomFilePath, pomContent, StandardCharsets.UTF_8);
-
-            LOGGER.info("Generated pom.xml at " + pomFilePath.toAbsolutePath());
-            LOGGER.info("pom.xml content:\n" + pomContent);
         }
     }
 
