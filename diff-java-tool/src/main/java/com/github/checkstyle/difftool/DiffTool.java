@@ -194,7 +194,10 @@ public final class DiffTool {
         project.setName((String) projectData.get("name"));
         project.setScm((String) projectData.get("scm"));
         project.setUrl((String) projectData.get("url"));
-        project.setReference((String) projectData.getOrDefault("reference", ""));
+
+        final Object referenceObj = projectData.getOrDefault("reference", "");
+        project.setReference(String.valueOf(referenceObj));
+
         project.setExcludes((List<String>) projectData.getOrDefault("excludes", new ArrayList<>()));
         return project;
     }
