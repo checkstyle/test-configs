@@ -84,7 +84,7 @@ class MainsLauncherTest {
         final String expectedProjectsContent = loadDefaultProjectsList();
 
         final Path outputConfigFile = tempDir.resolve("output-config.xml");
-        final Path outputProjectsFile = tempDir.resolve("output-projects.properties");
+        final Path outputProjectsFile = tempDir.resolve("output-projects.yml");
 
         assertDoesNotThrow(() -> {
             CheckstyleExampleExtractor.main(new String[]{
