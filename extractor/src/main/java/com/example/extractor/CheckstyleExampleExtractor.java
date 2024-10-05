@@ -58,14 +58,14 @@ public final class CheckstyleExampleExtractor {
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
 
     /** The filename for project properties. */
-    private static final String PROJ_PROP_PROP_FILENAME = "list-of-projects.properties";
+    private static final String PROJ_PROP_FILENAME = "list-of-projects.properties";
 
     /** The filename for project yml. */
     private static final String PROJ_YML_PROP_FILENAME = "list-of-projects.yml";
 
     /** The file path for project properties. */
     private static final String PROJ_PROP_PROP_FILE_PATH =
-            "src/main/resources/" + PROJ_PROP_PROP_FILENAME;
+            "src/main/resources/" + PROJ_PROP_FILENAME;
 
     /** The file path for project yml. */
     private static final String PROJ_YML_PROP_FILE_PATH =
@@ -593,12 +593,28 @@ public final class CheckstyleExampleExtractor {
                         (Map<String, Object>) moduleConfig.get(ALL_IN_ONE_SUBFOLDER);
                 final List<String> projectNames =
                         (List<String>) allInOneConfig.get("projects");
-                YamlParserAndProjectHandler.createProjectsFileForExample(
+
+                // Parse all-projects.yml to get allProjectData for YAML
+                final List<Map<String, Object>> allProjectData =
+                        YamlParserAndProjectHandler.parseAllProjectsYaml();
+
+                // Generate YAML projects file
+                YamlParserAndProjectHandler.createProjectsYmlFileForExample(
                         allInOneSubfolderPath,
                         projectNames,
-                        Files.readAllLines(
-                                Paths.get(YamlParserAndProjectHandler.ALL_PROJECTS_PATH)
-                        ),
+                        allProjectData,
+                        moduleName
+                );
+
+                // Load all-projects.properties to get allProjectLines for properties file
+                final List<String> allProjectLines =
+                        YamlParserAndProjectHandler.loadAllProjectsProperties();
+
+                // Generate properties projects file
+                YamlParserAndProjectHandler.createProjectsPropertiesFileForExample(
+                        allInOneSubfolderPath,
+                        projectNames,
+                        allProjectLines,
                         moduleName
                 );
             }
@@ -625,10 +641,10 @@ public final class CheckstyleExampleExtractor {
     private static void copyDefaultPropertiesFile(final Path allInOneSubfolderPath) {
         try {
             final Path sourcePropertiesPath = Paths
-                    .get(YamlParserAndProjectHandler.DEFAULT_PROJECTS_PATH)
+                    .get("src/main/resources/list-of-projects.properties")
                     .toAbsolutePath();
             final Path targetPropertiesPath =
-                    allInOneSubfolderPath.resolve(PROJ_PROP_PROP_FILENAME);
+                    allInOneSubfolderPath.resolve(PROJ_PROP_FILENAME);
             Files.copy(sourcePropertiesPath,
                     targetPropertiesPath,
                     StandardCopyOption.REPLACE_EXISTING);
@@ -648,7 +664,7 @@ public final class CheckstyleExampleExtractor {
             final Path sourceYamlPath = Paths
                     .get("src/main/resources/list-of-projects.yml")
                     .toAbsolutePath();
-            final Path targetYamlPath = allInOneSubfolderPath.resolve("list-of-projects.yml");
+            final Path targetYamlPath = allInOneSubfolderPath.resolve(PROJ_YML_PROP_FILENAME);
             Files.copy(sourceYamlPath, targetYamlPath, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException ex) {
