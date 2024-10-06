@@ -75,6 +75,51 @@ public final class DiffTool {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiffTool.class);
 
     /**
+     * The minimum number of fields required in a project properties line.
+     * Lines with fewer fields are considered invalid and will be skipped.
+     */
+    private static final int MIN_FIELD_COUNT = 3;
+
+    /**
+     * The index of the repository name in the properties line.
+     */
+    private static final int REPO_NAME_INDEX = 0;
+
+    /**
+     * The index of the SCM (Source Control Management) type in the properties line.
+     */
+    private static final int SCM_INDEX = 1;
+
+    /**
+     * The index of the URL in the properties line.
+     */
+    private static final int URL_INDEX = 2;
+
+    /**
+     * The index of the reference in the properties line.
+     * This field is optional and may not be present in all lines.
+     */
+    private static final int REFERENCE_INDEX = 3;
+
+    /**
+     * The index of the exclude folders in the properties line.
+     * This field is optional and may not be present in all lines.
+     */
+    private static final int EXCLUDE_FOLDERS_INDEX = 4;
+
+    /**
+     * The delimiter used to split fields in a properties line.
+     * Fields are separated by a pipe character "|".
+     */
+    private static final String FIELD_DELIMITER = "\\|";
+
+    /**
+     * The delimiter used to split exclude folders.
+     * Exclude folders are separated by commas ",".
+     */
+    private static final String EXCLUDE_DELIMITER = ",";
+
+    /**
      * Number of times a command will be retried if it fails.
      */
     private static final int DEFAULT_RETRY_COUNT = 5;
@@ -160,6 +205,26 @@ public final class DiffTool {
     }
 
     /**
+     * Parses the projects file (YAML or properties) and returns a list of projects.
+     *
+     * @param filePath The path to the projects file.
+     * @return A list of Project instances.
+     * @throws IOException If an I/O error occurs while reading the file.
+     * @throws IllegalArgumentException If unsupported project found.
+     */
+    private static List<Project> parseProjects(final String filePath) throws IOException {
+        if (filePath.endsWith(".yml") || filePath.endsWith(".yaml")) {
+            return parseProjectsFromYaml(filePath);
+        }
+        else if (filePath.endsWith(".properties")) {
+            return parseProjectsFromProperties(filePath);
+        }
+        else {
+            throw new IllegalArgumentException("Unsupported projects file format: " + filePath);
+        }
+    }
+
+    /**
      * Parses the YAML file containing the list of projects.
      *
      * @param filePath The path to the YAML file.
@@ -180,6 +245,60 @@ public final class DiffTool {
             }
             return projects;
         }
+    }
+
+    /**
+     * Parses the projects from a properties file.
+     *
+     * @param filePath The path to the properties file.
+     * @return A list of Project instances.
+     * @throws IOException If an I/O error occurs while reading the file.
+     */
+    private static List<Project> parseProjectsFromProperties(final String filePath)
+            throws IOException {
+        final List<Project> projects = new ArrayList<>();
+        final Path path = Paths.get(filePath);
+        final List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+
+        for (final String originalLine : lines) {
+            final String trimmedLine = originalLine.trim();
+
+            // Skip empty lines and comments
+            if (trimmedLine.isEmpty() || trimmedLine.startsWith("#")) {
+                continue;
+            }
+
+            final String[] fields = trimmedLine.split(FIELD_DELIMITER);
+
+            if (fields.length < MIN_FIELD_COUNT) {
+                LOGGER.warn("Skipping invalid line in projects.properties: " + trimmedLine);
+                continue;
+            }
+
+            final String repoName = fields[REPO_NAME_INDEX].trim();
+            final String scm = fields[SCM_INDEX].trim();
+            final String url = fields[URL_INDEX].trim();
+            final String reference =
+                fields.length > REFERENCE_INDEX ? fields[REFERENCE_INDEX].trim() : "";
+            final String excludeFolders =
+                fields.length > EXCLUDE_FOLDERS_INDEX ? fields[EXCLUDE_FOLDERS_INDEX].trim() : "";
+
+            final Project project = new Project();
+            project.setName(repoName);
+            project.setScm(scm);
+            project.setUrl(url);
+            project.setReference(reference);
+
+            if (!excludeFolders.isEmpty()) {
+                // Exclude folders are separated by commas
+                final String[] excludesArray = excludeFolders.split(EXCLUDE_DELIMITER);
+                project.setExcludes(Arrays.asList(excludesArray));
+            }
+
+            projects.add(project);
+        }
+
+        return projects;
     }
 
     /**
@@ -313,8 +432,10 @@ public final class DiffTool {
             return false;
         }
         if (!listOfProjectsFile.getName().endsWith(".yml")
-                && !listOfProjectsFile.getName().endsWith(".yaml")) {
-            LOGGER.error("Error: file " + listOfProjectsFile.getName() + " is not a YAML file!");
+                && !listOfProjectsFile.getName().endsWith(".yaml")
+                && !listOfProjectsFile.getName().endsWith(".properties")) {
+            LOGGER.error("Error: file " + listOfProjectsFile.getName()
+                    + " is not a supported projects file!");
             return false;
         }
         if (diffToolJarPath == null || diffToolJarPath.isEmpty()) {
@@ -602,7 +723,7 @@ public final class DiffTool {
         final String listOfProjects = (String) cfg.get("listOfProjects");
         final String extraMvnRegressionOptions = (String) cfg.get("extraMvnRegressionOptions");
 
-        final List<Project> projects = parseProjectsFromYaml(listOfProjects);
+        final List<Project> projects = parseProjects(listOfProjects);
         for (final Project project : projects) {
             final String repoName = project.getName();
             final String repoType = project.getScm();
