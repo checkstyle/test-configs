@@ -54,7 +54,7 @@ class MainsLauncherTest {
     /**
      * The constant for default projects file.
      */
-    private static final String DEFAULT_PROJECTS_FILE = "list-of-projects.properties";
+    private static final String DEFAULT_PROJECTS_FILE = "list-of-projects.yml";
 
     /**
      * Tests the main method of CheckstyleExampleExtractor.
