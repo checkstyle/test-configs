@@ -170,7 +170,7 @@ public final class CheckstyleExampleExtractor {
      */
     public static void outputDefaultProjectsList(final String outputPath) {
         try (InputStream inputStream = CheckstyleExampleExtractor.class
-                .getResourceAsStream("/list-of-projects.properties");
+                .getResourceAsStream("/list-of-projects.yml");
              OutputStream outputStream = Files.newOutputStream(Path.of(outputPath))) {
 
             final byte[] buffer = new byte[BUFFER_SIZE];
