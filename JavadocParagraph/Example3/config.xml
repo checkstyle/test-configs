@@ -22,23 +22,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="JavadocParagraph">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="JavadocParagraph">
-            <property name="allowNewlineParagraph" value="false"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="JavadocParagraph">
-            <property name="id" value="example3"/>
-        </module>
-
-        <module name="JavadocParagraph">
-            <property name="allowNewlineParagraph" value="false"/>
-            <property name="id" value="example4"/>
-        </module>
+        <module name="JavadocParagraph"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
