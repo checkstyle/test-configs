@@ -36,7 +36,7 @@
         </module>
 
         <module name="IllegalTokenText">
-            <property name="format" value="""/>
+            <property name="format" value='"'/>
             <property name="id" value="example3"/>
             <property name="tokens" value="TEXT_BLOCK_CONTENT"/>
         </module>
