@@ -476,8 +476,73 @@ public final class ConfigSerializer {
         if (builder.length() > 0) {
             builder.append('\n');
         }
-        builder.append(indent).append("<property name=\"").append(name)
-                .append("\" value=\"").append(value).append("\"/>");
+
+        // Check for quotes in the original, unescaped value
+        final boolean containsDoubleQuote = value.contains("\"");
+        final boolean containsSingleQuote = value.contains("'");
+
+        // Determine the appropriate quote character
+        final char quote;
+        if (containsDoubleQuote && !containsSingleQuote) {
+            // Use single quotes as delimiters
+            quote = '\'';
+        }
+        else {
+            // Use double quotes as delimiters in all other cases
+            quote = '"';
+        }
+
+        // Escape the value based on the selected quote character
+        final String escapedValue = escapeXmlAttributeValue(value, quote);
+
+        // Append the property to the builder
+        builder.append(indent)
+                .append("<property name=\"")
+                .append(escapeXml(name))
+                .append("\" value=")
+                .append(quote)
+                .append(escapedValue)
+                .append(quote)
+                .append("/>");
+    }
+
+    /**
+     * Escapes special XML characters in the input string.
+     * Replaces &, <, >, ", and ' with their corresponding XML entities.
+     * Returns the original input if null or empty.
+     *
+     * @param input the string to escape
+     * @return the escaped string or the original if null/empty
+     */
+    private static String escapeXml(final String input) {
+        String result = input;
+        if (input != null && !input.isEmpty()) {
+            result = input.replace("\"", "&quot;")
+                    .replace("'", "&apos;");
+        }
+        return result;
+    }
+
+    /**
+     * Escapes special characters in an XML attribute value.
+     * Replaces &, <, > with their corresponding XML entities.
+     * Depending on the delimiter, either ' or " is also escaped.
+     *
+     * @param input     the string to escape
+     * @param delimiter the delimiter used for the attribute (' or ")
+     * @return the escaped string or the original if null/empty
+     */
+    private static String escapeXmlAttributeValue(final String input, final char delimiter) {
+        String result = input;
+        if (input != null && !input.isEmpty()) {
+            if (delimiter == '\'') {
+                result = result.replace("'", "&apos;");
+            }
+            else {
+                result = result.replace("\"", "&quot;");
+            }
+        }
+        return result;
     }
 
     /**
