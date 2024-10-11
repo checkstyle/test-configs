@@ -33,7 +33,7 @@
 
         <module name="MultipleStringLiterals">
             <property name="id" value="example3"/>
-            <property name="ignoreStringsRegexp" value="^(("")|(", "))$"/>
+            <property name="ignoreStringsRegexp" value='^(("")|(", "))$'/>
         </module>
 
         <module name="MultipleStringLiterals">

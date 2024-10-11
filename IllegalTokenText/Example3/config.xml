@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalTokenText">
-            <property name="format" value="""/>
+            <property name="format" value='"'/>
             <property name="tokens" value="TEXT_BLOCK_CONTENT"/>
         </module>
 

@@ -24,7 +24,7 @@
 
         <module name="Regexp">
             <property name="duplicateLimit" value="0"/>
-            <property name="format" value="(/\*\*\n)( \*.*\n)*( \* <P>\n \*   <I>        This software is the confidential and proprietary information of\n        \*   ACME \(<B>"Confidential Information"</B>        \)\. You shall not\n \*   disclose such Confidential Information        and shall use it only in\n \*   accordance with the terms of the        license agreement you entered into\n \*   with ACME\.</I>\n        \* </P>\n \*\n \* © copyright \d\d\d\d ACME\n        \*\n \* @author .*)(\n\s\*.*)*/\n[\w|\s]*( class | interface )"/>
+            <property name="format" value='(/\*\*\n)( \*.*\n)*( \* <P>\n \*   <I>        This software is the confidential and proprietary information of\n        \*   ACME \(<B>"Confidential Information"</B>        \)\. You shall not\n \*   disclose such Confidential Information        and shall use it only in\n \*   accordance with the terms of the        license agreement you entered into\n \*   with ACME\.</I>\n        \* </P>\n \*\n \* © copyright \d\d\d\d ACME\n        \*\n \* @author .*)(\n\s\*.*)*/\n[\w|\s]*( class | interface )'/>
             <property name="message" value="Copyright in class/interface Javadoc"/>
         </module>
 
