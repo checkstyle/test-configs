@@ -517,7 +517,9 @@ public final class ConfigSerializer {
     private static String escapeXml(final String input) {
         String result = input;
         if (input != null && !input.isEmpty()) {
-            result = input.replace("\"", "&quot;")
+            result = input.replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace("\"", "&quot;")
                     .replace("'", "&apos;");
         }
         return result;
@@ -535,6 +537,10 @@ public final class ConfigSerializer {
     private static String escapeXmlAttributeValue(final String input, final char delimiter) {
         String result = input;
         if (input != null && !input.isEmpty()) {
+            // Escape '&', '<', and '>'
+            result = result.replace("&", "&amp;")
+                    .replace("<", "&lt;");
+            // Escape the delimiter character
             if (delimiter == '\'') {
                 result = result.replace("'", "&apos;");
             }
