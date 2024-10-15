@@ -1,5 +1,9 @@
 projects:
-  # Few projects that deliver a set of unusual Java constructions that shall be correctly handled by AST visitor
+  - name: spring-integration
+    scm: git
+    url: https://github.com/spring-projects/spring-integration
+    reference: main
+
   - name: checkstyle
     scm: git
     url: https://github.com/checkstyle/checkstyle.git
@@ -12,8 +16,8 @@ projects:
       - '**/resources-noncompilable/**/suppressionsstringprinter/**/*'
       - '**/resources-noncompilable/**/gui/**/*'
       - '**/resources-noncompilable/**/javadocpropertiesgenerator/**/*'
-      - 'src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/javaparser/InputJavaParser.java'
-      - '**/InputAllEscapedUnicodeCharacters.java' # 'InputAllEscapedUnicodeCharacters' must be skipped because it is too big and slows down JXR
+      - src/test/resources-noncompilable/com/puppycrawl/tools/checkstyle/javaparser/InputJavaParser.java
+      - '**/InputAllEscapedUnicodeCharacters.java'
       - '**/resources-noncompilable/**/javaparser/InputJavaParser.java'
       - '**/resources-noncompilable/**/checks/imports/unusedimports/InputUnusedImportsSingleWordPackage.java'
       - '**/resources-noncompilable/**/grammar/java19/*'
@@ -29,8 +33,6 @@ projects:
     url: https://github.com/checkstyle/sonar-checkstyle
     reference: master
 
-  # OpenJDK 21 requires lots of excludes; list here should be consistent with file filters at:
-  # https://github.com/checkstyle/checkstyle/blob/master/config/projects-to-test/openjdk21-excluded.files
   - name: openjdk21
     scm: git
     url: https://github.com/openjdk/jdk21.git
@@ -235,16 +237,6 @@ projects:
       - '**/test/langtools/tools/javac/patterns/T8309054.java'
       - '**/test/langtools/tools/javac/diags/examples/GuardNotAllowed.java'
 
-  - name: Hartshorn
-    scm: git
-    url: https://github.com/Dockbox-OSS/Hartshorn
-    reference: develop/0.7.0
-
-  - name: camunda
-    scm: git
-    url: https://github.com/camunda/camunda
-    reference: main
-
   - name: guava
     scm: git
     url: https://github.com/google/guava
@@ -314,7 +306,6 @@ projects:
     url: https://github.com/CS-SI/Orekit
     reference: 8.0.1
 
-  # Those projects are quite old and have a lot of legacy code
   - name: apache-ant
     scm: git
     url: https://github.com/apache/ant
@@ -340,7 +331,6 @@ projects:
     excludes:
       - '**/apache-struts/**/resources/**/*'
 
-  # Projects which contain a lot of lambda expressions
   - name: infinispan
     scm: git
     url: https://github.com/infinispan/infinispan
