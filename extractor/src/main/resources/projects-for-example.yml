@@ -527,12 +527,9 @@ WhitespaceAround:
 TrailingComment:
   Example1:
     projects:
-      - spring-integration
-      - checkstyle
-      - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
-      - guava
+      - Hartshorn
+      - camunda
       - spotbugs
       - pmd
       - spoon
@@ -555,12 +552,9 @@ TrailingComment:
       - Vavr
   Example2:
     projects:
-      - spring-integration
-      - checkstyle
-      - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
-      - guava
+      - Hartshorn
+      - camunda
       - spotbugs
       - pmd
       - spoon
@@ -583,12 +577,9 @@ TrailingComment:
       - Vavr
   Example3:
     projects:
-      - spring-integration
-      - checkstyle
-      - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
-      - guava
+      - Hartshorn
+      - camunda
       - spotbugs
       - pmd
       - spoon
@@ -611,12 +602,9 @@ TrailingComment:
       - Vavr
   Example4:
     projects:
-      - spring-integration
-      - checkstyle
-      - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
-      - guava
+      - Hartshorn
+      - camunda
       - spotbugs
       - pmd
       - spoon
@@ -639,12 +627,9 @@ TrailingComment:
       - Vavr
   all-examples-in-one:
     projects:
-      - spring-integration
-      - checkstyle
-      - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
-      - guava
+      - Hartshorn
+      - camunda
       - spotbugs
       - pmd
       - spoon
