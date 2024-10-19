@@ -23,16 +23,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="UnnecessaryParentheses">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="UnnecessaryParentheses">
-            <property name="id" value="example2"/>
-            <property name="tokens" value="BOR, BAND, BXOR"/>
-        </module>
-
-        <module name="UnnecessaryParentheses">
-            <property name="id" value="example3"/>
             <property name="tokens" value="QUESTION"/>
         </module>
 
