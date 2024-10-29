@@ -23,11 +23,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="HideUtilityClassConstructor">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="HideUtilityClassConstructor">
-            <property name="id" value="example2"/>
             <property name="ignoreAnnotatedBy" value="SpringBootApplication, java.lang.Deprecated"/>
         </module>
 
