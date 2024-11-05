@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MatchXpath">
-            <property name="query" value="//VARIABLE_DEF[./ASSIGN/EXPR/LITERAL_NEW              and not(./TYPE/IDENT[@text='var'])]"/>
+            <property name="query" value="//VARIABLE_DEF[./ASSIGN/EXPR/LITERAL_NEW                  and not(./TYPE/IDENT[@text='var'])]"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
