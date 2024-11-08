@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalInstantiation">
-            <property name="classes" value="java.lang.Boolean[],         Boolean[], java.lang.Integer[], Integer[]"/>
+            <property name="classes" value="java.lang.Boolean[], Boolean[], java.lang.Integer[], Integer[]"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
