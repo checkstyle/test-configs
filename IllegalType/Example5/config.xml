@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalType">
-            <property name="memberModifiers" value="LITERAL_PUBLIC,        LITERAL_PROTECTED, LITERAL_STATIC"/>
+            <property name="memberModifiers" value="LITERAL_PUBLIC, LITERAL_PROTECTED, LITERAL_STATIC"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
