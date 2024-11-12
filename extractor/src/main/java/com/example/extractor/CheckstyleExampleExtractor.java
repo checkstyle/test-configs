@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -56,6 +57,12 @@ public final class CheckstyleExampleExtractor {
 
     /** The root directory of the project. */
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
+
+    /** The constant for RegexHeader module. */
+    private static final String REGEXP_HEADER_MODULE = "regexpheader/Example2";
+
+    /** The constant for extra config file for RegexHeader. */
+    private static final String JAVA_HEADER_FILE = "java.header";
 
     /** The filename for project properties. */
     private static final String PROJ_PROP_FILENAME = "list-of-projects.properties";
@@ -428,8 +435,17 @@ public final class CheckstyleExampleExtractor {
             try {
                 final String templateFilePath = getTemplateFilePathForExamples(exampleFile);
                 if (templateFilePath != null) {
-                    final String generatedContent =
+                    String generatedContent =
                             ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
+
+                    // Special case handling for RegexpHeader/Example2 having external config
+                    if (exampleFile.contains(REGEXP_HEADER_MODULE)) {
+                        generatedContent = generatedContent.replace(
+                                "config/java.header",
+                                JAVA_HEADER_FILE
+                        );
+                    }
+
                     writeConfigFile(outputPath, generatedContent);
                     copyPropertiesFile(outputPath);
                     generateReadme(outputPath);
@@ -565,13 +581,28 @@ public final class CheckstyleExampleExtractor {
      */
     private static void generateAllInOneContent(
             final List<String> allExampleFiles,
-            final Path allInOneSubfolderPath)
-            throws Exception {
+            final Path allInOneSubfolderPath
+    ) throws Exception {
+
+        // Fail fast if null is not allowed
+        Objects.requireNonNull(allInOneSubfolderPath, "allInOneSubfolderPath must not be null");
+
         final String templateFilePath = getTemplateFilePathForExamples(allExampleFiles.get(0));
         final Path outputFilePath = allInOneSubfolderPath.resolve("config.xml");
 
-        final String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
-                allExampleFiles.toArray(new String[0]), templateFilePath);
+        String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
+                allExampleFiles.toArray(new String[0]),
+                templateFilePath
+        );
+
+        final Path parent = allInOneSubfolderPath.getParent();
+        if (parent != null) {
+            final String parentPath = parent.toString();
+            if (parentPath.contains(REGEXP_HEADER_MODULE)) {
+                generatedContent = generatedContent.replace("config/java.header", JAVA_HEADER_FILE);
+            }
+        }
+
         Files.writeString(outputFilePath, generatedContent);
     }
 
