@@ -57,6 +57,12 @@ public final class CheckstyleExampleExtractor {
     /** The root directory of the project. */
     private static final Path PROJECT_ROOT = Paths.get("").toAbsolutePath().getParent();
 
+    /** The constant for RegexHeader module. */
+    private static final String REGEXP_HEADER_MODULE = "regexpheader/Example2";
+
+    /** The constant for extra config file for RegexHeader. */
+    private static final String JAVA_HEADER_FILE = "java.header";
+
     /** The filename for project properties. */
     private static final String PROJ_PROP_FILENAME = "list-of-projects.properties";
 
@@ -428,8 +434,17 @@ public final class CheckstyleExampleExtractor {
             try {
                 final String templateFilePath = getTemplateFilePathForExamples(exampleFile);
                 if (templateFilePath != null) {
-                    final String generatedContent =
+                    String generatedContent =
                             ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
+
+                    // Special case handling for RegexpHeader/Example2 having external config
+                    if (exampleFile.contains(REGEXP_HEADER_MODULE)) {
+                        generatedContent = generatedContent.replace(
+                                "config/java.header",
+                                JAVA_HEADER_FILE
+                        );
+                    }
+
                     writeConfigFile(outputPath, generatedContent);
                     copyPropertiesFile(outputPath);
                     generateReadme(outputPath);
@@ -570,8 +585,19 @@ public final class CheckstyleExampleExtractor {
         final String templateFilePath = getTemplateFilePathForExamples(allExampleFiles.get(0));
         final Path outputFilePath = allInOneSubfolderPath.resolve("config.xml");
 
-        final String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
+        String generatedContent = ConfigSerializer.serializeAllInOneConfigToString(
                 allExampleFiles.toArray(new String[0]), templateFilePath);
+
+        // Special case handling for RegexpHeader/Example2 in all-in-one config
+        if (allInOneSubfolderPath != null
+                && allInOneSubfolderPath.getParent() != null
+                && allInOneSubfolderPath.getParent().toString().contains(REGEXP_HEADER_MODULE)) {
+            generatedContent = generatedContent.replace(
+                    "config/java.header",
+                    JAVA_HEADER_FILE
+            );
+        }
+
         Files.writeString(outputFilePath, generatedContent);
     }
 
