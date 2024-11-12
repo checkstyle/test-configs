@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -40,21 +41,27 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class MainsLauncherTest {
 
-    /**
-     * The base path to the Checkstyle repository.
-     */
+    /** The base path to the Checkstyle repository. */
     private static final String CHECKSTYLE_REPO_PATH = "../.ci-temp/checkstyle";
 
-    /**
-     * Base path for Checkstyle checks package used in test resource files.
-     */
+    /** Base path for Checkstyle checks package used in test resource files. */
     private static final String CHECKSTYLE_CHECKS_BASE_PATH =
             "com/puppycrawl/tools/checkstyle/checks";
 
-    /**
-     * The constant for default projects file.
-     */
+    /** The constant for default projects file. */
     private static final String DEFAULT_PROJECTS_FILE = "list-of-projects.yml";
+
+    /** Temporary folder for test files. */
+    @TempDir
+    Path temporaryFolder;
+
+    /**
+     * Resets system properties after each test.
+     */
+    @AfterEach
+    void tearDown() {
+        System.clearProperty("config.path");
+    }
 
     /**
      * Tests the main method of CheckstyleExampleExtractor.
@@ -122,7 +129,6 @@ class MainsLauncherTest {
 
     /**
      * Tests the getTemplateFilePathForInputFile method.
-     *
      */
     @Test
     void testGetTemplateFilePathForInputFile() throws Exception {
@@ -139,8 +145,81 @@ class MainsLauncherTest {
         assertThat(templatePath).endsWith("config-template-treewalker.xml");
     }
 
+    /**
+     * Helper method to load a file's content into a string.
+     *
+     * @param filePath The path to the file.
+     * @return The file's content as a string.
+     * @throws IOException If an I/O error occurs.
+     */
     private String loadToString(final String filePath) throws IOException {
         final byte[] encoded = Files.readAllBytes(Paths.get(filePath));
         return new String(encoded, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Tests the external config files functionality.
+     */
+    @Test
+    void testMainWithExternalConfigFiles(@TempDir final Path tempDir) throws Exception {
+        // Create the 'config' directory inside the tempDir
+        final Path configDir = tempDir.resolve("config");
+        Files.createDirectories(configDir);
+
+        // Write the java.header file inside the 'config' directory
+        final String headerFileContent = """
+        ^// Copyright \\(C\\) (\\d\\d\\d\\d -)? 2004 MyCompany$
+        ^// All rights reserved$
+            """;
+
+        final Path headerFile = configDir.resolve("java.header");
+        Files.writeString(headerFile, headerFileContent);
+
+        // Write the config.xml file with ${config.path}
+        final String configXmlContent = """
+        <?xml version="1.0"?>
+        <!DOCTYPE module PUBLIC
+            "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+            "https://checkstyle.org/dtds/configuration_1_3.dtd">
+        <module name="Checker">
+          <module name="RegexpHeader">
+            <property name="headerFile" value="${config.path}/java.header"/>
+            <property name="multiLines" value="10, 13"/>
+          </module>
+        </module>
+            """;
+
+        final Path configXmlFile = tempDir.resolve("config.xml");
+        Files.writeString(configXmlFile, configXmlContent);
+
+        // Set the system property before running the test
+        System.setProperty("config.path", tempDir.resolve("config").toAbsolutePath().toString());
+
+        final Path outputConfigFile = tempDir.resolve("output-config.xml");
+        final Path outputProjectsFile = tempDir.resolve("output-projects.yml");
+
+        assertDoesNotThrow(() -> {
+            CheckstyleExampleExtractor.main(new String[]{
+                CHECKSTYLE_REPO_PATH,
+                "--config-file",
+                configXmlFile.toString(),
+                outputConfigFile.toString(),
+                outputProjectsFile.toString(),
+            });
+        });
+
+        assertTrue(Files.exists(outputConfigFile), "Config output file should be created");
+
+        final String generatedConfigContent = Files.readString(outputConfigFile);
+        assertThat(generatedConfigContent)
+                .contains("<property name=\"headerFile\" value=\"${config.path}/java.header\"/>");
+
+        // Verify that the header file was copied to the config directory
+        assertTrue(Files.exists(outputConfigFile.getParent().resolve("config/java.header")),
+                "Header file should be copied to config directory");
+
+        assertTrue(Files.exists(outputProjectsFile), "Projects output file should be created");
+        final String generatedProjectsContent = Files.readString(outputProjectsFile);
+        assertFalse(generatedProjectsContent.isEmpty(), "Projects file should not be empty");
     }
 }

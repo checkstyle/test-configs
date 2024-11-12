@@ -82,35 +82,29 @@ public final class CheckstyleExampleExtractor {
     /** The subfolder name for all-in-one examples. */
     private static final String ALL_IN_ONE_SUBFOLDER = "all-examples-in-one";
 
-    /**
-     * Number of expected arguments when processing a single input file.
-     */
-    private static final int SINGLE_INPUT_FILE_ARG_COUNT = 5;
+    /** The buffer size for reading and writing files. */
+    private static final int BUFFER_SIZE = 1024;
 
-    /**
-     * Index of the "--input-file" flag in the argument array.
-     */
-    private static final int INPUT_FILE_FLAG_INDEX = 1;
+    /** Number of expected arguments when processing a configuration file. */
+    private static final int CONFIG_FILE_ARG_COUNT = 5;
 
-    /**
-     * Index of the input file path in the argument array.
-     */
+    /** Index of the "--config-file" flag in the argument array. */
+    private static final int CONFIG_FILE_FLAG_INDEX = 1;
+
+    /** Index of the configuration file path in the argument array. */
+    private static final int CONFIG_FILE_PATH_INDEX = 2;
+
+    /** Index of the input file path in the argument array. */
     private static final int INPUT_FILE_PATH_INDEX = 2;
 
-    /**
-     * Index of the output file path in the argument array.
-     */
-    private static final int OUTPUT_FILE_PATH_INDEX = 3;
+    /** Index of the output file path in the argument array. */
+    private static final int CONFIG_OUTPUT_PATH_INDEX = 3;
 
-    /**
-     * Index of the output file path in the argument array.
-     */
-    private static final int PROJECT_OUTPUT_PATH_INDEX = 4;
+    /** Index of the projects output path in the argument array. */
+    private static final int CONFIG_PROJECTS_PATH_INDEX = 4;
 
-    /**
-     * The buffer size for reading and writing files.
-     */
-    private static final int BUFFER_SIZE = 1024;
+    /** The configuration path variable placeholder. */
+    private static final String CONFIG_PATH_VARIABLE = "${config.path}";
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -129,26 +123,39 @@ public final class CheckstyleExampleExtractor {
     public static void main(final String[] args) throws Exception {
         if (args.length < 1) {
             throw new IllegalArgumentException(
-                    "Usage: <checkstyle repo path> [--input-config <config content> "
-                            + "<output file path>]"
+                    "Usage: <checkstyle repo path> [--input-file <input file path> "
+                            + "<config output path> <projects output path>] "
+                            + "or [--config-file <config file path> "
+                            + "<config output path> <projects output path>]"
             );
         }
 
-        if (args.length == SINGLE_INPUT_FILE_ARG_COUNT
-                && "--input-file".equals(args[INPUT_FILE_FLAG_INDEX])) {
-            // New functionality: process single input file
-            final String inputFilePath = args[INPUT_FILE_PATH_INDEX];
-            final String configOutputPath = args[OUTPUT_FILE_PATH_INDEX];
-            final String projectsOutputPath = args[PROJECT_OUTPUT_PATH_INDEX];
+        if (args.length >= CONFIG_FILE_ARG_COUNT) {
+            final String option = args[CONFIG_FILE_FLAG_INDEX];
+            if ("--input-file".equals(option)) {
+                // Process input file
+                final Path inputFile = Paths.get(args[INPUT_FILE_PATH_INDEX]);
+                final Path configOutputFile = Paths.get(args[CONFIG_OUTPUT_PATH_INDEX]);
+                final Path projectsOutputFile = Paths.get(args[CONFIG_PROJECTS_PATH_INDEX]);
 
-            // Process input file and generate config
-            processInputFile(Paths.get(inputFilePath), Paths.get(configOutputPath));
+                processInputFile(inputFile, configOutputFile);
+                outputDefaultProjectsList(projectsOutputFile.toString());
+            }
+            else if ("--config-file".equals(option)) {
+                // Process config file
+                final Path configFile = Paths.get(args[CONFIG_FILE_PATH_INDEX]);
+                final Path configOutputFile = Paths.get(args[CONFIG_OUTPUT_PATH_INDEX]);
+                final Path projectsOutputFile = Paths.get(args[CONFIG_PROJECTS_PATH_INDEX]);
 
-            // Output default projects list
-            outputDefaultProjectsList(projectsOutputPath);
+                processConfigFile(configFile, configOutputFile);
+                outputDefaultProjectsList(projectsOutputFile.toString());
+            }
+            else {
+                throw new IllegalArgumentException("Unknown option: " + option);
+            }
         }
         else {
-            // Functionality: process all examples
+            // Original functionality: process all examples
             final String checkstyleRepoPath = args[0];
             final List<Path> allExampleDirs = findAllExampleDirs(checkstyleRepoPath);
             final Map<String, List<Path>> moduleExamples = processExampleDirs(allExampleDirs);
@@ -160,6 +167,166 @@ public final class CheckstyleExampleExtractor {
                 generateReadmes(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    /**
+     * Processes external files referenced in the configuration content.
+     * Replaces paths with ${config.path} and copies necessary files to the output directory.
+     *
+     * @param configContent The original configuration content.
+     * @param configFile The path to the configuration file.
+     * @param outputFile The path to the output file.
+     * @return The updated configuration content with paths replaced.
+     * @throws IOException If an I/O error occurs during file operations.
+     */
+    private static String processExternalFilesInConfig(
+            final String configContent,
+            final Path configFile,
+            final Path outputFile) throws IOException {
+        String updatedContent = configContent;
+
+        // Regular expression to find properties with external file references
+        final Pattern pattern = Pattern.compile("<property name=\"([^\"]+)\" value=\"([^\"]+)\"/>");
+        final Matcher matcher = pattern.matcher(configContent);
+        while (matcher.find()) {
+            final String propertyValue = matcher.group(2);
+            if (isExternalProperty(propertyValue)) {
+                // Process this property
+                updatedContent =
+                        processProperty(propertyValue, updatedContent, configFile, outputFile);
+            }
+        }
+
+        return updatedContent;
+    }
+
+    /**
+     * Checks if the property value references an external file.
+     *
+     * @param propertyValue The value of the property to check.
+     * @return True if the property references an external file; false otherwise.
+     */
+    private static boolean isExternalProperty(final String propertyValue) {
+        return propertyValue.contains("config/java.header")
+                || propertyValue.contains("${execution.path}");
+    }
+
+    /**
+     * Processes a single property by replacing paths and copying external files.
+     *
+     * @param propertyValue The original property value.
+     * @param content The current configuration content.
+     * @param configFile The path to the configuration file.
+     * @param outputFile The path to the output file.
+     * @return The updated configuration content.
+     * @throws IOException If an I/O error occurs.
+     */
+    private static String processProperty(
+            final String propertyValue,
+            final String content,
+            final Path configFile,
+            final Path outputFile) throws IOException {
+
+        // Replace the path with ${config.path}
+        final String newPropertyValue = propertyValue
+                .replace("${execution.path}", CONFIG_PATH_VARIABLE)
+                .replace("config/java.header", CONFIG_PATH_VARIABLE + "/java.header");
+
+        // Update the content
+        final String updatedContent = content.replace(propertyValue, newPropertyValue);
+
+        // Copy the external file to the output directory
+        copyExternalFile(configFile, outputFile);
+
+        return updatedContent;
+    }
+
+    /**
+     * Copies the external file referenced in the configuration to the output directory.
+     *
+     * @param configFile The path to the configuration file.
+     * @param outputFile The path to the output file.
+     * @throws IOException If an I/O error occurs during file operations.
+     */
+    private static void copyExternalFile(final Path configFile,
+                                         final Path outputFile)
+                                         throws IOException {
+        final Path configParent = getParentPathOrWarn(configFile, "Config file");
+        final Path outputParent = getParentPathOrWarn(outputFile, "Output file");
+
+        if (configParent != null && outputParent != null) {
+            final Path sourceHeaderFile = configParent.resolve("java.header");
+            final Path targetHeaderFile = outputParent.resolve("config/java.header");
+
+            copyFileIfExists(sourceHeaderFile, targetHeaderFile);
+        }
+    }
+
+    /**
+     * Copies a file if it exists.
+     *
+     * @param sourceFile The source file path.
+     * @param targetFile The target file path.
+     * @throws IOException If an I/O error occurs during file operations.
+     */
+    private static void copyFileIfExists(final Path sourceFile,
+                                         final Path targetFile) throws IOException {
+        if (Files.exists(sourceFile)) {
+            final Path targetParent = getParentPathOrWarn(targetFile, "Target file");
+            if (targetParent != null) {
+                Files.createDirectories(targetParent);
+                Files.copy(sourceFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+        else {
+            LOGGER.warning("External file not found: " + sourceFile);
+        }
+    }
+
+    /**
+     * Retrieves the parent path of a given path, logging a warning if it is null.
+     *
+     * @param path The path to get the parent of.
+     * @param description A description used in the warning message.
+     * @return The parent path, or null if it does not exist.
+     */
+    private static Path getParentPathOrWarn(final Path path, final String description) {
+        final Path parent = path.getParent();
+        if (parent == null) {
+            LOGGER.warning(description + " has no parent directory: " + path);
+        }
+        return parent;
+    }
+
+    /**
+     * Processes a configuration file and generates an output file.
+     *
+     * @param configFile  The path to the configuration file
+     * @param outputFile The path to the output file
+     * @throws Exception If an error occurs during processing
+     * @throws IOException If an error occurs during processing
+     */
+    public static void processConfigFile(
+            final Path configFile,
+            final Path outputFile)
+            throws Exception {
+        // Check if the config file exists
+        if (!Files.exists(configFile)) {
+            LOGGER.severe("Config file does not exist: " + configFile);
+            throw new IOException("Config file does not exist: " + configFile);
+        }
+
+        // Read the config file content
+        final String configContent = Files.readString(configFile, StandardCharsets.UTF_8);
+
+        // Process external files in the config content
+        final String updatedContent = processExternalFilesInConfig(
+                configContent, configFile, outputFile);
+
+        // Write the updated content to the output file
+        Files.writeString(outputFile, updatedContent, StandardCharsets.UTF_8);
+
+        LOGGER.info("Generated configuration at " + outputFile);
     }
 
     /**
