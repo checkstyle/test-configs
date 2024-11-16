@@ -24,6 +24,7 @@
 
         <module name="RequireThis">
             <property name="checkFields" value="false"/>
+            <property name="validateOnlyOverlapping" value="false"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

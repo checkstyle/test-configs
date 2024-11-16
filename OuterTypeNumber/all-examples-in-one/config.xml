@@ -28,16 +28,7 @@
 
         <module name="OuterTypeNumber">
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="OuterTypeNumber">
-            <property name="id" value="example3"/>
             <property name="max" value="3"/>
-        </module>
-
-        <module name="OuterTypeNumber">
-            <property name="id" value="example4"/>
-            <property name="max" value="2"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
