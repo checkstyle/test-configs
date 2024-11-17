@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MethodCount">
-            <property name="maxTotal" value="30"/>
+            <property name="maxTotal" value="5"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
