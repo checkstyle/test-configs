@@ -28,6 +28,7 @@
 
         <module name="CommentsIndentation">
             <property name="id" value="example2"/>
+            <property name="tokens" value="SINGLE_LINE_COMMENT"/>
         </module>
 
         <module name="CommentsIndentation">
@@ -52,14 +53,6 @@
 
         <module name="CommentsIndentation">
             <property name="id" value="example8"/>
-        </module>
-
-        <module name="CommentsIndentation">
-            <property name="id" value="example9"/>
-        </module>
-
-        <module name="CommentsIndentation">
-            <property name="id" value="example10"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
