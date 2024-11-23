@@ -36,7 +36,7 @@
 
         <module name="MagicNumber">
             <property name="id" value="example3"/>
-            <property name="ignoreFieldDeclaration" value="false"/>
+            <property name="ignoreFieldDeclaration" value="true"/>
         </module>
 
         <module name="MagicNumber">
