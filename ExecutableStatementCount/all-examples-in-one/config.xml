@@ -28,8 +28,14 @@
 
         <module name="ExecutableStatementCount">
             <property name="id" value="example2"/>
-            <property name="max" value="20"/>
-            <property name="tokens" value="CTOR_DEF,METHOD_DEF"/>
+            <property name="max" value="2"/>
+            <property name="tokens" value="CTOR_DEF"/>
+        </module>
+
+        <module name="ExecutableStatementCount">
+            <property name="id" value="example3"/>
+            <property name="max" value="2"/>
+            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
