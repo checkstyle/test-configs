@@ -23,9 +23,9 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="RegexpSinglelineJava">
-            <property name="format" value="public"/>
+            <property name="format" value="private"/>
             <property name="ignoreComments" value="true"/>
-            <property name="message" value="public member found"/>
+            <property name="message" value="private member found"/>
             <property name="minimum" value="2"/>
         </module>
 
