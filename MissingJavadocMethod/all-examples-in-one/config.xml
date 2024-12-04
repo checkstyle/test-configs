@@ -39,7 +39,7 @@
 
         <module name="MissingJavadocMethod">
             <property name="id" value="example4"/>
-            <property name="ignoreMethodNamesRegex" value="^foo.*$"/>
+            <property name="ignoreMethodNamesRegex" value="^testMethod.*$"/>
         </module>
 
         <module name="MissingJavadocMethod">
