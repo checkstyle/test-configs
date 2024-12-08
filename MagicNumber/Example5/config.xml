@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MagicNumber">
-            <property name="constantWaiverParentToken" value="ASSIGN,ARRAY_INIT,EXPR,      UNARY_PLUS, UNARY_MINUS, TYPECAST, ELIST, DIV, PLUS "/>
+            <property name="constantWaiverParentToken" value="ASSIGN, ARRAY_INIT, EXPR,      UNARY_PLUS, UNARY_MINUS, TYPECAST, ELIST, DIV, PLUS"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
