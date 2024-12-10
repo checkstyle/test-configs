@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="JavaNCSS">
-            <property name="methodMaximum" value="40"/>
+            <property name="methodMaximum" value="4"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

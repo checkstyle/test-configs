@@ -28,16 +28,16 @@
 
         <module name="JavaNCSS">
             <property name="id" value="example2"/>
-            <property name="methodMaximum" value="40"/>
+            <property name="methodMaximum" value="4"/>
         </module>
 
         <module name="JavaNCSS">
-            <property name="classMaximum" value="100"/>
+            <property name="classMaximum" value="10"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="JavaNCSS">
-            <property name="fileMaximum" value="200"/>
+            <property name="fileMaximum" value="10"/>
             <property name="id" value="example4"/>
         </module>
 
