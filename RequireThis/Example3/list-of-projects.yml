@@ -327,7 +327,7 @@ projects:
   - name: apache-struts
     scm: git
     url: https://github.com/apache/struts.git
-    reference: master
+    reference: main
     excludes:
       - '**/apache-struts/**/resources/**/*'
 
