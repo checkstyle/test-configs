@@ -33,17 +33,39 @@
 
         <module name="IllegalImport">
             <property name="id" value="example3"/>
-            <property name="illegalClasses" value="java.util.Date, java.sql.Connection"/>
+            <property name="illegalPkgs" value="java.io, java.sql"/>
         </module>
 
         <module name="IllegalImport">
             <property name="id" value="example4"/>
+            <property name="illegalClasses" value="java.util.Date, java.sql.Connection"/>
+        </module>
+
+        <module name="IllegalImport">
+            <property name="id" value="example5"/>
+            <property name="illegalClasses" value="java.util.Date, java.sql.Connection"/>
+        </module>
+
+        <module name="IllegalImport">
+            <property name="id" value="example6"/>
             <property name="illegalPkgs" value="java\.util"/>
             <property name="regexp" value="true"/>
         </module>
 
         <module name="IllegalImport">
-            <property name="id" value="example5"/>
+            <property name="id" value="example7"/>
+            <property name="illegalPkgs" value="java\.util"/>
+            <property name="regexp" value="true"/>
+        </module>
+
+        <module name="IllegalImport">
+            <property name="id" value="example8"/>
+            <property name="illegalClasses" value="^java\.util\.(List|Arrays), ^java\.sql\.Connection"/>
+            <property name="regexp" value="true"/>
+        </module>
+
+        <module name="IllegalImport">
+            <property name="id" value="example9"/>
             <property name="illegalClasses" value="^java\.util\.(List|Arrays), ^java\.sql\.Connection"/>
             <property name="regexp" value="true"/>
         </module>

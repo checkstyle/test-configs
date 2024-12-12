@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MatchXpath">
-            <property name="query" value="//METHOD_DEF[./IDENT[@text='test' or @text='foo']]"/>
+            <property name="query" value="//METHOD_DEF[./IDENT[@text='test'              or @text='foo']]"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

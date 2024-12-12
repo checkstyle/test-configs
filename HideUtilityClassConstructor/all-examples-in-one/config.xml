@@ -26,11 +26,6 @@
             <property name="id" value="example1"/>
         </module>
 
-        <module name="HideUtilityClassConstructor">
-            <property name="id" value="example2"/>
-            <property name="ignoreAnnotatedBy" value="SpringBootApplication, java.lang.Deprecated"/>
-        </module>
-
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

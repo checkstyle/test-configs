@@ -25,7 +25,6 @@
         <module name="RegexpSinglelineJava">
             <property name="format" value="debug"/>
             <property name="ignoreCase" value="true"/>
-            <property name="ignoreComments" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

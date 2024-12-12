@@ -29,7 +29,7 @@
 
         <module name="RecordComponentNumber">
             <property name="accessModifiers" value="public"/>
-            <property name="max" value="5"/>
+            <property name="max" value="10"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

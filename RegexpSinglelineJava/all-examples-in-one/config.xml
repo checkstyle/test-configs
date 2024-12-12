@@ -36,7 +36,6 @@
             <property name="format" value="debug"/>
             <property name="id" value="example3"/>
             <property name="ignoreCase" value="true"/>
-            <property name="ignoreComments" value="true"/>
         </module>
 
         <module name="RegexpSinglelineJava">
@@ -46,7 +45,7 @@
         </module>
 
         <module name="RegexpSinglelineJava">
-            <property name="format" value="\.info(.*)"/>
+            <property name="format" value="\.log(.*)"/>
             <property name="id" value="example5"/>
             <property name="maximum" value="2"/>
         </module>
@@ -56,14 +55,14 @@
             <property name="id" value="example6"/>
             <property name="ignoreComments" value="true"/>
             <property name="message" value="public member found"/>
-            <property name="minimum" value="1"/>
+            <property name="minimum" value="2"/>
         </module>
 
         <module name="RegexpSinglelineJava">
-            <property name="format" value="private"/>
+            <property name="format" value="public"/>
             <property name="id" value="example7"/>
             <property name="ignoreComments" value="true"/>
-            <property name="message" value="private member found"/>
+            <property name="message" value="public member found"/>
             <property name="minimum" value="2"/>
         </module>
 

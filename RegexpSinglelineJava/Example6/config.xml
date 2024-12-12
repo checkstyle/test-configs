@@ -26,7 +26,7 @@
             <property name="format" value="public"/>
             <property name="ignoreComments" value="true"/>
             <property name="message" value="public member found"/>
-            <property name="minimum" value="1"/>
+            <property name="minimum" value="2"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

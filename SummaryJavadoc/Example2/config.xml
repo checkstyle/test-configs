@@ -22,9 +22,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="SummaryJavadoc">
-            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
-        </module>
+        <module name="SummaryJavadoc"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

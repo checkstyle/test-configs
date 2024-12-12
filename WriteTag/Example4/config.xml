@@ -26,7 +26,7 @@
             <property name="tag" value="@since"/>
             <property name="tagFormat" value="[1-9\.]"/>
             <property name="tagSeverity" value="ignore"/>
-            <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, ENUM_DEF,                ANNOTATION_DEF, RECORD_DEF, METHOD_DEF"/>
+            <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, ENUM_DEF, ANNOTATION_DEF, RECORD_DEF, METHOD_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

@@ -28,6 +28,19 @@
 
         <module name="NestedTryDepth">
             <property name="id" value="example2"/>
+        </module>
+
+        <module name="NestedTryDepth">
+            <property name="id" value="example3"/>
+        </module>
+
+        <module name="NestedTryDepth">
+            <property name="id" value="example4"/>
+            <property name="max" value="3"/>
+        </module>
+
+        <module name="NestedTryDepth">
+            <property name="id" value="example5"/>
             <property name="max" value="3"/>
         </module>
 

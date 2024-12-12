@@ -17,8 +17,7 @@
     </module>
 
     <module name="LineLength">
-        <property name="ignorePattern" value="^(import) "/>
-        <property name="max" value="60"/>
+        <property name="fileExtensions" value="xml, properties"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->

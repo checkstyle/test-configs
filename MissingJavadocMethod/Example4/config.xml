@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MissingJavadocMethod">
-            <property name="ignoreMethodNamesRegex" value="^testMethod.*$"/>
+            <property name="ignoreMethodNamesRegex" value="^foo.*$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

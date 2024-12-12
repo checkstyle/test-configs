@@ -31,11 +31,6 @@
             <property name="tokens" value="BOR, BAND, BXOR"/>
         </module>
 
-        <module name="UnnecessaryParentheses">
-            <property name="id" value="example3"/>
-            <property name="tokens" value="QUESTION"/>
-        </module>
-
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

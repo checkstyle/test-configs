@@ -27,12 +27,26 @@
         </module>
 
         <module name="SummaryJavadoc">
-            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="SummaryJavadoc">
+            <property name="forbiddenSummaryFragments" value="^This method returns.*"/>
             <property name="id" value="example3"/>
+        </module>
+
+        <module name="SummaryJavadoc">
+            <property name="id" value="example4"/>
+            <property name="period" value="。"/>
+        </module>
+
+        <module name="SummaryJavadoc">
+            <property name="id" value="example5"/>
+            <property name="period" value="。"/>
+        </module>
+
+        <module name="SummaryJavadoc">
+            <property name="id" value="example6"/>
             <property name="period" value="。"/>
         </module>
 

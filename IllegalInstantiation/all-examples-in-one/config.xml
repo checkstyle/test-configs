@@ -27,12 +27,12 @@
         </module>
 
         <module name="IllegalInstantiation">
-            <property name="classes" value="java.lang.Boolean, java.lang.Integer"/>
+            <property name="classes" value="java.lang.Boolean,        java.lang.Integer"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="IllegalInstantiation">
-            <property name="classes" value="java.lang.Boolean[], Boolean[], java.lang.Integer[], Integer[]"/>
+            <property name="classes" value="java.lang.Boolean[],         Boolean[], java.lang.Integer[], Integer[]"/>
             <property name="id" value="example3"/>
         </module>
 

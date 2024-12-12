@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalCatch">
-            <property name="illegalClassNames" value="ArithmeticException,OutOfMemoryError"/>
+            <property name="illegalClassNames" value="ArithmeticException,                  OutOfMemoryError"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

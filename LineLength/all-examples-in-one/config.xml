@@ -31,14 +31,19 @@
     </module>
 
     <module name="LineLength">
-        <property name="fileExtensions" value="xml, properties"/>
+        <property name="fileExtensions" value="java"/>
         <property name="id" value="example4"/>
     </module>
 
     <module name="LineLength">
+        <property name="fileExtensions" value="xml, properties"/>
         <property name="id" value="example5"/>
-        <property name="ignorePattern" value="^(import) "/>
-        <property name="max" value="60"/>
+    </module>
+
+    <module name="LineLength">
+        <property name="id" value="example6"/>
+        <property name="ignorePattern" value="^$"/>
+        <property name="max" value="50"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->

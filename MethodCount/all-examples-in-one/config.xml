@@ -28,13 +28,13 @@
 
         <module name="MethodCount">
             <property name="id" value="example2"/>
-            <property name="maxTotal" value="5"/>
+            <property name="maxTotal" value="30"/>
         </module>
 
         <module name="MethodCount">
             <property name="id" value="example3"/>
-            <property name="maxPublic" value="2"/>
-            <property name="maxTotal" value="6"/>
+            <property name="maxPublic" value="10"/>
+            <property name="maxTotal" value="40"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

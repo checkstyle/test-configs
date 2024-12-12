@@ -22,9 +22,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="CommentsIndentation">
-            <property name="tokens" value="SINGLE_LINE_COMMENT"/>
-        </module>
+        <module name="CommentsIndentation"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

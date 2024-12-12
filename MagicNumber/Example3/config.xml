@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MagicNumber">
-            <property name="ignoreFieldDeclaration" value="true"/>
+            <property name="ignoreFieldDeclaration" value="false"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

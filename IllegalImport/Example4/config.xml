@@ -23,8 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalImport">
-            <property name="illegalPkgs" value="java\.util"/>
-            <property name="regexp" value="true"/>
+            <property name="illegalClasses" value="java.util.Date, java.sql.Connection"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

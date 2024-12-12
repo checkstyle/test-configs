@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="RegexpSinglelineJava">
-            <property name="format" value="\.info(.*)"/>
+            <property name="format" value="\.log(.*)"/>
             <property name="maximum" value="2"/>
         </module>
 
