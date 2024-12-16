@@ -58,7 +58,7 @@
         </module>
 
         <module name="JavadocType">
-            <property name="allowedAnnotations" value="SpringBootApplication,Configuration"/>
+            <property name="allowedAnnotations" value="unknownTag"/>
             <property name="id" value="example8"/>
         </module>
 

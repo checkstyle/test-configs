@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="JavadocType">
-            <property name="allowedAnnotations" value="SpringBootApplication,Configuration"/>
+            <property name="allowedAnnotations" value="unknownTag"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
