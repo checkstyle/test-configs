@@ -23,7 +23,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassFanOutComplexity">
-            <property name="excludedClasses" value="HashMap, HashSet, Place"/>
+            <property name="excludedPackages" value="java.util"/>
+            <property name="max" value="3"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
