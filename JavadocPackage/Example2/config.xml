@@ -17,17 +17,7 @@
     </module>
 
     <module name="JavadocPackage">
-        <property name="id" value="example1"/>
-    </module>
-
-    <module name="JavadocPackage">
         <property name="allowLegacy" value="true"/>
-        <property name="id" value="example2"/>
-    </module>
-
-    <module name="JavadocPackage">
-        <property name="allowLegacy" value="true"/>
-        <property name="id" value="example3"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
