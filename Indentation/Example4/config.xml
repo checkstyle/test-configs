@@ -22,9 +22,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="Indentation">
-            <property name="forceStrictCondition" value="true"/>
-        </module>
+        <module name="Indentation"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
