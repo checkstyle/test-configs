@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -151,6 +152,10 @@ public final class CheckstyleExampleExtractor {
             // Functionality: process all examples
             final String checkstyleRepoPath = args[0];
             final List<Path> allExampleDirs = findAllExampleDirs(checkstyleRepoPath);
+
+            final Properties props = System.getProperties();
+            props.setProperty("config.folder", "${config.folder}");
+
             final Map<String, List<Path>> moduleExamples = processExampleDirs(allExampleDirs);
 
             YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
