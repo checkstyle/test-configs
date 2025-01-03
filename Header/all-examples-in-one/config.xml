@@ -22,7 +22,7 @@
 
     <module name="Header">
         <property name="fileExtensions" value="java"/>
-        <property name="headerFile" value="config/java.header"/>
+        <property name="headerFile" value="${config.folder}/java.header"/>
         <property name="id" value="example2"/>
         <property name="ignoreLines" value="2, 3, 4"/>
     </module>
@@ -30,6 +30,13 @@
     <module name="Header">
         <property name="header" value="// Copyright (C) 2004 MyCompany\n// All rights reserved"/>
         <property name="id" value="example3"/>
+    </module>
+
+    <module name="Header">
+        <property name="fileExtensions" value="java"/>
+        <property name="headerFile" value="${config.folder}/java.header"/>
+        <property name="id" value="example4"/>
+        <property name="ignoreLines" value="2, 3, 4"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
