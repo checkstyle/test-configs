@@ -24,7 +24,7 @@
 
         <module name="CustomImportOrder">
             <property name="customImportOrderRules" value="SAME_PACKAGE(3), THIRD_PARTY_PACKAGE, STATIC, SPECIAL_IMPORTS"/>
-            <property name="specialImportsRegExp" value="^android\."/>
+            <property name="specialImportsRegExp" value="^java\.lang\.String$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
