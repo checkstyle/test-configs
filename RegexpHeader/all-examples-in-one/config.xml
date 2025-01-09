@@ -21,24 +21,19 @@
     </module>
 
     <module name="RegexpHeader">
-        <property name="headerFile" value="config/java.header"/>
+        <property name="headerFile" value="${config.folder}/java.header"/>
         <property name="id" value="example2"/>
         <property name="multiLines" value="10, 13"/>
     </module>
 
     <module name="RegexpHeader">
-        <property name="header" value="^// Copyright \(C\) (\d\d\d\d -)? 2004 MyCompany$        \n^// All rights reserved$"/>
+        <property name="header" value="^// Copyright \(C\) (\d\d\d\d -)? 2004 MyCompany$      \n^// All rights reserved$"/>
         <property name="id" value="example3"/>
     </module>
 
     <module name="RegexpHeader">
-        <property name="header" value="^package .*\n\n.*"/>
+        <property name="header" value="^.*"/>
         <property name="id" value="example4"/>
-    </module>
-
-    <module name="RegexpHeader">
-        <property name="header" value="^package .*\n\n.*"/>
-        <property name="id" value="example5"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->

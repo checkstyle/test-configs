@@ -17,7 +17,7 @@
     </module>
 
     <module name="RegexpHeader">
-        <property name="headerFile" value="config/java.header"/>
+        <property name="headerFile" value="${config.folder}/java.header"/>
         <property name="multiLines" value="10, 13"/>
     </module>
 

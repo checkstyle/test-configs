@@ -17,7 +17,7 @@
     </module>
 
     <module name="RegexpHeader">
-        <property name="header" value="^// Copyright \(C\) (\d\d\d\d -)? 2004 MyCompany$        \n^// All rights reserved$"/>
+        <property name="header" value="^// Copyright \(C\) (\d\d\d\d -)? 2004 MyCompany$      \n^// All rights reserved$"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
