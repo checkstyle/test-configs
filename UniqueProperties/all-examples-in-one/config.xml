@@ -25,11 +25,6 @@
         <property name="id" value="example2"/>
     </module>
 
-    <module name="UniqueProperties">
-        <property name="fileExtensions" value="customProperties"/>
-        <property name="id" value="example3"/>
-    </module>
-
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>
