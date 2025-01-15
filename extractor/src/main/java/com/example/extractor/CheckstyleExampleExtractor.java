@@ -72,46 +72,44 @@ public final class CheckstyleExampleExtractor {
     private static final String PROJ_YML_PROP_FILE_PATH =
             "src/main/resources/" + PROJ_YML_PROP_FILENAME;
 
-    /** The regular expression pattern for excluded file paths. */
-    private static final String EXCLUDED_FILE_PATTERN =
-            "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/regexp/"
-                    + "regexpmultiline/Example7.txt";
-
     /** The regular expression pattern for example files. */
     private static final String EXAMPLE_FILE_PATTERN = "Example\\d+\\.(java|txt)";
 
     /** The subfolder name for all-in-one examples. */
     private static final String ALL_IN_ONE_SUBFOLDER = "all-examples-in-one";
 
-    /**
-     * Number of expected arguments when processing a single input file.
-     */
+    /** The filename for the Java header file. */
+    private static final String JAVA_HEADER_FILENAME = "java.header";
+
+    /** The name of the Example2 directory. */
+    private static final String EXAMPLE2_DIR = "Example2";
+
+    /** The name of the Example4 directory. */
+    private static final String EXAMPLE4_DIR = "Example4";
+
+    /** The name of the Header directory. */
+    private static final String HEADER_DIR = "Header";
+
+    /** Number of expected arguments when processing a single input file. */
     private static final int SINGLE_INPUT_FILE_ARG_COUNT = 5;
 
-    /**
-     * Index of the "--input-file" flag in the argument array.
-     */
+    /** Index of the "--input-file" flag in the argument array. */
     private static final int INPUT_FILE_FLAG_INDEX = 1;
 
-    /**
-     * Index of the input file path in the argument array.
-     */
+    /** Index of the input file path in the argument array. */
     private static final int INPUT_FILE_PATH_INDEX = 2;
 
-    /**
-     * Index of the output file path in the argument array.
-     */
+    /** Index of the output file path in the argument array. */
     private static final int OUTPUT_FILE_PATH_INDEX = 3;
 
-    /**
-     * Index of the output file path in the argument array.
-     */
+    /** Index of the output file path in the argument array. */
     private static final int PROJECT_OUTPUT_PATH_INDEX = 4;
 
-    /**
-     * The buffer size for reading and writing files.
-     */
+    /** The buffer size for reading and writing files. */
     private static final int BUFFER_SIZE = 1024;
+
+    /** The constant for header path. */
+    private static final String JAVA_HEADER_PATH = "config/java.header";
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -156,7 +154,8 @@ public final class CheckstyleExampleExtractor {
             final Properties props = System.getProperties();
             props.setProperty("config.folder", "${config.folder}");
 
-            final Map<String, List<Path>> moduleExamples = processExampleDirs(allExampleDirs);
+            final Map<String, List<Path>> moduleExamples =
+                    processExampleDirs(allExampleDirs, checkstyleRepoPath);
 
             YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
 
@@ -305,15 +304,16 @@ public final class CheckstyleExampleExtractor {
      * Processes example directories to map module names to their corresponding directories.
      *
      * @param allExampleDirs A list of paths to example directories.
+     * @param checkstyleRepoPath The path to the Checkstyle repository.
      * @return A map associating module names with their example directories.
      * @throws Exception If an unexpected error occurs.
      */
     private static Map<String, List<Path>> processExampleDirs(
-            final List<Path> allExampleDirs)
+            final List<Path> allExampleDirs, final String checkstyleRepoPath)
             throws Exception {
         final Map<String, List<Path>> moduleExamples = new ConcurrentHashMap<>();
         for (final Path dir : allExampleDirs) {
-            final String moduleName = processDirectory(dir.toString());
+            final String moduleName = processDirectory(dir.toString(), checkstyleRepoPath);
             if (moduleName != null) {
                 moduleExamples.computeIfAbsent(moduleName, moduleKey -> new ArrayList<>()).add(dir);
             }
@@ -365,10 +365,12 @@ public final class CheckstyleExampleExtractor {
      * Process a directory containing example files.
      *
      * @param inputDir Input directory path
+     * @param checkstyleRepoPath The path to the Checkstyle repository.
      * @return Module name if processing was successful, null otherwise
      * @throws Exception If an I/O error occurs
      */
-    public static String processDirectory(final String inputDir) throws Exception {
+    public static String processDirectory(final String inputDir,
+                                          final String checkstyleRepoPath) throws Exception {
         String moduleName = null;
 
         final Path inputPath = Paths.get(inputDir);
@@ -376,7 +378,6 @@ public final class CheckstyleExampleExtractor {
             final List<Path> exampleFiles = paths
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().matches(EXAMPLE_FILE_PATTERN))
-                    .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATTERN))
                     .collect(Collectors.toList());
 
             if (!exampleFiles.isEmpty()) {
@@ -387,7 +388,7 @@ public final class CheckstyleExampleExtractor {
                     Files.createDirectories(outputPath);
 
                     for (final Path exampleFile : exampleFiles) {
-                        processExampleFile(exampleFile, outputPath);
+                        processExampleFile(exampleFile, outputPath, checkstyleRepoPath);
                     }
                 }
             }
@@ -400,36 +401,40 @@ public final class CheckstyleExampleExtractor {
      * Processes an example file and creates a corresponding subfolder in the output path.
      *
      * @param exampleFile The example file to process.
+     * @param checkstyleRepoPath The path to the Checkstyle repository.
      * @param outputPath  The path where the processed file's subfolder will be created.
      * @throws Exception If an unexpected error occurs.
      */
     private static void processExampleFile(
             final Path exampleFile,
-            final Path outputPath)
+            final Path outputPath,
+            final String checkstyleRepoPath)
             throws Exception {
         final Path fileName = exampleFile.getFileName();
         if (fileName != null) {
             final String fileNameStr = fileName.toString().replaceFirst("\\.(java|txt)$", "");
             final Path subfolderPath = outputPath.resolve(fileNameStr);
             Files.createDirectories(subfolderPath);
-            processFile(exampleFile.toString(), subfolderPath);
+            processFile(exampleFile.toString(), subfolderPath, checkstyleRepoPath);
         }
     }
 
     /**
      * Processes an example file and generates its configuration, properties, and README.
+     * Also copies any known extra files if present in the same folder.
      *
-     * @param exampleFile The path to the example file.
-     * @param outputPath  The path where the generated content will be stored.
+     * @param exampleFile The path to the example file (.java or .txt).
+     * @param checkstyleRepoPath The path to the Checkstyle repository.
+     * @param outputPath  The path where the generated content (config.xml, etc.) will be stored.
      * @throws Exception If an unexpected error occurs.
      */
     private static void processFile(
             final String exampleFile,
-            final Path outputPath)
+            final Path outputPath,
+            final String checkstyleRepoPath)
             throws Exception {
         if (exampleFile != null
-                && outputPath != null
-                && !exampleFile.endsWith(EXCLUDED_FILE_PATTERN)) {
+                && outputPath != null) {
             try {
                 final String templateFilePath = getTemplateFilePathForExamples(exampleFile);
                 if (templateFilePath != null) {
@@ -438,6 +443,7 @@ public final class CheckstyleExampleExtractor {
                     writeConfigFile(outputPath, generatedContent);
                     copyPropertiesFile(outputPath);
                     generateReadme(outputPath);
+                    handleHeaderFileIfNeeded(outputPath, checkstyleRepoPath);
                 }
                 else {
                     LOGGER.log(Level.WARNING,
@@ -450,6 +456,60 @@ public final class CheckstyleExampleExtractor {
                         "Error reading or processing the file: "
                                 + exampleFile, ex);
             }
+        }
+    }
+
+    /**
+     * Copies java.header from Checkstyle repository into the output folder
+     * (next to config.xml) if it exists.
+     *
+     * @param outputPath  The folder where config.xml is placed.
+     * @param checkstyleRepoPath The path to Checkstyle repository
+     * @throws IOException if an I/O error occurs.
+     */
+    private static void copyJavaHeaderIfNeeded(final Path outputPath,
+                                               final String checkstyleRepoPath)
+            throws IOException {
+        final Path source =
+                Paths.get(checkstyleRepoPath, JAVA_HEADER_PATH);
+
+        if (Files.exists(source)) {
+            Files.copy(source,
+                    outputPath.resolve(JAVA_HEADER_FILENAME),
+                    StandardCopyOption.REPLACE_EXISTING);
+            LOGGER.info("Copied " + JAVA_HEADER_FILENAME
+                    + " from " + source + " to " + outputPath);
+        }
+        else {
+            LOGGER.warning("No " + JAVA_HEADER_FILENAME
+                    + " found at " + source + ". Skipping.");
+        }
+    }
+
+    /**
+     * Checks if the output path requires a java.header file and copies it if needed.
+     *
+     * @param outputPath The path where config.xml is placed
+     * @param checkstyleRepoPath The path to Checkstyle repository
+     * @throws IOException if an I/O error occurs
+     */
+    private static void handleHeaderFileIfNeeded(final Path outputPath,
+                                                 final String checkstyleRepoPath)
+            throws IOException {
+        final Path parentDir = outputPath.getParent();
+        final String parentName = Optional.ofNullable(parentDir)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .orElse("");
+
+        final String folderName = Optional.ofNullable(outputPath.getFileName())
+                .map(Path::toString)
+                .orElse("");
+
+        if (HEADER_DIR.equals(parentName)
+                && (EXAMPLE2_DIR.equals(folderName)
+                || EXAMPLE4_DIR.equals(folderName))) {
+            copyJavaHeaderIfNeeded(outputPath, checkstyleRepoPath);
         }
     }
 
@@ -554,7 +614,6 @@ public final class CheckstyleExampleExtractor {
                 paths.filter(Files::isRegularFile)
                         .filter(path -> path.getFileName().toString().matches(EXAMPLE_FILE_PATTERN))
                         .map(Path::toString)
-                        .filter(file -> !file.endsWith(EXCLUDED_FILE_PATTERN))
                         .forEach(allExampleFiles::add);
             }
         }
@@ -709,7 +768,6 @@ public final class CheckstyleExampleExtractor {
             try (Stream<Path> paths = Files.list(dir)) {
                 paths.filter(Files::isRegularFile)
                         .filter(path -> path.getFileName().toString().matches(EXAMPLE_FILE_PATTERN))
-                        .filter(path -> !path.toString().endsWith(EXCLUDED_FILE_PATTERN))
                         .forEach(exampleFile -> {
                             generateIndividualReadme(exampleFile, outputPath, moduleName);
                         });

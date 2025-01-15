@@ -16,6 +16,7 @@
         <sevntu-checkstyle.version>1.44.1</sevntu-checkstyle.version>
         <checkstyle.config.location>https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml</checkstyle.config.location>
         <checkstyle.failsOnError>true</checkstyle.failsOnError>
+        <config.folder>${project.basedir}/config</config.folder>
     </properties>
 
     <build>
@@ -62,6 +63,9 @@
                 <configuration>
                     <enableFilesSummary>false</enableFilesSummary>
                     <failsOnError>${checkstyle.failsOnError}</failsOnError>
+                    <propertyExpansion>
+                        config.folder=${config.folder}
+                    </propertyExpansion>
                 </configuration>
             </plugin>
 
