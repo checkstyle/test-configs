@@ -48,12 +48,15 @@
         <!-- SignatureDeclareThrowsException is excluded as the project needs flexibility
              in specifying exceptions for certain methods, particularly those interacting with external APIs. -->
         <exclude name="SignatureDeclareThrowsException"/>
+
         <!-- GodClass is excluded as some classes necessarily manage complex functionalities,
              and attempts to refactor would decrease cohesion and increase coupling. -->
         <exclude name="GodClass"/>
+
         <!-- TooManyMethods is excluded because some classes require multiple methods
              due to the breadth of their responsibilities, particularly in utility or service classes. -->
         <exclude name="TooManyMethods"/>
+
         <!-- AvoidCatchingGenericException is excluded to allow for broad exception handling
              in certain scenarios where specific exceptions are not easily anticipated. -->
         <exclude name="AvoidCatchingGenericException"/>
