@@ -1,6 +1,6 @@
 # Checkstyle Test Configurations Generator
 
-This repository stores and generates configurations for diff.groovy testing in the Checkstyle project.
+This repository stores and generates configurations for diff.groovy testing or regression-report.yml in the Checkstyle project.
 
 ## Using the Configurations
 
