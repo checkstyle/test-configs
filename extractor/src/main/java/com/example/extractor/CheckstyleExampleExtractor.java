@@ -88,7 +88,7 @@ public final class CheckstyleExampleExtractor {
     private static final String EXAMPLE4_DIR = "Example4";
 
     /** The name of the Header directory. */
-    private static final String HEADER_DIR = "Header";
+    private static final String HEADER_MODULE = "Header";
 
     /** Number of expected arguments when processing a single input file. */
     private static final int SINGLE_INPUT_FILE_ARG_COUNT = 5;
@@ -160,7 +160,7 @@ public final class CheckstyleExampleExtractor {
             YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
 
             for (final Map.Entry<String, List<Path>> entry : moduleExamples.entrySet()) {
-                generateAllInOneConfig(entry.getKey(), entry.getValue());
+                generateAllInOneConfig(entry.getKey(), entry.getValue(), checkstyleRepoPath);
                 generateReadmes(entry.getKey(), entry.getValue());
             }
         }
@@ -366,7 +366,7 @@ public final class CheckstyleExampleExtractor {
      *
      * @param inputDir Input directory path
      * @param checkstyleRepoPath The path to the Checkstyle repository.
-     * @return Module name if processing was successful, null otherwise
+     * @return Module name if processing was successful, null otherwise.
      * @throws Exception If an I/O error occurs
      */
     public static String processDirectory(final String inputDir,
@@ -464,7 +464,7 @@ public final class CheckstyleExampleExtractor {
      * (next to config.xml) if it exists.
      *
      * @param outputPath  The folder where config.xml is placed.
-     * @param checkstyleRepoPath The path to Checkstyle repository
+     * @param checkstyleRepoPath The path to Checkstyle repository.
      * @throws IOException if an I/O error occurs.
      */
     private static void copyJavaHeaderIfNeeded(final Path outputPath,
@@ -489,9 +489,9 @@ public final class CheckstyleExampleExtractor {
     /**
      * Checks if the output path requires a java.header file and copies it if needed.
      *
-     * @param outputPath The path where config.xml is placed
-     * @param checkstyleRepoPath The path to Checkstyle repository
-     * @throws IOException if an I/O error occurs
+     * @param outputPath The path where config.xml is placed.
+     * @param checkstyleRepoPath The path to Checkstyle repository.
+     * @throws IOException if an I/O error occurs.
      */
     private static void handleHeaderFileIfNeeded(final Path outputPath,
                                                  final String checkstyleRepoPath)
@@ -506,7 +506,7 @@ public final class CheckstyleExampleExtractor {
                 .map(Path::toString)
                 .orElse("");
 
-        if (HEADER_DIR.equals(parentName)
+        if (HEADER_MODULE.equals(parentName)
                 && (EXAMPLE2_DIR.equals(folderName)
                 || EXAMPLE4_DIR.equals(folderName))) {
             copyJavaHeaderIfNeeded(outputPath, checkstyleRepoPath);
@@ -573,12 +573,14 @@ public final class CheckstyleExampleExtractor {
      * Generate all-in-one configuration for a module.
      *
      * @param moduleName Module name
-     * @param exampleDirs List of example directories
-     * @throws Exception If an I/O error occurs during generation
+     * @param exampleDirs List of example directories.
+     * @param checkstyleRepoPath The path to the Checkstyle repository.
+     * @throws Exception If an I/O error occurs during generation.
      */
     public static void generateAllInOneConfig(
             final String moduleName,
-            final List<Path> exampleDirs)
+            final List<Path> exampleDirs,
+            final String checkstyleRepoPath)
             throws Exception {
         final List<String> allExampleFiles = getAllExampleFiles(exampleDirs);
         final boolean shouldProceed = !allExampleFiles.isEmpty();
@@ -594,7 +596,7 @@ public final class CheckstyleExampleExtractor {
             Files.createDirectories(allInOneSubfolderPath);
 
             generateAllInOneContent(allExampleFiles, allInOneSubfolderPath);
-            handleAllExamplesInOne(moduleName, allInOneSubfolderPath);
+            handleAllExamplesInOne(moduleName, allInOneSubfolderPath, checkstyleRepoPath);
             generateAllInOneReadme(allInOneSubfolderPath, moduleName);
         }
     }
@@ -642,12 +644,14 @@ public final class CheckstyleExampleExtractor {
     /**
      * Handles the creation and copying of project files for the "all-examples-in-one" case.
      *
-     * @param moduleName             The name of the module.
+     * @param moduleName The name of the module.
+     * @param checkstyleRepoPath The path to the Checkstyle repository.
      * @param allInOneSubfolderPath  The path to the "all-examples-in-one" subfolder.
      */
     private static void handleAllExamplesInOne(
             final String moduleName,
-            final Path allInOneSubfolderPath) {
+            final Path allInOneSubfolderPath,
+            final String checkstyleRepoPath) {
         try {
             final Map<String, Object> yamlData = YamlParserAndProjectHandler.parseYamlFile();
             final Map<String, Object> moduleConfig = (Map<String, Object>) yamlData.get(moduleName);
@@ -681,11 +685,21 @@ public final class CheckstyleExampleExtractor {
                         allProjectLines,
                         moduleName
                 );
+
+                // Add java.header for Header module's all-in-one examples
+                if (HEADER_MODULE.equals(moduleName)) {
+                    copyJavaHeaderIfNeeded(allInOneSubfolderPath, checkstyleRepoPath);
+                }
             }
             else {
                 // Copy default properties and YAML files
                 copyDefaultPropertiesFile(allInOneSubfolderPath);
                 copyDefaultYamlFile(allInOneSubfolderPath);
+
+                // Add java.header for Header module's all-in-one examples
+                if (HEADER_MODULE.equals(moduleName)) {
+                    copyJavaHeaderIfNeeded(allInOneSubfolderPath, checkstyleRepoPath);
+                }
             }
         }
         catch (IOException ex) {
