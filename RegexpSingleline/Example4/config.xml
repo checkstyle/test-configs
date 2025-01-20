@@ -17,7 +17,7 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="This file is copyrighted"/>
+        <property name="format" value="^[ ]*\* This file is copyrighted"/>
         <property name="maximum" value="10"/>
         <property name="minimum" value="1"/>
     </module>

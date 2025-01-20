@@ -35,16 +35,17 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="This file is copyrighted"/>
+        <property name="format" value="^[ ]*\* This file is copyrighted"/>
         <property name="id" value="example4"/>
         <property name="maximum" value="10"/>
         <property name="minimum" value="1"/>
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="This file is copyrighted"/>
+        <property name="format" value="^[ ]*\* This file is copyrighted"/>
         <property name="id" value="example5"/>
         <property name="maximum" value="10"/>
+        <property name="message" value="File must contain copyright statement"/>
         <property name="minimum" value="1"/>
     </module>
 
@@ -52,16 +53,6 @@
         <property name="fileExtensions" value="sql"/>
         <property name="format" value="license"/>
         <property name="id" value="example6"/>
-        <property name="ignoreCase" value="true"/>
-        <property name="maximum" value="9999"/>
-        <property name="message" value="File must contain at least one occurrence of 'license' term"/>
-        <property name="minimum" value="1"/>
-    </module>
-
-    <module name="RegexpSingleline">
-        <property name="fileExtensions" value="sql"/>
-        <property name="format" value="license"/>
-        <property name="id" value="example7"/>
         <property name="ignoreCase" value="true"/>
         <property name="maximum" value="9999"/>
         <property name="message" value="File must contain at least one occurrence of 'license' term"/>
