@@ -21,7 +21,7 @@
     </module>
 
     <module name="RegexpOnFilename">
-        <property name="fileNamePattern" value="\.gif$"/>
+        <property name="fileNamePattern" value="^TestExample\d+\.xml$"/>
         <property name="id" value="example2"/>
     </module>
 
@@ -33,28 +33,14 @@
     </module>
 
     <module name="RegexpOnFilename">
-        <property name="fileExtensions" value="properties, xml"/>
-        <property name="folderPattern" value="[\\/]src[\\/]\w+[\\/]resources[\\/]"/>
+        <property name="fileNamePattern" value=".*\.(properties|xml)$"/>
         <property name="id" value="example4"/>
         <property name="match" value="false"/>
     </module>
 
     <module name="RegexpOnFilename">
-        <property name="fileNamePattern" value="\.(java|xml)$"/>
-        <property name="id" value="example5"/>
-        <property name="match" value="false"/>
-    </module>
-
-    <module name="RegexpOnFilename">
-        <property name="fileNamePattern" value="\.(java|xml)$"/>
-        <property name="folderPattern" value="[\\/]src[\\/]"/>
-        <property name="id" value="example6"/>
-        <property name="match" value="false"/>
-    </module>
-
-    <module name="RegexpOnFilename">
         <property name="fileNamePattern" value="^([A-Z][a-z0-9]+\.?)+$"/>
-        <property name="id" value="example7"/>
+        <property name="id" value="example5"/>
         <property name="ignoreFileNameExtensions" value="true"/>
         <property name="match" value="false"/>
     </module>

@@ -17,7 +17,8 @@
     </module>
 
     <module name="RegexpOnFilename">
-        <property name="fileNamePattern" value="\.(java|xml)$"/>
+        <property name="fileNamePattern" value="^([A-Z][a-z0-9]+\.?)+$"/>
+        <property name="ignoreFileNameExtensions" value="true"/>
         <property name="match" value="false"/>
     </module>
 

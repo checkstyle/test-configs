@@ -17,7 +17,7 @@
     </module>
 
     <module name="RegexpOnFilename">
-        <property name="fileNamePattern" value="\.gif$"/>
+        <property name="fileNamePattern" value="^TestExample\d+\.xml$"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
