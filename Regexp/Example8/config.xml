@@ -23,8 +23,9 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="Regexp">
-            <property name="format" value="(?i)debug"/>
+            <property name="format" value="[ \t]+$"/>
             <property name="illegalPattern" value="true"/>
+            <property name="message" value="Trailing whitespace"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

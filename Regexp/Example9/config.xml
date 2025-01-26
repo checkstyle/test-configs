@@ -23,8 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="Regexp">
-            <property name="errorLimit" value="1000"/>
-            <property name="format" value="(?i)debug"/>
+            <property name="format" value="(?i)fix me\."/>
             <property name="illegalPattern" value="true"/>
         </module>
 

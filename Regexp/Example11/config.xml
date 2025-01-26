@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="Regexp">
-            <property name="format" value="\A/{71}\n// checkstyle:\n// Checks Java source code for        adherence to a set of rules\.\n// Copyright \(C\) \d\d\d\d  Oliver Burn\n        // Last modification by \$Author.*\$\n/{71}\n\npackage [\w\.]*;\n\n        (import [\w\.]*;\n)*\n/\*\*\n( \*[^/]*\n)* \*/"/>
+            <property name="format" value="// Copyright \(C\) \d\d\d\d MyCompany\n// All rights reserved"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
