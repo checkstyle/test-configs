@@ -64,7 +64,7 @@
                     <enableFilesSummary>false</enableFilesSummary>
                     <failsOnError>${checkstyle.failsOnError}</failsOnError>
                     <propertyExpansion>
-                        config.folder=${config.folder}
+                        config.folder=${project.basedir}
                     </propertyExpansion>
                 </configuration>
             </plugin>
