@@ -17,9 +17,8 @@
     </module>
 
     <module name="Translation">
-        <property name="fileExtensions" value="properties, translations"/>
         <property name="id" value="example1"/>
-        <property name="requiredTranslations" value="fr"/>
+        <property name="requiredTranslations" value="es, fr"/>
     </module>
 
     <module name="Translation">
@@ -29,8 +28,9 @@
     </module>
 
     <module name="Translation">
+        <property name="fileExtensions" value="properties,translations"/>
         <property name="id" value="example3"/>
-        <property name="requiredTranslations" value="ja, fr"/>
+        <property name="requiredTranslations" value="fr"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->

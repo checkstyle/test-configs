@@ -17,8 +17,7 @@
     </module>
 
     <module name="Translation">
-        <property name="fileExtensions" value="properties, translations"/>
-        <property name="requiredTranslations" value="fr"/>
+        <property name="requiredTranslations" value="es, fr"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
