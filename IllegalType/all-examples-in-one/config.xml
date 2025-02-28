@@ -65,6 +65,13 @@
             <property name="query" value="//METHOD_DEF//*"/>
         </module>
 
+        <module name="IllegalType">
+            <property name="id" value="IllegalTypeVarAsField"/>
+            <property name="id" value="example8"/>
+            <property name="illegalClassNames" value="var"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>
