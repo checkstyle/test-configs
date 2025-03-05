@@ -27,7 +27,7 @@
         </module>
 
         <module name="IllegalIdentifierName">
-            <property name="format" value="(?i)^(?!(record|yield|var|permits|sealed|open|transitive|_)$).+$"/>
+            <property name="format" value="(?i)^(?!(when|record|yield|var|permits|sealed|open|transitive|_)$|(.*\$)).+$"/>
             <property name="id" value="example2"/>
         </module>
 

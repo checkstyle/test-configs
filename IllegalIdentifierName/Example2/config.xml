@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalIdentifierName">
-            <property name="format" value="(?i)^(?!(record|yield|var|permits|sealed|open|transitive|_)$).+$"/>
+            <property name="format" value="(?i)^(?!(when|record|yield|var|permits|sealed|open|transitive|_)$|(.*\$)).+$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
