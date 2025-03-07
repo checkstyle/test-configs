@@ -22,9 +22,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="JavadocVariable">
-            <property name="accessModifiers" value="private,package"/>
-        </module>
+        <module name="JavadocVariable"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

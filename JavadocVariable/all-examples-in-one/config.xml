@@ -27,19 +27,22 @@
         </module>
 
         <module name="JavadocVariable">
+            <property name="accessModifiers" value="public"/>
             <property name="id" value="example2"/>
-            <property name="scope" value="public"/>
         </module>
 
         <module name="JavadocVariable">
-            <property name="excludeScope" value="protected"/>
+            <property name="accessModifiers" value="private,package"/>
             <property name="id" value="example3"/>
-            <property name="scope" value="private"/>
         </module>
 
         <module name="JavadocVariable">
             <property name="id" value="example4"/>
             <property name="ignoreNamePattern" value="log|logger"/>
+        </module>
+
+        <module name="JavadocVariable">
+            <property name="id" value="example5"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
