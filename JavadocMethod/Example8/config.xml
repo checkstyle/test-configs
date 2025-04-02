@@ -23,43 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="JavadocMethod">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="JavadocMethod">
-            <property name="accessModifiers" value="public"/>
-            <property name="allowMissingParamTags" value="true"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="JavadocMethod">
-            <property name="accessModifiers" value="private, package"/>
-            <property name="id" value="example3"/>
-        </module>
-
-        <module name="JavadocMethod">
-            <property name="allowMissingReturnTag" value="true"/>
-            <property name="id" value="example4"/>
-        </module>
-
-        <module name="JavadocMethod">
-            <property name="allowedAnnotations" value="Deprecated"/>
-            <property name="id" value="example5"/>
-        </module>
-
-        <module name="JavadocMethod">
-            <property name="id" value="example6"/>
-            <property name="tokens" value="CTOR_DEF"/>
-        </module>
-
-        <module name="JavadocMethod">
-            <property name="id" value="example7"/>
-            <property name="validateThrows" value="true"/>
-        </module>
-
-        <module name="JavadocMethod">
             <property name="allowInlineReturn" value="true"/>
-            <property name="id" value="example8"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
