@@ -23,7 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="VariableDeclarationUsageDistance">
-            <property name="ignoreVariablePattern" value="^num$"/>
+            <property name="ignoreFinal" value="false"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

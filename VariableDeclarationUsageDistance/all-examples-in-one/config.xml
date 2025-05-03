@@ -27,22 +27,26 @@
         </module>
 
         <module name="VariableDeclarationUsageDistance">
-            <property name="allowedDistance" value="4"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="VariableDeclarationUsageDistance">
+            <property name="allowedDistance" value="4"/>
             <property name="id" value="example3"/>
-            <property name="ignoreVariablePattern" value="^num$"/>
         </module>
 
         <module name="VariableDeclarationUsageDistance">
             <property name="id" value="example4"/>
-            <property name="validateBetweenScopes" value="true"/>
+            <property name="ignoreVariablePattern" value="^num$"/>
         </module>
 
         <module name="VariableDeclarationUsageDistance">
             <property name="id" value="example5"/>
+            <property name="validateBetweenScopes" value="true"/>
+        </module>
+
+        <module name="VariableDeclarationUsageDistance">
+            <property name="id" value="example6"/>
             <property name="ignoreFinal" value="false"/>
         </module>
 
