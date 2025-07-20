@@ -23,30 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control1.xml"/>
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control2.xml"/>
-            <property name="id" value="example2"/>
-            <property name="path" value="${config.folder}[\\/]api[\\/].*$"/>
-        </module>
-
-        <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control4.xml"/>
-            <property name="id" value="example3"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control5.xml"/>
-            <property name="id" value="example4"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control10.xml"/>
-            <property name="id" value="example5"/>
-            <property name="path" value="^.*[\\/]src[\\/]xdocs-examples[\\/].*$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
