@@ -44,8 +44,23 @@
         </module>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control10.xml"/>
+            <property name="file" value="${config.folder}/import-control6.xml"/>
             <property name="id" value="example5"/>
+        </module>
+
+        <module name="ImportControl">
+            <property name="file" value="${config.folder}/import-control7.xml"/>
+            <property name="id" value="example6"/>
+        </module>
+
+        <module name="ImportControl">
+            <property name="file" value="${config.folder}/import-control8.xml"/>
+            <property name="id" value="example7"/>
+        </module>
+
+        <module name="ImportControl">
+            <property name="file" value="${config.folder}/import-control10.xml"/>
+            <property name="id" value="example8"/>
             <property name="path" value="^.*[\\/]src[\\/]xdocs-examples[\\/].*$"/>
         </module>
 
