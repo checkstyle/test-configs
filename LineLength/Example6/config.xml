@@ -17,8 +17,13 @@
     </module>
 
     <module name="LineLength">
-        <property name="ignorePattern" value="^$"/>
-        <property name="max" value="50"/>
+        <property name="max" value="70"/>
+    </module>
+
+    <module name="SuppressWithPlainTextCommentFilter">
+        <property name="checkFormat" value="LineLength"/>
+        <property name="offCommentFormat" value='^.*"""$'/>
+        <property name="onCommentFormat" value='^\s*"""\s*(?:[,;]|.+)$'/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
