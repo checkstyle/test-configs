@@ -23,27 +23,9 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="TypeName">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="TypeName">
-            <property name="applyToPrivate" value="false"/>
-            <property name="applyToProtected" value="false"/>
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="TypeName">
-            <property name="format" value="^I_[a-zA-Z0-9]*$"/>
-            <property name="id" value="example3"/>
-            <property name="tokens" value="INTERFACE_DEF"/>
-        </module>
-
-        <module name="TypeName">
             <property name="applyToPackage" value="false"/>
             <property name="applyToPublic" value="false"/>
             <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
-            <property name="id" value="example4"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
