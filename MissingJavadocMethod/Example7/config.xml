@@ -23,37 +23,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MissingJavadocMethod">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="MissingJavadocMethod">
-            <property name="id" value="example2"/>
-            <property name="scope" value="private"/>
-        </module>
-
-        <module name="MissingJavadocMethod">
-            <property name="excludeScope" value="protected"/>
-            <property name="id" value="example3"/>
-            <property name="scope" value="private"/>
-        </module>
-
-        <module name="MissingJavadocMethod">
-            <property name="id" value="example4"/>
-            <property name="ignoreMethodNamesRegex" value="^testMethod.*$"/>
-        </module>
-
-        <module name="MissingJavadocMethod">
-            <property name="allowMissingPropertyJavadoc" value="true"/>
-            <property name="id" value="example5"/>
-        </module>
-
-        <module name="MissingJavadocMethod">
-            <property name="allowedAnnotations" value="Override,Deprecated"/>
-            <property name="id" value="example6"/>
-        </module>
-
-        <module name="MissingJavadocMethod">
-            <property name="id" value="example7"/>
             <property name="minLineCount" value="2"/>
         </module>
 
