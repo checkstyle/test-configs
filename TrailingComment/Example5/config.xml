@@ -23,38 +23,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="TrailingComment">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="TrailingComment">
-            <property name="format" value="^\s*$"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="TrailingComment">
-            <property name="id" value="example3"/>
-            <property name="legalComment" value="^ (SUPPRESS CHECKSTYLE|NOPMD|NOSONAR)$"/>
-        </module>
-
-        <module name="TrailingComment">
-            <property name="id" value="example4"/>
-            <property name="legalComment" value="^ (SUPPRESS CHECKSTYLE|NOPMD|NOSONAR).*"/>
-        </module>
-
-        <module name="TrailingComment">
-            <property name="id" value="example5"/>
             <property name="legalComment" value="^ (TODO|FIXME|trailingcomment).*"/>
-        </module>
-
-        <module name="TrailingComment">
-            <property name="id" value="example6"/>
-            <property name="legalComment" value="^ violation.*"/>
-        </module>
-
-        <module name="SuppressionXpathSingleFilter">
-            <property name="checks" value="TrailingCommentCheck"/>
-            <property name="id" value="example6"/>
-            <property name="query" value="//BLOCK_COMMENT_BEGIN        [./COMMENT_CONTENT[@text=' NOSONAR ' or @text=' NOPMD '        or @text=' SUPPRESS CHECKSTYLE ']]"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

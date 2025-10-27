@@ -22,11 +22,8 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="TrailingComment"/>
-
-        <module name="SuppressionXpathSingleFilter">
-            <property name="checks" value="TrailingCommentCheck"/>
-            <property name="query" value="//SINGLE_LINE_COMMENT        [./COMMENT_CONTENT[starts-with(@text, ' NOPMD')]],//SINGLE_LINE_COMMENT        [./COMMENT_CONTENT[starts-with(@text, ' SUPPRESS CHECKSTYLE')]],//SINGLE_LINE_COMMENT        [./COMMENT_CONTENT[starts-with(@text, ' NOSONAR')]]"/>
+        <module name="TrailingComment">
+            <property name="legalComment" value="^ (SUPPRESS CHECKSTYLE|NOPMD|NOSONAR).*"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
