@@ -3,7 +3,7 @@ SummaryJavadoc:
     projects:
       # javadocs in japan language
       - WxJava
-      - openjdk21
+      - openjdk25
 
 RequireThis:
   Example1:
@@ -12,7 +12,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -40,7 +40,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -68,7 +68,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -96,7 +96,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -124,7 +124,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -152,7 +152,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -180,7 +180,7 @@ RequireThis:
       - checkstyle
       - sevntu-checkstyle
       - checkstyle-sonar
-      - openjdk21
+      - openjdk25
       - guava
       - spotbugs
       - pmd
@@ -210,7 +210,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -239,7 +239,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -268,7 +268,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -297,7 +297,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -326,7 +326,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -355,7 +355,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -384,7 +384,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -413,7 +413,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -442,7 +442,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -471,7 +471,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
@@ -500,7 +500,7 @@ WhitespaceAround:
       - sevntu-checkstyle
       - checkstyle-sonar
       - WxJava
-      - openjdk21
+      - openjdk25
       - spring-integration
       - guava
       - spotbugs
