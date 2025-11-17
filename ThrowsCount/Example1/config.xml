@@ -18,7 +18,10 @@
     </module>
 
     <module name="TreeWalker">
-        <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
+        <!-- We intentionally ignore all Java parse errors in regression reports.
+             Projects often use syntax newer than Checkstyle supports, so parse
+             failures must not appear as diffs or violations. Stacktrace format
+             changes would also create noisy diffs, so we suppress them entirely. -->
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
