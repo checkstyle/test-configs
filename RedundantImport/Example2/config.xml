@@ -25,13 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="RedundantImport">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="RedundantImport">
-            <property name="id" value="example2"/>
-        </module>
+        <module name="RedundantImport"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
