@@ -26,8 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalImport">
-            <property name="illegalPkgs" value="java\.util"/>
-            <property name="regexp" value="true"/>
+            <property name="illegalModules" value="java.base, java.logging"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
