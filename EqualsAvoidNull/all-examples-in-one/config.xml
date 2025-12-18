@@ -27,6 +27,7 @@
 
         <module name="EqualsAvoidNull">
             <property name="id" value="example1"/>
+            <property name="ignoreEqualsIgnoreCase" value="false"/>
         </module>
 
         <module name="EqualsAvoidNull">
