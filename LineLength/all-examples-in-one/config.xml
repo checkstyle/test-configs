@@ -43,7 +43,7 @@
 
     <module name="LineLength">
         <property name="id" value="example6"/>
-        <property name="max" value="100"/>
+        <property name="max" value="84"/>
     </module>
 
     <module name="com.puppycrawl.tools.checkstyle.filters.SuppressWithPlainTextCommentFilter">
