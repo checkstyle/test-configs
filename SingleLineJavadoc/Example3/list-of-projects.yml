@@ -356,6 +356,16 @@ projects:
     url: https://github.com/CS-SI/Orekit
     reference: 8.0.1
 
+  - name: pulsar
+    scm: git
+    url: https://github.com/apache/pulsar
+    reference: master
+
+  - name: rhsm
+    scm: git
+    url: https://github.com/RedHatInsights/rhsm-subscriptions
+    reference: main
+
   # Those projects are quite old and have a lot of legacy code
   - name: apache-ant
     scm: git
