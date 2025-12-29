@@ -26,32 +26,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MethodCount">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="MethodCount">
-            <property name="id" value="example2"/>
-            <property name="maxTotal" value="5"/>
-        </module>
-
-        <module name="MethodCount">
-            <property name="id" value="example3"/>
-            <property name="maxPublic" value="2"/>
-            <property name="maxTotal" value="6"/>
-        </module>
-
-        <module name="MethodCount">
-            <property name="id" value="example4"/>
-            <property name="maxPrivate" value="1"/>
-        </module>
-
-        <module name="MethodCount">
-            <property name="id" value="example5"/>
-            <property name="maxPackage" value="0"/>
-        </module>
-
-        <module name="MethodCount">
-            <property name="id" value="example6"/>
             <property name="maxProtected" value="1"/>
         </module>
 
