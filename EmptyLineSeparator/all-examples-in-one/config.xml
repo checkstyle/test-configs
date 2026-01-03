@@ -31,22 +31,32 @@
 
         <module name="EmptyLineSeparator">
             <property name="id" value="example2"/>
+            <property name="tokens" value="PACKAGE_DEF"/>
+        </module>
+
+        <module name="EmptyLineSeparator">
+            <property name="id" value="example3"/>
+            <property name="tokens" value="IMPORT"/>
+        </module>
+
+        <module name="EmptyLineSeparator">
+            <property name="id" value="example4"/>
             <property name="tokens" value="VARIABLE_DEF, METHOD_DEF"/>
         </module>
 
         <module name="EmptyLineSeparator">
             <property name="allowNoEmptyLineBetweenFields" value="true"/>
-            <property name="id" value="example3"/>
+            <property name="id" value="example5"/>
         </module>
 
         <module name="EmptyLineSeparator">
             <property name="allowMultipleEmptyLines" value="false"/>
-            <property name="id" value="example4"/>
+            <property name="id" value="example6"/>
         </module>
 
         <module name="EmptyLineSeparator">
             <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
-            <property name="id" value="example5"/>
+            <property name="id" value="example7"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

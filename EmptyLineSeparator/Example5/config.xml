@@ -26,7 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="EmptyLineSeparator">
-            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
