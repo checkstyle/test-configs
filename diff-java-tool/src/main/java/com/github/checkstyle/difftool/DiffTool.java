@@ -199,7 +199,7 @@ public final class DiffTool {
             System.exit(1);
         }
         catch (IllegalArgumentException | IllegalStateException ex) {
-            LOGGER.error("Error in application state or arguments: " + ex.getMessage(), ex);
+            LOGGER.error("Error in application state or arguments", ex);
             System.exit(1);
         }
     }
@@ -271,7 +271,7 @@ public final class DiffTool {
             final String[] fields = trimmedLine.split(FIELD_DELIMITER);
 
             if (fields.length < MIN_FIELD_COUNT) {
-                LOGGER.warn("Skipping invalid line in projects.properties: " + trimmedLine);
+                LOGGER.warn("Skipping invalid line in projects.properties: {}", trimmedLine);
                 continue;
             }
 
