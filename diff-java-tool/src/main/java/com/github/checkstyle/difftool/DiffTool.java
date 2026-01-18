@@ -154,6 +154,9 @@ public final class DiffTool {
             }
 
             final Config cfg = new Config(cliOptions);
+            final boolean isRegressionTesting =
+                    cfg.getPatchBranch() != null && cfg.getLocalGitRepo() != null;
+
             final List<String> configFilesList =
                     Arrays.asList(cfg.getConfigFile(),
                             cfg.getBaseConfig(),
@@ -174,13 +177,14 @@ public final class DiffTool {
             CheckstyleReportInfo checkstyleBaseReportInfo = null;
             if (cfg.isDiffMode()) {
                 checkstyleBaseReportInfo =
-                        launchCheckstyleReport(cfg.getCheckstyleToolBaseConfig());
+                        launchCheckstyleReport(cfg.getCheckstyleToolBaseConfig(), false);
+
             }
 
             final CheckstyleReportInfo checkstylePatchReportInfo =
-                    launchCheckstyleReport(cfg.getCheckstyleToolPatchConfig());
+                    launchCheckstyleReport(cfg.getCheckstyleToolPatchConfig(), isRegressionTesting);
 
-            if (checkstylePatchReportInfo != null) {
+            if (isRegressionTesting) {
                 deleteDir(cfg.getReportsDir());
                 moveDir(cfg.getTmpReportsDir(), cfg.getReportsDir());
 
@@ -195,7 +199,7 @@ public final class DiffTool {
             }
         }
         catch (IOException | InterruptedException ex) {
-            LOGGER.error("Error: " + ex.getMessage(), ex);
+            LOGGER.error("Error", ex);
             System.exit(1);
         }
         catch (IllegalArgumentException | IllegalStateException ex) {
@@ -654,15 +658,16 @@ public final class DiffTool {
      * Launches the Checkstyle report generation process.
      *
      * @param cfg The configuration map for Checkstyle.
+     * @param isRegressionTesting whether regression testing mode is enabled
      * @return CheckstyleReportInfo containing report details if regression testing, otherwise null.
      * @throws IOException If an I/O error occurs during command execution.
      * @throws InterruptedException If the process is interrupted.
      */
-    private static CheckstyleReportInfo launchCheckstyleReport(final Map<String, Object> cfg)
+    private static CheckstyleReportInfo launchCheckstyleReport(
+        final Map<String, Object> cfg,
+        final boolean isRegressionTesting)
             throws IOException, InterruptedException {
         CheckstyleReportInfo reportInfo = null;
-        final boolean isRegressionTesting =
-                cfg.get("branch") != null && cfg.get("localGitRepo") != null;
 
         if (isRegressionTesting) {
             LOGGER.info("Installing Checkstyle artifact ("
