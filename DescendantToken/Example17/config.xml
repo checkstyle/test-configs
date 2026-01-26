@@ -25,18 +25,12 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="JavadocTagContinuationIndentation">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="JavadocTagContinuationIndentation">
-            <property name="id" value="example2"/>
-            <property name="offset" value="2"/>
-        </module>
-
-        <module name="JavadocTagContinuationIndentation">
-            <property name="id" value="example3"/>
-            <property name="violateExecutionOnNonTightHtml" value="true"/>
+        <module name="DescendantToken">
+            <property name="limitedTokens" value="LITERAL_DEFAULT"/>
+            <property name="maximumDepth" value="2"/>
+            <property name="minimumMessage" value="Switch must contain at least one default branch."/>
+            <property name="minimumNumber" value="1"/>
+            <property name="tokens" value="LITERAL_SWITCH"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
