@@ -1,3 +1,5 @@
+[![Cron Extractor](https://github.com/checkstyle/test-configs/actions/workflows/cron-extract.yml/badge.svg)](https://github.com/checkstyle/test-configs/actions/workflows/cron-extract.yml)
+
 # Checkstyle Test Configurations Generator
 
 This repository stores and generates configurations for diff.groovy testing or regression-report.yml in the Checkstyle project.
