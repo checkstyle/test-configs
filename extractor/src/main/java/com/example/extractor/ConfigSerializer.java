@@ -39,7 +39,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.DefaultConfiguration;
+import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
 import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
@@ -86,6 +88,13 @@ public final class ConfigSerializer {
 
     /** Logger for this class. */
     private static final Logger LOGGER = Logger.getLogger(ConfigSerializer.class.getName());
+
+    /** Known source path fragments for header examples with external XML config. */
+    private static final List<String> EXTERNAL_XML_CONFIG_PATHS = List.of(
+            "checks/header/header",
+            "checks/header/regexpheader",
+            "checks/header/multifileregexpheader"
+    );
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -297,9 +306,7 @@ public final class ConfigSerializer {
     public static String serializeConfigToString(final String exampleFilePath,
                                                  final String templateFilePath)
             throws Exception {
-        final TestInputConfiguration testInputConfiguration =
-                InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-        final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+        final Configuration xmlConfig = loadXmlConfiguration(exampleFilePath);
 
         final String template = Files.readString(Path.of(templateFilePath), StandardCharsets.UTF_8);
 
@@ -340,9 +347,7 @@ public final class ConfigSerializer {
 
         for (int index = 0; index < exampleFilePaths.length; index++) {
             final String exampleFilePath = exampleFilePaths[index];
-            final TestInputConfiguration testInputConfiguration =
-                    InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-            final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+            final Configuration xmlConfig = loadXmlConfiguration(exampleFilePath);
             final Configuration targetModule = getTargetModule(xmlConfig);
             if (targetModule != null) {
                 isTreeWalker &= isTreeWalkerConfig(xmlConfig);
@@ -639,10 +644,57 @@ public final class ConfigSerializer {
      * @throws Exception If an Exception occurs
      */
     public static String extractModuleName(final String exampleFilePath) throws Exception {
-        final TestInputConfiguration testInputConfiguration =
-                InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-        final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+        final Configuration xmlConfig = loadXmlConfiguration(exampleFilePath);
         return getSpecificModuleName(xmlConfig);
+    }
+
+    /**
+     * Loads XML configuration from inline or external XML example config.
+     *
+     * @param exampleFilePath Path to the example file
+     * @return Loaded XML configuration
+     * @throws Exception if an unexpected error occurs
+     */
+    public static Configuration loadXmlConfiguration(final String exampleFilePath)
+            throws Exception {
+        final Configuration result;
+        if (isExternalXmlConfigPath(exampleFilePath)) {
+            result = ConfigurationLoader.loadConfiguration(
+                    getConfigFilePath(exampleFilePath),
+                    new PropertiesExpander(System.getProperties()),
+                    ConfigurationLoader.IgnoredModulesOptions.EXECUTE
+            );
+        }
+        else {
+            final TestInputConfiguration testInputConfiguration =
+                    InlineConfigParser.parseWithXmlHeader(exampleFilePath);
+            result = testInputConfiguration.getXmlConfiguration();
+        }
+        return result;
+    }
+
+    /**
+     * Gets config file path for examples with external XML config files.
+     *
+     * @param exampleFilePath Path to the example file
+     * @return Path to the config file to parse
+     */
+    public static String getConfigFilePath(final String exampleFilePath) {
+        String configFilePath = exampleFilePath;
+        if (isExternalXmlConfigPath(exampleFilePath)) {
+            configFilePath = exampleFilePath.replaceFirst("\\.(java|txt)$", ".xml");
+        }
+        return configFilePath;
+    }
+
+    /**
+     * Checks if example uses external XML config.
+     *
+     * @param exampleFilePath Path to the example file
+     * @return true if example uses external XML config
+     */
+    private static boolean isExternalXmlConfigPath(final String exampleFilePath) {
+        return EXTERNAL_XML_CONFIG_PATHS.stream().anyMatch(exampleFilePath::contains);
     }
 
     /**

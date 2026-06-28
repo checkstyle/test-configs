@@ -26,7 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassFanOutComplexity">
-            <property name="excludedClasses" value="HashMap, HashSet, Place3"/>
+            <property name="excludedClasses" value="HashMap, HashSet, Place"/>
             <property name="max" value="3"/>
         </module>
 

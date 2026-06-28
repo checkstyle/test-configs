@@ -27,12 +27,12 @@
     </module>
 
     <module name="RegexpHeader">
-        <property name="header" value="^// Copyright \(C\) (\d\d\d\d -)? 2004 MyCompany$      \n^// All rights reserved$"/>
+        <property name="headerFile" value="${config.folder}/copyright.header"/>
         <property name="id" value="example3"/>
     </module>
 
     <module name="RegexpHeader">
-        <property name="header" value="^.*"/>
+        <property name="headerFile" value="${config.folder}/universal.header"/>
         <property name="id" value="example4"/>
     </module>
 

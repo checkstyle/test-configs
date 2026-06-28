@@ -59,6 +59,16 @@
         <property name="minimum" value="1"/>
     </module>
 
+    <module name="RegexpSingleline">
+        <property name="fileExtensions" value="sql"/>
+        <property name="format" value="license"/>
+        <property name="id" value="example7"/>
+        <property name="ignoreCase" value="true"/>
+        <property name="maximum" value="9999"/>
+        <property name="message" value="File must contain at least one occurrence of 'license' term"/>
+        <property name="minimum" value="1"/>
+    </module>
+
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>

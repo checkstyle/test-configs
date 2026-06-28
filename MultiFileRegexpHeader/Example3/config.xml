@@ -17,7 +17,7 @@
     </module>
 
     <module name="MultiFileRegexpHeader">
-        <property name="headerFiles" value="${config.folder}/java.header,      ${config.folder}/apache.header"/>
+        <property name="headerFiles" value="${config.folder}/java.header, ${config.folder}/apache.header"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->

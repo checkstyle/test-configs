@@ -60,6 +60,8 @@
         <!-- AvoidCatchingGenericException is excluded to allow for broad exception handling
              in certain scenarios where specific exceptions are not easily anticipated. -->
         <exclude name="AvoidCatchingGenericException"/>
+        <!-- We use our ImportControl to control imports in packages and classes. -->
+        <exclude name="LoosePackageCoupling"/>
     </rule>
 
     <rule ref="category/java/documentation.xml">

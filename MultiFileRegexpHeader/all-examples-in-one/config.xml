@@ -22,12 +22,12 @@
 
     <module name="MultiFileRegexpHeader">
         <property name="fileExtensions" value="java"/>
-        <property name="headerFiles" value="${config.folder}/java.header,    ${config.folder}/apache.header"/>
+        <property name="headerFiles" value="${config.folder}/java.header, ${config.folder}/apache.header"/>
         <property name="id" value="example2"/>
     </module>
 
     <module name="MultiFileRegexpHeader">
-        <property name="headerFiles" value="${config.folder}/java.header,      ${config.folder}/apache.header"/>
+        <property name="headerFiles" value="${config.folder}/java.header, ${config.folder}/apache.header"/>
         <property name="id" value="example3"/>
     </module>
 

@@ -35,15 +35,11 @@
 
         <module name="NoLineWrap">
             <property name="id" value="example3"/>
-        </module>
-
-        <module name="NoLineWrap">
-            <property name="id" value="example4"/>
             <property name="tokens" value="IMPORT"/>
         </module>
 
         <module name="NoLineWrap">
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
             <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
 
