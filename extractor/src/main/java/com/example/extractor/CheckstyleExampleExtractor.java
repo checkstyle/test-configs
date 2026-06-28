@@ -81,14 +81,32 @@ public final class CheckstyleExampleExtractor {
     /** The filename for the Java header file. */
     private static final String JAVA_HEADER_FILENAME = "java.header";
 
+    /** The filename for the Apache header file. */
+    private static final String APACHE_HEADER_FILENAME = "apache.header";
+
+    /** The filename for the copyright header file. */
+    private static final String COPYRIGHT_HEADER_FILENAME = "copyright.header";
+
+    /** The filename for the universal header file. */
+    private static final String UNIVERSAL_HEADER_FILENAME = "universal.header";
+
     /** The name of the Example2 directory. */
     private static final String EXAMPLE2_DIR = "Example2";
+
+    /** The name of the Example3 directory. */
+    private static final String EXAMPLE3_DIR = "Example3";
 
     /** The name of the Example4 directory. */
     private static final String EXAMPLE4_DIR = "Example4";
 
     /** The name of the Header directory. */
     private static final String HEADER_MODULE = "Header";
+
+    /** The name of the RegexpHeader directory. */
+    private static final String REGEXP_HEADER_MODULE = "RegexpHeader";
+
+    /** The name of the MultiFileRegexpHeader directory. */
+    private static final String MF_REGEXP_HEADER_MODULE = "MultiFileRegexpHeader";
 
     /** Number of expected arguments when processing a single input file. */
     private static final int SINGLE_INPUT_FILE_ARG_COUNT = 5;
@@ -108,8 +126,67 @@ public final class CheckstyleExampleExtractor {
     /** The buffer size for reading and writing files. */
     private static final int BUFFER_SIZE = 1024;
 
-    /** The constant for header path. */
-    private static final String JAVA_HEADER_PATH = "config/java.header";
+    /** The constant for xdocs header check resources path. */
+    private static final String XDOCS_HEADER_CHECKS_PATH =
+            "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/checks/header";
+
+    /** The xdocs resource directory for Header examples. */
+    private static final String HEADER_RESOURCE_DIR = "header";
+
+    /** The xdocs resource directory for RegexpHeader examples. */
+    private static final String REGEXP_HEADER_RESOURCE_DIR = "regexpheader";
+
+    /** The xdocs resource directory for MultiFileRegexpHeader examples. */
+    private static final String MF_REGEXP_HEADER_DIR = "multifileregexpheader";
+
+    /** Separator for xdocs header resource references. */
+    private static final String RESOURCE_SEPARATOR = "/";
+
+    /** The source path fragment for xdocs header check resources. */
+    private static final String CHECKS_HEADER_PATH = "checks/header";
+
+    /** Module names to use for xdocs header example source paths. */
+    private static final Map<String, String> MODULE_BY_SOURCE_PATH = Map.of(
+            getHeaderRef(CHECKS_HEADER_PATH, HEADER_RESOURCE_DIR), HEADER_MODULE,
+            getHeaderRef(CHECKS_HEADER_PATH, REGEXP_HEADER_RESOURCE_DIR), REGEXP_HEADER_MODULE,
+            getHeaderRef(CHECKS_HEADER_PATH, MF_REGEXP_HEADER_DIR), MF_REGEXP_HEADER_MODULE
+    );
+
+    /** Header files to copy for individual generated example folders. */
+    private static final Map<String, List<String>> HEADER_FILES_BY_OUTPUT_PATH = Map.ofEntries(
+            Map.entry(getHeaderKey(HEADER_MODULE, EXAMPLE2_DIR),
+                    List.of(getHeaderRef(HEADER_RESOURCE_DIR, JAVA_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(HEADER_MODULE, EXAMPLE4_DIR),
+                    List.of(getHeaderRef(HEADER_RESOURCE_DIR, JAVA_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(REGEXP_HEADER_MODULE, EXAMPLE2_DIR),
+                    List.of(getHeaderRef(REGEXP_HEADER_RESOURCE_DIR, JAVA_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(REGEXP_HEADER_MODULE, EXAMPLE3_DIR),
+                    List.of(getHeaderRef(REGEXP_HEADER_RESOURCE_DIR, COPYRIGHT_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(REGEXP_HEADER_MODULE, EXAMPLE4_DIR),
+                    List.of(getHeaderRef(REGEXP_HEADER_RESOURCE_DIR, UNIVERSAL_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(MF_REGEXP_HEADER_MODULE, EXAMPLE2_DIR),
+                    List.of(getHeaderRef(MF_REGEXP_HEADER_DIR, JAVA_HEADER_FILENAME),
+                            getHeaderRef(MF_REGEXP_HEADER_DIR, APACHE_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(MF_REGEXP_HEADER_MODULE, EXAMPLE3_DIR),
+                    List.of(getHeaderRef(MF_REGEXP_HEADER_DIR, JAVA_HEADER_FILENAME),
+                            getHeaderRef(MF_REGEXP_HEADER_DIR, APACHE_HEADER_FILENAME))),
+            Map.entry(getHeaderKey(MF_REGEXP_HEADER_MODULE, EXAMPLE4_DIR),
+                    List.of(getHeaderRef(MF_REGEXP_HEADER_DIR, UNIVERSAL_HEADER_FILENAME)))
+    );
+
+    /** Header files to copy for generated all-examples-in-one folders. */
+    private static final Map<String, List<String>> ALL_EXAMPLES_HEADER_FILES = Map.of(
+            HEADER_MODULE,
+            List.of(getHeaderRef(HEADER_RESOURCE_DIR, JAVA_HEADER_FILENAME)),
+            REGEXP_HEADER_MODULE,
+            List.of(getHeaderRef(REGEXP_HEADER_RESOURCE_DIR, JAVA_HEADER_FILENAME),
+                    getHeaderRef(REGEXP_HEADER_RESOURCE_DIR, COPYRIGHT_HEADER_FILENAME),
+                    getHeaderRef(REGEXP_HEADER_RESOURCE_DIR, UNIVERSAL_HEADER_FILENAME)),
+            MF_REGEXP_HEADER_MODULE,
+            List.of(getHeaderRef(MF_REGEXP_HEADER_DIR, JAVA_HEADER_FILENAME),
+                    getHeaderRef(MF_REGEXP_HEADER_DIR, APACHE_HEADER_FILENAME),
+                    getHeaderRef(MF_REGEXP_HEADER_DIR, UNIVERSAL_HEADER_FILENAME))
+    );
 
     /**
      * Private constructor to prevent instantiation of this utility class.
@@ -382,7 +459,7 @@ public final class CheckstyleExampleExtractor {
 
             if (!exampleFiles.isEmpty()) {
                 final Path firstExampleFile = exampleFiles.get(0);
-                moduleName = ConfigSerializer.extractModuleName(firstExampleFile.toString());
+                moduleName = getModuleName(inputPath, firstExampleFile);
                 if (moduleName != null) {
                     final Path outputPath = PROJECT_ROOT.resolve(moduleName);
                     Files.createDirectories(outputPath);
@@ -460,30 +537,126 @@ public final class CheckstyleExampleExtractor {
     }
 
     /**
-     * Copies java.header from Checkstyle repository into the output folder
-     * (next to config.xml) if it exists.
+     * Gets module name from hardcoded path mapping or from example file config.
      *
-     * @param outputPath  The folder where config.xml is placed.
+     * @param inputPath The path to the example directory.
+     * @param firstExampleFile The first example file in the example directory.
+     * @return The module name for the example directory.
+     * @throws Exception if an unexpected error occurs.
+     */
+    private static String getModuleName(final Path inputPath,
+                                        final Path firstExampleFile)
+            throws Exception {
+        final String inputPathString = inputPath.toString();
+        final Optional<String> moduleName = MODULE_BY_SOURCE_PATH.entrySet().stream()
+                .filter(entry -> inputPathString.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst();
+
+        final String result;
+        if (moduleName.isPresent()) {
+            result = moduleName.get();
+        }
+        else {
+            result = ConfigSerializer.extractModuleName(firstExampleFile.toString());
+        }
+        return result;
+    }
+
+    /**
+     * Creates a lookup key for header file mappings.
+     *
+     * @param moduleName The generated module folder name.
+     * @param folderName The generated example folder name.
+     * @return A lookup key for header file mappings.
+     */
+    private static String getHeaderKey(final String moduleName, final String folderName) {
+        return moduleName + RESOURCE_SEPARATOR + folderName;
+    }
+
+    /**
+     * Creates a relative xdocs header resource reference.
+     *
+     * @param resourceDir The xdocs resource directory.
+     * @param headerFileName The header file name.
+     * @return A relative xdocs header resource reference.
+     */
+    private static String getHeaderRef(final String resourceDir,
+                                       final String headerFileName) {
+        return resourceDir + RESOURCE_SEPARATOR + headerFileName;
+    }
+
+    /**
+     * Gets the header file name from a relative xdocs header resource reference.
+     *
+     * @param headerResourcePath The relative xdocs header resource reference.
+     * @return The header file name.
+     */
+    private static String getHeaderFileName(final String headerResourcePath) {
+        final int separatorIndex = headerResourcePath.lastIndexOf(RESOURCE_SEPARATOR);
+        return headerResourcePath.substring(separatorIndex + 1);
+    }
+
+    /**
+     * Copies header file from Checkstyle xdocs examples into the output folder.
+     *
+     * @param outputPath The folder where config.xml is placed.
      * @param checkstyleRepoPath The path to Checkstyle repository.
+     * @param headerResourcePath The relative xdocs header resource reference.
      * @throws IOException if an I/O error occurs.
      */
-    private static void copyJavaHeaderIfNeeded(final Path outputPath,
-                                               final String checkstyleRepoPath)
+    private static void copyXdocsHeaderIfNeeded(final Path outputPath,
+                                                final String checkstyleRepoPath,
+                                                final String headerResourcePath)
             throws IOException {
-        final Path source =
-                Paths.get(checkstyleRepoPath, JAVA_HEADER_PATH);
+        final Path source = Paths.get(checkstyleRepoPath, XDOCS_HEADER_CHECKS_PATH,
+                headerResourcePath);
+        final String headerFileName = getHeaderFileName(headerResourcePath);
 
         if (Files.exists(source)) {
             Files.copy(source,
-                    outputPath.resolve(JAVA_HEADER_FILENAME),
+                    outputPath.resolve(headerFileName),
                     StandardCopyOption.REPLACE_EXISTING);
-            LOGGER.info("Copied " + JAVA_HEADER_FILENAME
+            LOGGER.info("Copied " + headerFileName
                     + " from " + source + " to " + outputPath);
         }
         else {
-            LOGGER.warning("No " + JAVA_HEADER_FILENAME
+            LOGGER.warning("No " + headerFileName
                     + " found at " + source + ". Skipping.");
         }
+    }
+
+    /**
+     * Copies xdocs header files into the output folder.
+     *
+     * @param outputPath The folder where config.xml is placed.
+     * @param checkstyleRepoPath The path to Checkstyle repository.
+     * @param headerResourcePaths The relative xdocs header resource references.
+     * @throws IOException if an I/O error occurs.
+     */
+    private static void copyXdocsHeadersIfNeeded(final Path outputPath,
+                                                 final String checkstyleRepoPath,
+                                                 final List<String> headerResourcePaths)
+            throws IOException {
+        for (final String headerResourcePath : headerResourcePaths) {
+            copyXdocsHeaderIfNeeded(outputPath, checkstyleRepoPath, headerResourcePath);
+        }
+    }
+
+    /**
+     * Copies known all-examples-in-one header files if needed.
+     *
+     * @param moduleName The name of the module.
+     * @param outputPath The path where config.xml is placed.
+     * @param checkstyleRepoPath The path to Checkstyle repository.
+     * @throws IOException if an I/O error occurs.
+     */
+    private static void handleAllInOneHeaderFilesIfNeeded(final String moduleName,
+                                                          final Path outputPath,
+                                                          final String checkstyleRepoPath)
+            throws IOException {
+        copyXdocsHeadersIfNeeded(outputPath, checkstyleRepoPath,
+                ALL_EXAMPLES_HEADER_FILES.getOrDefault(moduleName, Collections.emptyList()));
     }
 
     /**
@@ -506,11 +679,9 @@ public final class CheckstyleExampleExtractor {
                 .map(Path::toString)
                 .orElse("");
 
-        if (HEADER_MODULE.equals(parentName)
-                && (EXAMPLE2_DIR.equals(folderName)
-                || EXAMPLE4_DIR.equals(folderName))) {
-            copyJavaHeaderIfNeeded(outputPath, checkstyleRepoPath);
-        }
+        final String headerKey = getHeaderKey(parentName, folderName);
+        copyXdocsHeadersIfNeeded(outputPath, checkstyleRepoPath,
+                HEADER_FILES_BY_OUTPUT_PATH.getOrDefault(headerKey, Collections.emptyList()));
     }
 
     /**
@@ -686,20 +857,16 @@ public final class CheckstyleExampleExtractor {
                         moduleName
                 );
 
-                // Add java.header for Header module's all-in-one examples
-                if (HEADER_MODULE.equals(moduleName)) {
-                    copyJavaHeaderIfNeeded(allInOneSubfolderPath, checkstyleRepoPath);
-                }
+                handleAllInOneHeaderFilesIfNeeded(moduleName,
+                        allInOneSubfolderPath, checkstyleRepoPath);
             }
             else {
                 // Copy default properties and YAML files
                 copyDefaultPropertiesFile(allInOneSubfolderPath);
                 copyDefaultYamlFile(allInOneSubfolderPath);
 
-                // Add java.header for Header module's all-in-one examples
-                if (HEADER_MODULE.equals(moduleName)) {
-                    copyJavaHeaderIfNeeded(allInOneSubfolderPath, checkstyleRepoPath);
-                }
+                handleAllInOneHeaderFilesIfNeeded(moduleName,
+                        allInOneSubfolderPath, checkstyleRepoPath);
             }
         }
         catch (IOException ex) {
@@ -836,9 +1003,7 @@ public final class CheckstyleExampleExtractor {
     private static String getTemplateFilePathForExamples(
             final String exampleFilePath)
             throws Exception {
-        final TestInputConfiguration testInputConfiguration =
-                InlineConfigParser.parseWithXmlHeader(exampleFilePath);
-        final Configuration xmlConfig = testInputConfiguration.getXmlConfiguration();
+        final Configuration xmlConfig = ConfigSerializer.loadXmlConfiguration(exampleFilePath);
         final boolean isTreeWalker = ConfigSerializer.isTreeWalkerConfig(xmlConfig);
 
         final String resourceName;

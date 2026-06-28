@@ -25,7 +25,9 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="OverloadMethodsDeclarationOrder"/>
+        <module name="OverloadMethodsDeclarationOrder">
+            <property name="orderByIncreasingParameterCount" value="true"/>
+        </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

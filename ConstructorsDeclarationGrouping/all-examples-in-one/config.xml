@@ -31,6 +31,7 @@
 
         <module name="ConstructorsDeclarationGrouping">
             <property name="id" value="example2"/>
+            <property name="orderByIncreasingParameterCount" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

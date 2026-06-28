@@ -35,7 +35,7 @@
         </module>
 
         <module name="ClassFanOutComplexity">
-            <property name="excludedClasses" value="HashMap, HashSet, Place3"/>
+            <property name="excludedClasses" value="HashMap, HashSet, Place"/>
             <property name="id" value="example3"/>
             <property name="max" value="3"/>
         </module>

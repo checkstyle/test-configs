@@ -25,9 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="EqualsAvoidNull">
-            <property name="ignoreEqualsIgnoreCase" value="false"/>
-        </module>
+        <module name="EqualsAvoidNull"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

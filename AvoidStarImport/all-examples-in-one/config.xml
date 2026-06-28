@@ -56,6 +56,11 @@
             <property name="id" value="example6"/>
         </module>
 
+        <module name="AvoidStarImport">
+            <property name="id" value="example7"/>
+            <property name="maxAllowedStarImports" value="1"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

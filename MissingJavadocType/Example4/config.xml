@@ -26,6 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MissingJavadocType">
+            <property name="scope" value="private"/>
             <property name="skipAnnotations" value="SpringBootApplication,Configuration"/>
         </module>
 

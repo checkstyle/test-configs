@@ -42,11 +42,13 @@
 
         <module name="MissingJavadocType">
             <property name="id" value="example4"/>
+            <property name="scope" value="private"/>
             <property name="skipAnnotations" value="SpringBootApplication,Configuration"/>
         </module>
 
         <module name="MissingJavadocType">
             <property name="id" value="example5"/>
+            <property name="scope" value="private"/>
             <property name="skipAnnotations" value="Annotation,MyClass.Annotation"/>
         </module>
 

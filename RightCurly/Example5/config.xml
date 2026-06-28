@@ -27,7 +27,7 @@
 
         <module name="RightCurly">
             <property name="option" value="alone_or_singleline"/>
-            <property name="tokens" value="LITERAL_SWITCH, LITERAL_CASE"/>
+            <property name="tokens" value="LITERAL_SWITCH, LITERAL_CASE, LITERAL_DEFAULT"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
