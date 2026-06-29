@@ -676,7 +676,7 @@ public final class DiffTool {
             executeCmd("git checkout " + cfg.get("branch"), (File) cfg.get("localGitRepo"));
             executeCmd("git log -1 --pretty=MSG:%s%nSHA-1:%H", (File) cfg.get("localGitRepo"));
             executeCmd(
-                    "mvn -e --no-transfer-progress --batch-mode -Pno-validations clean install",
+                    "./mvnw -e --no-transfer-progress --batch-mode -Pno-validations clean install",
                     (File) cfg.get("localGitRepo")
             );
         }
