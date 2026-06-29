@@ -52,6 +52,11 @@ jobs:
           cd diff-java-tool
           ./gradlew clean build
 
+      - name: Build checkstyle with maven
+        run: |
+          cd "${{ env.CI_TEMP_DIR }}/checkstyle"
+          ./mvnw -e --no-transfer-progress --batch-mode -Pno-validations clean install
+
       - name: Copy DiffTool JAR to CI Temp Directory
         run: |
           cp diff-java-tool/build/libs/diff-java-tool-*-all.jar "${CI_TEMP_DIR}/${DIFFTOOL_JAR}"
