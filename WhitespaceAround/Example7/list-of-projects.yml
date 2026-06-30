@@ -321,7 +321,7 @@ projects:
   - name: pmd
     scm: git
     url: https://github.com/pmd/pmd
-    reference: pmd_releases/6.21.0
+    reference: pmd_releases/7.25.0
     excludes:
       - '**/pmd/pmd-java/src/test/**/*'
       - '**/pmd/cpd/files/*'
@@ -343,7 +343,7 @@ projects:
   - name: spring-framework
     scm: git
     url: https://github.com/spring-projects/spring-framework
-    reference: v4.1.6.RELEASE
+    reference: 136f78ebd050d67439c15f8d1b1e0af4612b6285
 
   - name: hibernate-orm
     scm: git
@@ -370,7 +370,7 @@ projects:
   - name: Hbase
     scm: git
     url: https://github.com/apache/hbase
-    reference: 1.1.0.1
+    reference: 3332550188cc76f594994f628cfc4b48ffdd1ddb
 
   - name: Orekit
     scm: git
@@ -425,4 +425,4 @@ projects:
   - name: Vavr
     scm: git
     url: https://github.com/vavr-io/vavr
-    reference: v0.9.0
+    reference: 6f908f7dcf13567ae2fbeb4dcf9db45f8cf951a0
