@@ -425,4 +425,4 @@ projects:
   - name: Vavr
     scm: git
     url: https://github.com/vavr-io/vavr
-    reference: 6f908f7dcf13567ae2fbeb4dcf9db45f8cf951a0
+    reference: 519061238d7df5d5b16e9b187e4b971562ddb112
