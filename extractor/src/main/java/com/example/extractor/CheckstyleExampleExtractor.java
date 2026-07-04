@@ -64,14 +64,6 @@ public final class CheckstyleExampleExtractor {
     /** The filename for project yml. */
     private static final String PROJ_YML_PROP_FILENAME = "list-of-projects.yml";
 
-    /** The file path for project properties. */
-    private static final String PROJ_PROP_PROP_FILE_PATH =
-            "src/main/resources/" + PROJ_PROP_FILENAME;
-
-    /** The file path for project yml. */
-    private static final String PROJ_YML_PROP_FILE_PATH =
-            "src/main/resources/" + PROJ_YML_PROP_FILENAME;
-
     /** The regular expression pattern for example files. */
     private static final String EXAMPLE_FILE_PATTERN = "Example\\d+\\.(java|txt)";
 
@@ -220,8 +212,10 @@ public final class CheckstyleExampleExtractor {
             // Process input file and generate config
             processInputFile(Paths.get(inputFilePath), Paths.get(configOutputPath));
 
-            // Output default projects list
-            outputDefaultProjectsList(projectsOutputPath);
+            final String projectsResource =
+                    YamlParserAndProjectHandler.getDefaultProjectsYamlResource(
+                            Paths.get(inputFilePath));
+            outputProjectsList(projectsOutputPath, projectsResource);
         }
         else {
             // Functionality: process all examples
@@ -234,7 +228,9 @@ public final class CheckstyleExampleExtractor {
             final Map<String, List<Path>> moduleExamples =
                     processExampleDirs(allExampleDirs, checkstyleRepoPath);
 
-            YamlParserAndProjectHandler.processProjectsForExamples(PROJECT_ROOT.toString());
+            YamlParserAndProjectHandler.processProjectsForExamples(
+                    PROJECT_ROOT.toString(),
+                    YamlParserAndProjectHandler.getJavadocModuleNames(moduleExamples));
 
             for (final Map.Entry<String, List<Path>> entry : moduleExamples.entrySet()) {
                 generateAllInOneConfig(entry.getKey(), entry.getValue(), checkstyleRepoPath);
@@ -244,14 +240,16 @@ public final class CheckstyleExampleExtractor {
     }
 
     /**
-     * Writes the default projects list to the specified file.
+     * Writes the selected projects list to the specified file.
      *
      * @param outputPath the file path to write the list.
-     * @throws IllegalStateException if I/O error occurs while readin or writing to file
+     * @param projectsResource the classpath resource to write.
+     * @throws IllegalStateException if I/O error occurs while reading or writing to file
      */
-    public static void outputDefaultProjectsList(final String outputPath) {
+    private static void outputProjectsList(final String outputPath,
+                                           final String projectsResource) {
         try (InputStream inputStream = CheckstyleExampleExtractor.class
-                .getResourceAsStream("/list-of-projects.yml");
+                .getResourceAsStream(projectsResource);
              OutputStream outputStream = Files.newOutputStream(Path.of(outputPath))) {
 
             final byte[] buffer = new byte[BUFFER_SIZE];
@@ -518,7 +516,9 @@ public final class CheckstyleExampleExtractor {
                     final String generatedContent =
                             ConfigSerializer.serializeConfigToString(exampleFile, templateFilePath);
                     writeConfigFile(outputPath, generatedContent);
-                    copyPropertiesFile(outputPath);
+                    copyProjectFiles(outputPath,
+                            YamlParserAndProjectHandler.isJavadocExamplePath(
+                                    Paths.get(exampleFile)));
                     generateReadme(outputPath);
                     handleHeaderFileIfNeeded(outputPath, checkstyleRepoPath);
                 }
@@ -699,16 +699,18 @@ public final class CheckstyleExampleExtractor {
     }
 
     /**
-     * Copies the project properties file to the specified output path.
+     * Copies the project files to the specified output path.
      *
-     * @param outputPath The path where the properties file will be copied.
+     * @param outputPath The path where project files will be copied.
+     * @param javadocModule whether to use javadoc-specific project lists.
      * @throws IOException If an I/O error occurs.
      */
-    private static void copyPropertiesFile(final Path outputPath) throws IOException {
+    private static void copyProjectFiles(final Path outputPath, final boolean javadocModule)
+            throws IOException {
         final Path sourceYamlPath =
-                Paths.get(PROJ_YML_PROP_FILE_PATH).toAbsolutePath();
+                YamlParserAndProjectHandler.getDefaultProjectsYamlPath(javadocModule);
         final Path sourcePropertiesPath =
-                Paths.get(PROJ_PROP_PROP_FILE_PATH).toAbsolutePath();
+                YamlParserAndProjectHandler.getDefaultProjectsPropertiesPath(javadocModule);
 
         if (Files.exists(sourceYamlPath)) {
             final Path targetYamlPath = outputPath.resolve("list-of-projects.yml");
@@ -767,7 +769,8 @@ public final class CheckstyleExampleExtractor {
             Files.createDirectories(allInOneSubfolderPath);
 
             generateAllInOneContent(allExampleFiles, allInOneSubfolderPath);
-            handleAllExamplesInOne(moduleName, allInOneSubfolderPath, checkstyleRepoPath);
+            handleAllExamplesInOne(moduleName, allInOneSubfolderPath,
+                    checkstyleRepoPath, YamlParserAndProjectHandler.isJavadocModule(exampleDirs));
             generateAllInOneReadme(allInOneSubfolderPath, moduleName);
         }
     }
@@ -818,11 +821,13 @@ public final class CheckstyleExampleExtractor {
      * @param moduleName The name of the module.
      * @param checkstyleRepoPath The path to the Checkstyle repository.
      * @param allInOneSubfolderPath  The path to the "all-examples-in-one" subfolder.
+     * @param javadocModule whether to use javadoc-specific project lists.
      */
     private static void handleAllExamplesInOne(
             final String moduleName,
             final Path allInOneSubfolderPath,
-            final String checkstyleRepoPath) {
+            final String checkstyleRepoPath,
+            final boolean javadocModule) {
         try {
             final Map<String, Object> yamlData = YamlParserAndProjectHandler.parseYamlFile();
             final Map<String, Object> moduleConfig = (Map<String, Object>) yamlData.get(moduleName);
@@ -833,27 +838,28 @@ public final class CheckstyleExampleExtractor {
                 final List<String> projectNames =
                         (List<String>) allInOneConfig.get("projects");
 
-                // Parse all-projects.yml to get allProjectData for YAML
-                final List<Map<String, Object>> allProjectData =
-                        YamlParserAndProjectHandler.parseAllProjectsYaml();
+                final List<Map<String, Object>> projectData =
+                        YamlParserAndProjectHandler.loadProjectDataForModule(javadocModule);
+                final String yamlSourceName =
+                        YamlParserAndProjectHandler.getProjectDataSourceName(javadocModule);
 
                 // Generate YAML projects file
                 YamlParserAndProjectHandler.createProjectsYmlFileForExample(
                         allInOneSubfolderPath,
                         projectNames,
-                        allProjectData,
-                        moduleName
+                        projectData,
+                        moduleName,
+                        yamlSourceName
                 );
 
-                // Load all-projects.properties to get allProjectLines for properties file
-                final List<String> allProjectLines =
-                        YamlParserAndProjectHandler.loadAllProjectsProperties();
+                final List<String> projectLines =
+                        YamlParserAndProjectHandler.loadProjectPropertiesForModule(javadocModule);
 
                 // Generate properties projects file
                 YamlParserAndProjectHandler.createProjectsPropertiesFileForExample(
                         allInOneSubfolderPath,
                         projectNames,
-                        allProjectLines,
+                        projectLines,
                         moduleName
                 );
 
@@ -862,8 +868,8 @@ public final class CheckstyleExampleExtractor {
             }
             else {
                 // Copy default properties and YAML files
-                copyDefaultPropertiesFile(allInOneSubfolderPath);
-                copyDefaultYamlFile(allInOneSubfolderPath);
+                copyDefaultPropertiesFile(allInOneSubfolderPath, javadocModule);
+                copyDefaultYamlFile(allInOneSubfolderPath, javadocModule);
 
                 handleAllInOneHeaderFilesIfNeeded(moduleName,
                         allInOneSubfolderPath, checkstyleRepoPath);
@@ -873,8 +879,8 @@ public final class CheckstyleExampleExtractor {
             LOGGER.log(Level.SEVERE,
                     "Error processing YAML file for all-examples-in-one: "
                             + ex.getMessage(), ex);
-            copyDefaultPropertiesFile(allInOneSubfolderPath);
-            copyDefaultYamlFile(allInOneSubfolderPath);
+            copyDefaultPropertiesFile(allInOneSubfolderPath, javadocModule);
+            copyDefaultYamlFile(allInOneSubfolderPath, javadocModule);
         }
     }
 
@@ -882,12 +888,13 @@ public final class CheckstyleExampleExtractor {
      * Copies the default project properties file to the specified subfolder.
      *
      * @param allInOneSubfolderPath The path where the properties file will be copied.
+     * @param javadocModule whether to use javadoc-specific project lists.
      */
-    private static void copyDefaultPropertiesFile(final Path allInOneSubfolderPath) {
+    private static void copyDefaultPropertiesFile(final Path allInOneSubfolderPath,
+                                                  final boolean javadocModule) {
         try {
-            final Path sourcePropertiesPath = Paths
-                    .get("src/main/resources/list-of-projects.properties")
-                    .toAbsolutePath();
+            final Path sourcePropertiesPath =
+                    YamlParserAndProjectHandler.getDefaultProjectsPropertiesPath(javadocModule);
             final Path targetPropertiesPath =
                     allInOneSubfolderPath.resolve(PROJ_PROP_FILENAME);
             Files.copy(sourcePropertiesPath,
@@ -903,12 +910,13 @@ public final class CheckstyleExampleExtractor {
      * Copies the default YAML file to the specified subfolder path.
      *
      * @param allInOneSubfolderPath the target directory to copy the YAML file into.
+     * @param javadocModule whether to use javadoc-specific project lists.
      */
-    private static void copyDefaultYamlFile(final Path allInOneSubfolderPath) {
+    private static void copyDefaultYamlFile(final Path allInOneSubfolderPath,
+                                            final boolean javadocModule) {
         try {
-            final Path sourceYamlPath = Paths
-                    .get("src/main/resources/list-of-projects.yml")
-                    .toAbsolutePath();
+            final Path sourceYamlPath = YamlParserAndProjectHandler.getDefaultProjectsYamlPath(
+                    javadocModule);
             final Path targetYamlPath = allInOneSubfolderPath.resolve(PROJ_YML_PROP_FILENAME);
             Files.copy(sourceYamlPath, targetYamlPath, StandardCopyOption.REPLACE_EXISTING);
         }

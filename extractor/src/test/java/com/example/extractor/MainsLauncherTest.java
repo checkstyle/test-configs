@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -55,6 +56,35 @@ class MainsLauncherTest {
      * The constant for default projects file.
      */
     private static final String DEFAULT_PROJECTS_FILE = "list-of-projects.yml";
+
+    /**
+     * The constant for default projects properties file.
+     */
+    private static final String DEFAULT_PROPS_FILE = "list-of-projects.properties";
+
+    /**
+     * The constant for javadoc default projects file.
+     */
+    private static final String JAVADOC_DEFAULT_PROJECTS_FILE =
+            "list-of-projects-for-javadoc-checks.yml";
+
+    /**
+     * The constant for javadoc default project properties file.
+     */
+    private static final String JAVADOC_DEFAULT_PROPS_FILE =
+            "list-of-projects-for-javadoc-checks.properties";
+
+    /**
+     * The constant for javadoc all-projects file.
+     */
+    private static final String JAVADOC_ALL_PROJECTS_FILE =
+            "all-projects-for-javadoc-checks.yml";
+
+    /**
+     * An exclude that exists only in the javadoc project-list variant.
+     */
+    private static final String JAVADOC_PARSE_EXCLUDE =
+            "**/make/jdk/src/classes/build/tools/generatecharacter/GenerateCharacter.java";
 
     /**
      * Tests the main method of CheckstyleExampleExtractor.
@@ -105,6 +135,60 @@ class MainsLauncherTest {
         final String generatedProjectsContent = Files.readString(outputProjectsFile);
         assertFalse(generatedProjectsContent.isEmpty(), "Projects file should not be empty");
         assertThat(generatedProjectsContent).isEqualTo(expectedProjectsContent);
+    }
+
+    /**
+     * Tests that javadoc modules use javadoc-specific project lists.
+     *
+     * @param tempDir The temporary directory where the output files will be created.
+     * @throws Exception if any error occurs during the test
+     */
+    @Test
+    void testJavadocModulesUseJavadocProjectLists(@TempDir final Path tempDir)
+            throws Exception {
+        YamlParserAndProjectHandler.processProjectsForExamples(
+                tempDir.toString(), Set.of("SummaryJavadoc"));
+
+        final Path javadocExamplePath = tempDir.resolve("SummaryJavadoc").resolve("Example3");
+        final String javadocProjects =
+                Files.readString(javadocExamplePath.resolve(DEFAULT_PROJECTS_FILE));
+        final String javadocProperties =
+                Files.readString(javadocExamplePath.resolve(DEFAULT_PROPS_FILE));
+
+        final Path defaultExamplePath = tempDir.resolve("RequireThis").resolve("Example1");
+        final String defaultProjects =
+                Files.readString(defaultExamplePath.resolve(DEFAULT_PROJECTS_FILE));
+        final String defaultProperties =
+                Files.readString(defaultExamplePath.resolve(DEFAULT_PROPS_FILE));
+
+        assertThat(javadocProjects).contains(JAVADOC_PARSE_EXCLUDE);
+        assertThat(javadocProperties).contains(JAVADOC_PARSE_EXCLUDE);
+        assertThat(defaultProjects).doesNotContain(JAVADOC_PARSE_EXCLUDE);
+        assertThat(defaultProperties).doesNotContain(JAVADOC_PARSE_EXCLUDE);
+    }
+
+    /**
+     * Tests that javadoc default project-list copies do not use all-projects resources.
+     */
+    @Test
+    void testJavadocDefaultProjectListSelection() {
+        final Path javadocInput = Paths.get(
+                "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/"
+                        + "checks/javadoc/summaryjavadoc/Example1.java");
+        final Path nonJavadocInput = Paths.get(
+                "src/xdocs-examples/resources/com/puppycrawl/tools/checkstyle/"
+                        + "checks/whitespace/methodparampad/Example1.java");
+
+        assertThat(YamlParserAndProjectHandler.getDefaultProjectsYamlResource(javadocInput))
+                .isEqualTo("/" + JAVADOC_DEFAULT_PROJECTS_FILE);
+        assertThat(YamlParserAndProjectHandler.getDefaultProjectsYamlResource(nonJavadocInput))
+                .isEqualTo("/" + DEFAULT_PROJECTS_FILE);
+        assertThat(YamlParserAndProjectHandler.getDefaultProjectsYamlPath(true).toString())
+                .endsWith(JAVADOC_DEFAULT_PROJECTS_FILE);
+        assertThat(YamlParserAndProjectHandler.getDefaultProjectsPropertiesPath(true).toString())
+                .endsWith(JAVADOC_DEFAULT_PROPS_FILE);
+        assertThat(YamlParserAndProjectHandler.getProjectDataSourceName(true))
+                .endsWith(JAVADOC_ALL_PROJECTS_FILE);
     }
 
     /**
