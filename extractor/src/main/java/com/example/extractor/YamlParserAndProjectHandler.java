@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,10 +51,46 @@ public final class YamlParserAndProjectHandler {
     public static final String ALL_PROJECTS_YAML_PATH = "src/main/resources/all-projects.yml";
 
     /**
+     * Path to the YAML file containing all projects for javadoc checks.
+     */
+    public static final String JAVADOC_PROJECTS_YAML_PATH =
+            "src/main/resources/all-projects-for-javadoc-checks.yml";
+
+    /**
      * Path to the default properties file containing a list of projects.
      */
     public static final String ALL_PROJECTS_PROPERTIES_PATH =
             "src/main/resources/all-projects.properties";
+
+    /**
+     * Path to the properties file containing all projects for javadoc checks.
+     */
+    public static final String JAVADOC_PROJECTS_PROPS_PATH =
+            "src/main/resources/all-projects-for-javadoc-checks.properties";
+
+    /**
+     * Path to the default YAML file containing project configurations.
+     */
+    private static final String DEFAULT_LIST_YAML_PATH =
+            "src/main/resources/list-of-projects.yml";
+
+    /**
+     * Path to the javadoc default YAML file containing project configurations.
+     */
+    private static final String JAVADOC_LIST_YAML_PATH =
+            "src/main/resources/list-of-projects-for-javadoc-checks.yml";
+
+    /**
+     * Path to the default properties file containing project configurations.
+     */
+    private static final String DEFAULT_LIST_PROPS_PATH =
+            "src/main/resources/list-of-projects.properties";
+
+    /**
+     * Path to the javadoc default properties file containing project configurations.
+     */
+    private static final String JAVADOC_LIST_PROPS_PATH =
+            "src/main/resources/list-of-projects-for-javadoc-checks.properties";
 
     /**
      * Newline character used to ensure content ends with a newline.
@@ -92,6 +129,11 @@ public final class YamlParserAndProjectHandler {
             "src/main/resources/projects-for-example.yml";
 
     /**
+     * The path fragment for javadoc check examples.
+     */
+    private static final String JAVADOC_PATH_FRAGMENT = "/checks/javadoc/";
+
+    /**
      * Private constructor to prevent instantiation of this utility class.
      *
      * @throws UnsupportedOperationException if an attempt is made to instantiate this class
@@ -104,16 +146,37 @@ public final class YamlParserAndProjectHandler {
      * Processes projects for examples and creates project files for each example.
      *
      * @param testConfigPath the path to the test configuration directory
+     * @param javadocModuleNames module names that should use javadoc project lists
      * @throws IOException if an I/O error occurs
      */
-    public static void processProjectsForExamples(final String testConfigPath) throws IOException {
+    public static void processProjectsForExamples(
+            final String testConfigPath,
+            final Set<String> javadocModuleNames) throws IOException {
         final Map<String, Object> yamlData = parseYamlFile();
         final List<Map<String, Object>> allProjectData = parseAllProjectsYaml();
+        final List<Map<String, Object>> javadocProjectData =
+                parseAllProjectsForJavadocChecksYaml();
         final List<String> allProjectLines = loadAllProjectsProperties();
+        final List<String> javadocProjectLines =
+                loadAllProjectsForJavadocChecksProperties();
 
         for (final Map.Entry<String, Object> entry : yamlData.entrySet()) {
             final String checkName = entry.getKey();
             final Map<String, Object> checkData = (Map<String, Object>) entry.getValue();
+            final boolean javadocModule = javadocModuleNames.contains(checkName);
+            final List<Map<String, Object>> yamlProjectData;
+            final List<String> propertiesProjectLines;
+            final String yamlSourceName;
+            if (javadocModule) {
+                yamlProjectData = javadocProjectData;
+                propertiesProjectLines = javadocProjectLines;
+                yamlSourceName = JAVADOC_PROJECTS_YAML_PATH;
+            }
+            else {
+                yamlProjectData = allProjectData;
+                propertiesProjectLines = allProjectLines;
+                yamlSourceName = ALL_PROJECTS_YAML_PATH;
+            }
 
             for (final Map.Entry<String, Object> exampleEntry : checkData.entrySet()) {
                 final String exampleName = exampleEntry.getKey();
@@ -124,13 +187,14 @@ public final class YamlParserAndProjectHandler {
 
                 final Path examplePath = Paths.get(testConfigPath, checkName, exampleName);
                 createProjectsYmlFileForExample(examplePath, projectNames,
-                        allProjectData, checkName);
+                        yamlProjectData, checkName, yamlSourceName);
                 createProjectsPropertiesFileForExample(examplePath, projectNames,
-                        allProjectLines, checkName);
+                        propertiesProjectLines, checkName);
 
                 if ("all-examples-in-one".equals(exampleName)) {
                     createAllInOneProjectsFile(Paths.get(testConfigPath, checkName),
-                            projectNames, allProjectData, allProjectLines, checkName);
+                            projectNames, yamlProjectData, propertiesProjectLines,
+                            checkName, yamlSourceName);
                 }
             }
         }
@@ -157,8 +221,33 @@ public final class YamlParserAndProjectHandler {
      * @throws IllegalStateException if project not found
      */
     public static List<Map<String, Object>> parseAllProjectsYaml() throws IOException {
-        final Path allProjectsYamlPath = Paths.get(ALL_PROJECTS_YAML_PATH);
-        try (InputStream inputStream = Files.newInputStream(allProjectsYamlPath)) {
+        return parseProjectsYamlFile(ALL_PROJECTS_YAML_PATH);
+    }
+
+    /**
+     * Parses the YAML file containing all projects for javadoc checks.
+     *
+     * @return a list of maps representing project data
+     * @throws IOException if an I/O error occurs
+     * @throws IllegalStateException if project not found
+     */
+    public static List<Map<String, Object>> parseAllProjectsForJavadocChecksYaml()
+            throws IOException {
+        return parseProjectsYamlFile(JAVADOC_PROJECTS_YAML_PATH);
+    }
+
+    /**
+     * Parses a project-list YAML file.
+     *
+     * @param projectsYamlPathString the path to the YAML file containing projects
+     * @return a list of maps representing project data
+     * @throws IOException if an I/O error occurs
+     * @throws IllegalStateException if project not found
+     */
+    private static List<Map<String, Object>> parseProjectsYamlFile(
+            final String projectsYamlPathString) throws IOException {
+        final Path projectsYamlPath = Paths.get(projectsYamlPathString);
+        try (InputStream inputStream = Files.newInputStream(projectsYamlPath)) {
             final Map<String, Object> yamlData = new Yaml().load(inputStream);
             final Object projectsObj = yamlData.get("projects");
             if (projectsObj instanceof List) {
@@ -166,7 +255,7 @@ public final class YamlParserAndProjectHandler {
             }
             else {
                 throw new IllegalStateException(
-                        "Expected 'projects' to be a list in " + ALL_PROJECTS_YAML_PATH);
+                        "Expected 'projects' to be a list in " + projectsYamlPathString);
             }
         }
     }
@@ -178,7 +267,163 @@ public final class YamlParserAndProjectHandler {
      * @throws IOException if an I/O error occurs
      */
     public static List<String> loadAllProjectsProperties() throws IOException {
-        final Path allProjectsPropertiesPath = Paths.get(ALL_PROJECTS_PROPERTIES_PATH);
+        return loadProjectsPropertiesFile(ALL_PROJECTS_PROPERTIES_PATH);
+    }
+
+    /**
+     * Loads all project lines from all-projects-for-javadoc-checks.properties.
+     *
+     * @return a list of project lines
+     * @throws IOException if an I/O error occurs
+     */
+    public static List<String> loadAllProjectsForJavadocChecksProperties() throws IOException {
+        return loadProjectsPropertiesFile(JAVADOC_PROJECTS_PROPS_PATH);
+    }
+
+    /**
+     * Loads project YAML data for a generated module.
+     *
+     * @param javadocModule whether to use javadoc-specific project lists
+     * @return a list of maps representing project data
+     * @throws IOException if an I/O error occurs
+     */
+    static List<Map<String, Object>> loadProjectDataForModule(final boolean javadocModule)
+            throws IOException {
+        return parseProjectsYamlFile(getProjectDataSourceName(javadocModule));
+    }
+
+    /**
+     * Loads project property lines for a generated module.
+     *
+     * @param javadocModule whether to use javadoc-specific project lists
+     * @return a list of project lines
+     * @throws IOException if an I/O error occurs
+     */
+    static List<String> loadProjectPropertiesForModule(final boolean javadocModule)
+            throws IOException {
+        final String result;
+        if (javadocModule) {
+            result = JAVADOC_PROJECTS_PROPS_PATH;
+        }
+        else {
+            result = ALL_PROJECTS_PROPERTIES_PATH;
+        }
+        return loadProjectsPropertiesFile(result);
+    }
+
+    /**
+     * Gets the YAML source name for a generated module.
+     *
+     * @param javadocModule whether to use javadoc-specific project lists
+     * @return the YAML source name
+     */
+    static String getProjectDataSourceName(final boolean javadocModule) {
+        final String result;
+        if (javadocModule) {
+            result = JAVADOC_PROJECTS_YAML_PATH;
+        }
+        else {
+            result = ALL_PROJECTS_YAML_PATH;
+        }
+        return result;
+    }
+
+    /**
+     * Gets the default project YAML resource for an input example.
+     *
+     * @param inputFilePath the input example path
+     * @return the classpath resource path
+     */
+    static String getDefaultProjectsYamlResource(final Path inputFilePath) {
+        final String result;
+        if (isJavadocExamplePath(inputFilePath)) {
+            result = "/" + Paths.get(JAVADOC_LIST_YAML_PATH).getFileName();
+        }
+        else {
+            result = "/" + Paths.get(DEFAULT_LIST_YAML_PATH).getFileName();
+        }
+        return result;
+    }
+
+    /**
+     * Gets the default project YAML source path.
+     *
+     * @param javadocModule whether to use javadoc-specific project lists
+     * @return the project YAML source path
+     */
+    static Path getDefaultProjectsYamlPath(final boolean javadocModule) {
+        final String result;
+        if (javadocModule) {
+            result = JAVADOC_LIST_YAML_PATH;
+        }
+        else {
+            result = DEFAULT_LIST_YAML_PATH;
+        }
+        return Paths.get(result).toAbsolutePath();
+    }
+
+    /**
+     * Gets the default project properties source path.
+     *
+     * @param javadocModule whether to use javadoc-specific project lists
+     * @return the project properties source path
+     */
+    static Path getDefaultProjectsPropertiesPath(final boolean javadocModule) {
+        final String result;
+        if (javadocModule) {
+            result = JAVADOC_LIST_PROPS_PATH;
+        }
+        else {
+            result = DEFAULT_LIST_PROPS_PATH;
+        }
+        return Paths.get(result).toAbsolutePath();
+    }
+
+    /**
+     * Gets javadoc module names from generated example directories.
+     *
+     * @param moduleExamples module names mapped to their example directories
+     * @return module names that use javadoc-specific project lists
+     */
+    static Set<String> getJavadocModuleNames(final Map<String, List<Path>> moduleExamples) {
+        return moduleExamples.entrySet().stream()
+                .filter(entry -> isJavadocModule(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Checks whether a generated module comes from javadoc examples.
+     *
+     * @param exampleDirs module example directories
+     * @return true if any example directory is under javadoc checks
+     */
+    static boolean isJavadocModule(final List<Path> exampleDirs) {
+        return exampleDirs.stream().anyMatch(YamlParserAndProjectHandler::isJavadocExamplePath);
+    }
+
+    /**
+     * Checks whether a path is under javadoc checks examples.
+     *
+     * @param path the path to inspect
+     * @return true if the path is under javadoc checks examples
+     */
+    static boolean isJavadocExamplePath(final Path path) {
+        final String normalizedPath = path.toString().replace('\\', '/');
+        return normalizedPath.contains(JAVADOC_PATH_FRAGMENT)
+                || normalizedPath.startsWith(JAVADOC_PATH_FRAGMENT.substring(1));
+    }
+
+    /**
+     * Loads project lines from a properties project-list file.
+     *
+     * @param projectsPropertiesPathString the path to the properties file containing projects
+     * @return a list of project lines
+     * @throws IOException if an I/O error occurs
+     */
+    private static List<String> loadProjectsPropertiesFile(
+            final String projectsPropertiesPathString) throws IOException {
+        final Path allProjectsPropertiesPath = Paths.get(projectsPropertiesPathString);
         try (BufferedReader reader = Files.newBufferedReader(
                 allProjectsPropertiesPath, StandardCharsets.UTF_8)) {
             return reader.lines()
@@ -195,19 +440,21 @@ public final class YamlParserAndProjectHandler {
      * @param projectNames    the list of project names
      * @param allProjectData  the list of all project data
      * @param checkName       the name of the check
+     * @param yamlSourceName  the YAML source name for error messages
      * @throws IOException if an I/O error occurs
      * @throws IllegalArgumentException if a project name is not found in all-projects.yml
      */
     static void createProjectsYmlFileForExample(final Path examplePath,
                                                 final List<String> projectNames,
                                                 final List<Map<String, Object>> allProjectData,
-                                                final String checkName) throws IOException {
+                                                final String checkName,
+                                                final String yamlSourceName) throws IOException {
         Files.createDirectories(examplePath);
         final Path projectsFilePath =
                 examplePath.resolve("list-of-projects.yml");
 
         final List<Map<String, Object>> projects =
-                filterProjects(projectNames, allProjectData, checkName, "all-projects.yml");
+                filterProjects(projectNames, allProjectData, checkName, yamlSourceName);
 
         final Map<String, Object> yamlData = new ConcurrentHashMap<>();
         yamlData.put("projects", projects);
@@ -344,17 +591,21 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectData  the list of all project data
      * @param allProjectLines the list of all project lines from all-projects.properties
      * @param checkName       the name of the check
+     * @param yamlSourceName  the YAML source name for error messages
      * @throws IOException if an I/O error occurs
      */
     private static void createAllInOneProjectsFile(final Path modulePath,
                                                    final List<String> projectNames,
                                                    final List<Map<String, Object>> allProjectData,
                                                    final List<String> allProjectLines,
-                                                   final String checkName) throws IOException {
+                                                   final String checkName,
+                                                   final String yamlSourceName)
+            throws IOException {
         final Path allInOnePath = prepareAllInOnePath(modulePath);
 
         // Create YAML and Properties files
-        generateProjectsYaml(allInOnePath, projectNames, allProjectData, checkName);
+        generateProjectsYaml(allInOnePath, projectNames, allProjectData,
+                checkName, yamlSourceName);
         generateProjectsProperties(allInOnePath, projectNames, allProjectLines, checkName);
     }
 
@@ -378,16 +629,18 @@ public final class YamlParserAndProjectHandler {
      * @param projectNames    A list of project names to include.
      * @param allProjectData  A list of project data maps.
      * @param checkName       The context name for error messages.
+     * @param yamlSourceName  the YAML source name for error messages.
      * @throws IOException If an I/O error occurs during file operations.
      */
     private static void generateProjectsYaml(final Path allInOnePath,
                                              final List<String> projectNames,
                                              final List<Map<String, Object>> allProjectData,
-                                             final String checkName) throws IOException {
+                                             final String checkName,
+                                             final String yamlSourceName) throws IOException {
         final Path projectsYamlFilePath =
                 allInOnePath.resolve("list-of-projects.yml");
         final List<Map<String, Object>> projectsYaml =
-                filterProjects(projectNames, allProjectData, checkName, "all-projects.yml");
+                filterProjects(projectNames, allProjectData, checkName, yamlSourceName);
 
         final Map<String, Object> yamlData = new ConcurrentHashMap<>();
         yamlData.put("projects", projectsYaml);
