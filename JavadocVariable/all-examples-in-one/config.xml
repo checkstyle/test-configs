@@ -45,6 +45,7 @@
         </module>
 
         <module name="JavadocVariable">
+            <property name="accessModifiers" value="public,protected,package,private"/>
             <property name="id" value="example5"/>
         </module>
 
