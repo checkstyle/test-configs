@@ -35,7 +35,7 @@
 
         <module name="ClassDataAbstractionCoupling">
             <property name="id" value="example3"/>
-            <property name="max" value="2"/>
+            <property name="max" value="9"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
