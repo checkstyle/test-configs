@@ -24,6 +24,7 @@ projects:
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/imports/unusedimports/InputUnusedImportsFromStaticMethodRefJavadocDisabled.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/abstractjavadoc/InputAbstractJavadocInvalidAtSeeReference.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/abstractjavadoc/InputAbstractJavadocInvalidAtSeeReference2.java'
+      - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/abstractjavadoc/InputAbstractJavadocInvalidInlineMethodReferenceWithoutHash.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/abstractjavadoc/InputAbstractJavadocInvalidLexing.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/abstractjavadoc/InputAbstractJavadocJavadocTagsWithoutArgs.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/abstractjavadoc/InputAbstractJavadocNoWsBeforeDescriptionInJavadocTags.java'
@@ -73,8 +74,6 @@ projects:
     scm: git
     url: https://github.com/sevntu-checkstyle/sevntu.checkstyle
     reference: master
-    excludes:
-      - '**/sevntu-checks/src/test/resources/com/github/sevntu/checkstyle/checks/coding/InputAvoidModifiersForTypesCheck.java'
 
   - name: checkstyle-sonar
     scm: git
@@ -353,23 +352,12 @@ projects:
       - '**/make/jdk/src/classes/build/tools/generatecharacter/GenerateCharacter.java'
       - '**/make/langtools/src/classes/build/tools/symbolgenerator/CreateSymbols.java'
       - '**/src/java.base/share/classes/java/lang/invoke/MethodHandle.java'
-      - '**/src/java.base/share/classes/java/math/BigDecimal.java'
-      - '**/src/java.base/share/classes/java/math/BigInteger.java'
-      - '**/src/java.base/share/classes/java/net/CookieHandler.java'
-      - '**/src/java.base/share/classes/java/net/URLDecoder.java'
-      - '**/src/java.base/share/classes/java/nio/MappedByteBuffer.java'
-      - '**/src/java.base/share/classes/java/nio/file/Files.java'
-      - '**/src/java.base/share/classes/java/util/IdentityHashMap.java'
-      - '**/src/java.base/share/classes/java/util/random/RandomGenerator.java'
-      - '**/src/java.base/share/classes/jdk/internal/platform/Metrics.java'
       - '**/src/java.desktop/macosx/classes/com/apple/laf/AquaButtonExtendedTypes.java'
       - '**/src/java.desktop/share/classes/com/sun/imageio/plugins/jpeg/JPEGImageReader.java'
       - '**/src/java.desktop/share/classes/com/sun/media/sound/ModelChannelMixer.java'
       - '**/src/java.desktop/share/classes/javax/swing/plaf/synth/SynthParser.java'
       - '**/src/java.desktop/share/classes/sun/java2d/pipe/LoopBasedPipe.java'
       - '**/src/java.desktop/windows/classes/sun/awt/windows/WPrinterJob.java'
-      - '**/src/java.management/share/classes/javax/management/remote/JMXConnector.java'
-      - '**/src/java.net.http/share/classes/jdk/internal/net/http/common/SubscriberWrapper.java'
       - '**/src/java.net.http/share/classes/jdk/internal/net/http/common/TimeSource.java'
       - '**/src/java.prefs/share/classes/java/util/prefs/XmlSupport.java'
       - '**/src/java.rmi/share/classes/sun/rmi/transport/DGCClient.java'
@@ -411,7 +399,6 @@ projects:
       - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/dom/TextImpl.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/impl/XMLDocumentFragmentScannerImpl.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/impl/XMLDocumentScannerImpl.java'
-      - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/impl/XMLEntityScanner.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/impl/xpath/XPath.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/impl/xpath/regex/BMPattern.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xerces/internal/impl/xs/traversers/XSDAttributeGroupTraverser.java'
@@ -430,10 +417,8 @@ projects:
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/dtm/DTMManager.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/dtm/ref/DTMManagerDefault.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/dtm/ref/sax2dtm/SAX2DTM.java'
-      - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/serializer/EmptySerializer.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/serializer/Serializer.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/serializer/SerializerFactory.java'
-      - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/serializer/ToSAXHandler.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/serializer/utils/URI.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/utils/FastStringBuffer.java'
       - '**/src/java.xml/share/classes/com/sun/org/apache/xml/internal/utils/URI.java'
@@ -479,7 +464,6 @@ projects:
       - '**/src/jdk.jfr/share/classes/jdk/jfr/internal/RemoveFields.java'
       - '**/src/jdk.jfr/share/classes/jdk/jfr/internal/management/StreamBarrier.java'
       - '**/src/jdk.jfr/share/classes/jdk/jfr/internal/query/Configuration.java'
-      - '**/src/jdk.jfr/share/classes/jdk/jfr/internal/query/QueryPrinter.java'
       - '**/src/jdk.jpackage/share/classes/jdk/jpackage/internal/model/CustomLauncherIcon.java'
       - '**/src/jdk.jpackage/share/classes/jdk/jpackage/internal/model/DefaultLauncherIcon.java'
       - '**/src/jdk.jpackage/share/classes/jdk/jpackage/internal/model/FileAssociation.java'
@@ -509,10 +493,6 @@ projects:
       - '**/test/hotspot/jtreg/vmTestbase/nsk/share/jdwp/Debugee.java'
       - '**/test/hotspot/jtreg/vmTestbase/nsk/share/jdwp/SocketTransport.java'
       - '**/test/hotspot/jtreg/vmTestbase/nsk/share/jpda/DebugeeArgumentHandler.java'
-      - '**/test/hotspot/jtreg/vmTestbase/vm/mlvm/share/ExceptionsOptionObjectFactory.java'
-      - '**/test/hotspot/jtreg/vmTestbase/vm/mlvm/share/MlvmOOMTest.java'
-      - '**/test/hotspot/jtreg/vmTestbase/vm/mlvm/share/MlvmTest.java'
-      - '**/test/hotspot/jtreg/vmTestbase/vm/mlvm/share/MlvmTestExecutor.java'
       - '**/test/hotspot/jtreg/vmTestbase/vm/share/options/OptionsMap.java'
       - '**/test/jaxp/javax/xml/jaxp/unittest/datatype/DatatypeFactoryTest.java'
       - '**/test/jaxp/javax/xml/jaxp/unittest/stream/StreamReaderDelegateTest.java'
@@ -523,7 +503,6 @@ projects:
       - '**/test/jdk/java/awt/regtesthelpers/AbstractPolicyTest.java'
       - '**/test/jdk/java/awt/regtesthelpers/AbstractTest.java'
       - '**/test/jdk/java/beans/XMLEncoder/Test4679556.java'
-      - '**/test/jdk/java/lang/System/LoggerFinder/internal/backend/LoggerFinderBackendTest.java'
       - '**/test/jdk/java/lang/ThreadLocal/ThreadLocalSupplierTest.java'
       - '**/test/jdk/java/text/Normalizer/DataValidationTest.java'
       - '**/test/jdk/java/util/ResourceBundle/ResourceBundleTest.java'
@@ -537,8 +516,6 @@ projects:
       - '**/test/jdk/sun/security/util/ManifestDigester/FindSection.java'
       - '**/test/langtools/jdk/javadoc/doclet/DocRootSlash/DocRootSlash.java'
       - '**/test/langtools/jdk/javadoc/doclet/T6735320/SerialFieldTest.java'
-      - '**/test/langtools/jdk/javadoc/doclet/testGenericTypeLink/pkg1/A.java'
-      - '**/test/langtools/jdk/javadoc/doclet/testGenericTypeLink/pkg2/B.java'
       - '**/test/langtools/jdk/javadoc/doclet/testLiteralCodeInPre/pkg/Test.java'
       - '**/test/langtools/jdk/javadoc/doclet/testSearch/pkg/AnotherClass.java'
       - '**/test/langtools/jdk/javadoc/doclet/testSeeTag/badref/Test.java'
@@ -636,7 +613,6 @@ projects:
       - '**/zeebe/scheduler/src/main/java/io/camunda/zeebe/scheduler/ActorControl.java'
       - '**/zeebe/test-util/src/main/java/io/camunda/zeebe/test/util/junit/CachedTestResultsExtension.java'
       - '**/zeebe/util/src/main/java/io/camunda/zeebe/util/Either.java'
-      - '**/zeebe/zb-db/src/main/java/io/camunda/zeebe/db/impl/rocksdb/transaction/RawTransactionalColumnFamily.java'
 
   - name: guava
     scm: git
@@ -835,7 +811,6 @@ projects:
       - '**/src/main/java/org/elasticsearch/repositories/fs/FsRepository.java'
       - '**/src/main/java/org/elasticsearch/repositories/uri/URLRepository.java'
       - '**/src/main/java/org/elasticsearch/search/aggregations/Aggregator.java'
-      - '**/src/main/java/org/elasticsearch/search/highlight/HighlightBuilder.java'
       - '**/src/main/java/org/elasticsearch/transport/TransportServiceAdapter.java'
       - '**/src/test/java/org/elasticsearch/test/ElasticsearchIntegrationTest.java'
 
