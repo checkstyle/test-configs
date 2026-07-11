@@ -30,22 +30,22 @@
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="expected|ignore"/>
+            <property name="commentFormat" value="This is expected"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="commentFormat" value="This is expected"/>
+            <property name="exceptionVariableName" value="myException"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="commentFormat" value="This is expected"/>
+            <property name="exceptionVariableName" value="expected|ignore"/>
             <property name="id" value="example4"/>
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="myException"/>
+            <property name="commentFormat" value="This is expected"/>
             <property name="id" value="example5"/>
         </module>
 

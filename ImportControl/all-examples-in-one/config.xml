@@ -31,19 +31,19 @@
         </module>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control2.xml"/>
-            <property name="id" value="example2"/>
-            <property name="path" value="${config.folder}[\\/]api[\\/].*$"/>
-        </module>
-
-        <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control4.xml"/>
-            <property name="id" value="example3"/>
+            <property name="id" value="example2"/>
         </module>
 
         <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control5.xml"/>
+            <property name="id" value="example3"/>
+        </module>
+
+        <module name="ImportControl">
+            <property name="file" value="${config.folder}/import-control2.xml"/>
             <property name="id" value="example4"/>
+            <property name="path" value="${config.folder}[\\/]api[\\/].*$"/>
         </module>
 
         <module name="ImportControl">

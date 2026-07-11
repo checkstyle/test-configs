@@ -32,19 +32,19 @@
         <module name="WriteTag">
             <property name="id" value="example2"/>
             <property name="tag" value="@since"/>
+            <property name="tagFormat" value="[1-9\.]"/>
+            <property name="tagSeverity" value="error"/>
+            <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, ENUM_DEF,                ANNOTATION_DEF, RECORD_DEF, METHOD_DEF"/>
         </module>
 
         <module name="WriteTag">
             <property name="id" value="example3"/>
             <property name="tag" value="@since"/>
-            <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, ENUM_DEF,                ANNOTATION_DEF, RECORD_DEF, METHOD_DEF"/>
         </module>
 
         <module name="WriteTag">
             <property name="id" value="example4"/>
             <property name="tag" value="@since"/>
-            <property name="tagFormat" value="[1-9\.]"/>
-            <property name="tagSeverity" value="ignore"/>
             <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, ENUM_DEF,                ANNOTATION_DEF, RECORD_DEF, METHOD_DEF"/>
         </module>
 
@@ -52,7 +52,7 @@
             <property name="id" value="example5"/>
             <property name="tag" value="@since"/>
             <property name="tagFormat" value="[1-9\.]"/>
-            <property name="tagSeverity" value="error"/>
+            <property name="tagSeverity" value="ignore"/>
             <property name="tokens" value="INTERFACE_DEF, CLASS_DEF, ENUM_DEF,                ANNOTATION_DEF, RECORD_DEF, METHOD_DEF"/>
         </module>
 

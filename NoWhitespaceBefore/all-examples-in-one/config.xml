@@ -32,15 +32,15 @@
         <module name="NoWhitespaceBefore">
             <property name="allowLineBreaks" value="true"/>
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="NoWhitespaceBefore">
-            <property name="id" value="example3"/>
             <property name="tokens" value="METHOD_REF, DOT"/>
         </module>
 
         <module name="NoWhitespaceBefore">
             <property name="allowLineBreaks" value="true"/>
+            <property name="id" value="example3"/>
+        </module>
+
+        <module name="NoWhitespaceBefore">
             <property name="id" value="example4"/>
             <property name="tokens" value="METHOD_REF, DOT"/>
         </module>

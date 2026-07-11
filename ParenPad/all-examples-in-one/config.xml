@@ -31,12 +31,12 @@
 
         <module name="ParenPad">
             <property name="id" value="example2"/>
-            <property name="option" value="space"/>
-            <property name="tokens" value="LITERAL_FOR, LITERAL_CATCH, SUPER_CTOR_CALL"/>
         </module>
 
         <module name="ParenPad">
             <property name="id" value="example3"/>
+            <property name="option" value="space"/>
+            <property name="tokens" value="LITERAL_FOR, LITERAL_CATCH, SUPER_CTOR_CALL"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

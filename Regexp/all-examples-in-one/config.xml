@@ -57,28 +57,27 @@
         </module>
 
         <module name="Regexp">
-            <property name="format" value="System\.out\.println"/>
-            <property name="id" value="example7"/>
-            <property name="illegalPattern" value="true"/>
-        </module>
-
-        <module name="Regexp">
-            <property name="format" value="System\.out\.println"/>
-            <property name="id" value="example8"/>
-            <property name="ignoreComments" value="true"/>
-            <property name="illegalPattern" value="true"/>
-        </module>
-
-        <module name="Regexp">
             <property name="format" value="[ \t]+$"/>
-            <property name="id" value="example9"/>
+            <property name="id" value="example7"/>
             <property name="illegalPattern" value="true"/>
             <property name="message" value="Trailing whitespace"/>
         </module>
 
         <module name="Regexp">
             <property name="format" value="(?i)fix me\."/>
+            <property name="id" value="example8"/>
+            <property name="illegalPattern" value="true"/>
+        </module>
+
+        <module name="Regexp">
+            <property name="format" value="// Copyright \(C\) \d\d\d\d MyCompany\n// All rights reserved"/>
+            <property name="id" value="example9"/>
+        </module>
+
+        <module name="Regexp">
+            <property name="format" value="System\.out\.println"/>
             <property name="id" value="example10"/>
+            <property name="ignoreComments" value="true"/>
             <property name="illegalPattern" value="true"/>
         </module>
 
@@ -90,8 +89,9 @@
         </module>
 
         <module name="Regexp">
-            <property name="format" value="// Copyright \(C\) \d\d\d\d MyCompany\n// All rights reserved"/>
+            <property name="format" value="System\.out\.println"/>
             <property name="id" value="example12"/>
+            <property name="illegalPattern" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

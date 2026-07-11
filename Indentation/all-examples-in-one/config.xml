@@ -30,16 +30,16 @@
         </module>
 
         <module name="Indentation">
-            <property name="caseIndent" value="0"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="Indentation">
-            <property name="forceStrictCondition" value="true"/>
+            <property name="caseIndent" value="0"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="Indentation">
+            <property name="forceStrictCondition" value="true"/>
             <property name="id" value="example4"/>
         </module>
 

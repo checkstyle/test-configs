@@ -30,23 +30,23 @@
         </module>
 
         <module name="RequireThis">
-            <property name="checkMethods" value="false"/>
             <property name="id" value="example2"/>
             <property name="validateOnlyOverlapping" value="false"/>
         </module>
 
         <module name="RequireThis">
-            <property name="checkFields" value="false"/>
             <property name="id" value="example3"/>
             <property name="validateOnlyOverlapping" value="false"/>
         </module>
 
         <module name="RequireThis">
+            <property name="checkMethods" value="false"/>
             <property name="id" value="example4"/>
             <property name="validateOnlyOverlapping" value="false"/>
         </module>
 
         <module name="RequireThis">
+            <property name="checkFields" value="false"/>
             <property name="id" value="example5"/>
             <property name="validateOnlyOverlapping" value="false"/>
         </module>

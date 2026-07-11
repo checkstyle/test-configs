@@ -28,24 +28,24 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="System.exit\("/>
+        <property name="format" value="^[ ]*\* This file is copyrighted"/>
         <property name="id" value="example3"/>
+        <property name="maximum" value="10"/>
+        <property name="message" value="File must contain copyright statement"/>
+        <property name="minimum" value="1"/>
+    </module>
+
+    <module name="RegexpSingleline">
+        <property name="format" value="System.exit\("/>
+        <property name="id" value="example4"/>
         <property name="maximum" value="1"/>
         <property name="minimum" value="0"/>
     </module>
 
     <module name="RegexpSingleline">
         <property name="format" value="^[ ]*\* This file is copyrighted"/>
-        <property name="id" value="example4"/>
-        <property name="maximum" value="10"/>
-        <property name="minimum" value="1"/>
-    </module>
-
-    <module name="RegexpSingleline">
-        <property name="format" value="^[ ]*\* This file is copyrighted"/>
         <property name="id" value="example5"/>
         <property name="maximum" value="10"/>
-        <property name="message" value="File must contain copyright statement"/>
         <property name="minimum" value="1"/>
     </module>
 

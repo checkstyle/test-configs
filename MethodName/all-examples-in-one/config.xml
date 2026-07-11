@@ -30,18 +30,18 @@
         </module>
 
         <module name="MethodName">
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+            <property name="allowClassName" value="false"/>
+            <property name="format" value="^[a-zA-Z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="MethodName">
-            <property name="allowClassName" value="true"/>
-            <property name="format" value="^[a-zA-Z](_?[a-zA-Z0-9]+)*$"/>
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="MethodName">
-            <property name="allowClassName" value="false"/>
+            <property name="allowClassName" value="true"/>
             <property name="format" value="^[a-zA-Z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example4"/>
         </module>

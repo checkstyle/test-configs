@@ -30,13 +30,13 @@
         </module>
 
         <module name="TodoComment">
-            <property name="format" value="(?i)(TODO)|(FIXME)"/>
+            <property name="format" value="^\s*([*=#])\1{8,}\s*$"/>
+            <property name="id" value="BoxComments"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="TodoComment">
-            <property name="format" value="^\s*([*=#])\1{8,}\s*$"/>
-            <property name="id" value="BoxComments"/>
+            <property name="format" value="(?i)(TODO)|(FIXME)"/>
             <property name="id" value="example3"/>
         </module>
 

@@ -31,13 +31,13 @@
 
         <module name="LeftCurly">
             <property name="id" value="example2"/>
-            <property name="option" value="nl"/>
+            <property name="option" value="nlow"/>
             <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
         </module>
 
         <module name="LeftCurly">
             <property name="id" value="example3"/>
-            <property name="option" value="nlow"/>
+            <property name="option" value="nl"/>
             <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
         </module>
 

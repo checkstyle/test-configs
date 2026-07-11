@@ -30,54 +30,54 @@
         </module>
 
         <module name="VisibilityModifier">
+            <property name="allowPublicImmutableFields" value="true"/>
             <property name="id" value="example2"/>
-            <property name="packageAllowed" value="true"/>
-        </module>
-
-        <module name="VisibilityModifier">
-            <property name="id" value="example3"/>
-            <property name="protectedAllowed" value="true"/>
-        </module>
-
-        <module name="VisibilityModifier">
-            <property name="id" value="example4"/>
-            <property name="publicMemberPattern" value="^$"/>
-        </module>
-
-        <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
-            <property name="id" value="example5"/>
-        </module>
-
-        <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
-            <property name="id" value="example6"/>
-            <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String"/>
-        </module>
-
-        <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
-            <property name="id" value="example7"/>
             <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String, com.google.common.collect.ImmutableMap"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example8"/>
-            <property name="ignoreAnnotationCanonicalNames" value="java.lang.Deprecated"/>
+            <property name="id" value="example3"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example9"/>
+            <property name="id" value="example4"/>
+            <property name="packageAllowed" value="true"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example10"/>
+            <property name="id" value="example5"/>
+            <property name="protectedAllowed" value="true"/>
+        </module>
+
+        <module name="VisibilityModifier">
+            <property name="id" value="example6"/>
             <property name="ignoreAnnotationCanonicalNames" value="Deprecated"/>
         </module>
 
         <module name="VisibilityModifier">
             <property name="allowPublicImmutableFields" value="true"/>
+            <property name="id" value="example7"/>
+        </module>
+
+        <module name="VisibilityModifier">
+            <property name="id" value="example8"/>
+            <property name="publicMemberPattern" value="^$"/>
+        </module>
+
+        <module name="VisibilityModifier">
+            <property name="allowPublicImmutableFields" value="true"/>
+            <property name="id" value="example9"/>
+        </module>
+
+        <module name="VisibilityModifier">
+            <property name="allowPublicImmutableFields" value="true"/>
+            <property name="id" value="example10"/>
+            <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String"/>
+        </module>
+
+        <module name="VisibilityModifier">
             <property name="id" value="example11"/>
+            <property name="ignoreAnnotationCanonicalNames" value="java.lang.Deprecated"/>
         </module>
 
         <module name="VisibilityModifier">

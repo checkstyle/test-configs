@@ -31,7 +31,7 @@
 
         <module name="IllegalSymbol">
             <property name="id" value="example2"/>
-            <property name="symbolCodes" value="0x1F300-0x1F5FF, 0x1F680-0x1F6FF"/>
+            <property name="symbolCodes" value="0x0080-0x10FFFF"/>
         </module>
 
         <module name="IllegalSymbol">
@@ -41,13 +41,13 @@
 
         <module name="IllegalSymbol">
             <property name="id" value="example4"/>
-            <property name="symbolCodes" value="0x1F600-0x1F64F"/>
-            <property name="tokens" value="STRING_LITERAL"/>
+            <property name="symbolCodes" value="0x1F300-0x1F5FF, 0x1F680-0x1F6FF"/>
         </module>
 
         <module name="IllegalSymbol">
             <property name="id" value="example5"/>
-            <property name="symbolCodes" value="0x0080-0x10FFFF"/>
+            <property name="symbolCodes" value="0x1F600-0x1F64F"/>
+            <property name="tokens" value="STRING_LITERAL"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

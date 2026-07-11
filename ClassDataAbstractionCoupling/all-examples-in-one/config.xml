@@ -35,12 +35,12 @@
 
         <module name="ClassDataAbstractionCoupling">
             <property name="id" value="example3"/>
-            <property name="max" value="9"/>
+            <property name="max" value="2"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
             <property name="id" value="example4"/>
-            <property name="max" value="2"/>
+            <property name="max" value="9"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
@@ -49,32 +49,32 @@
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedClasses" value="HashMap, HashSet, Example1"/>
+            <property name="excludeClassesRegexps" value=".*Reader$"/>
             <property name="id" value="example6"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludeClassesRegexps" value=".*Reader$"/>
+            <property name="excludedPackages" value="java.io"/>
             <property name="id" value="example7"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludeClassesRegexps" value=".*Reader$"/>
+            <property name="excludedClasses" value="HashMap, HashSet, Example1"/>
             <property name="id" value="example8"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedPackages" value="java.io"/>
+            <property name="excludedPackages" value="com.puppycrawl.tools.checkstyle.checks.metrics.classdataabstractioncoupling.ignore"/>
             <property name="id" value="example9"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedPackages" value="java.io"/>
+            <property name="excludeClassesRegexps" value=".*Reader$"/>
             <property name="id" value="example10"/>
         </module>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="excludedPackages" value="com.puppycrawl.tools.checkstyle.checks.metrics.classdataabstractioncoupling.ignore"/>
+            <property name="excludedPackages" value="java.io"/>
             <property name="id" value="example11"/>
         </module>
 
