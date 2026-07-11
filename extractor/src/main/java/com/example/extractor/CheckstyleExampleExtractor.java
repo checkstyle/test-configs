@@ -65,7 +65,7 @@ public final class CheckstyleExampleExtractor {
     private static final String PROJ_YML_PROP_FILENAME = "list-of-projects.yml";
 
     /** The regular expression pattern for example files. */
-    private static final String EXAMPLE_FILE_PATTERN = "Example\\d+\\.(java|txt)";
+    private static final String EXAMPLE_FILE_PATTERN = "(Example|UseCase)\\d+\\.(java|txt)";
 
     /** The subfolder name for all-in-one examples. */
     private static final String ALL_IN_ONE_SUBFOLDER = "all-examples-in-one";
@@ -1032,7 +1032,8 @@ public final class CheckstyleExampleExtractor {
      * @return The extracted example number, or {@code Integer.MAX_VALUE} if not found.
      */
     private static int extractExampleNumber(final String filename) {
-        final Matcher matcher = Pattern.compile("Example(\\d+)\\.(java|txt)").matcher(filename);
+        final Matcher matcher =
+            Pattern.compile("(?:Example|UseCase)(\\d+)\\.(java|txt)").matcher(filename);
         final int exampleNumber;
 
         if (matcher.find()) {
