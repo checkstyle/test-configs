@@ -26,12 +26,12 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="TodoComment">
-            <property name="format" value="^\s*([*=#])\1{8,}\s*$"/>
-            <property name="id" value="BoxComments"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="TodoComment">
+            <property name="format" value="^\s*([*=#])\1{8,}\s*$"/>
+            <property name="id" value="BoxComments"/>
             <property name="id" value="example2"/>
         </module>
 

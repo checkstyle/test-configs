@@ -27,12 +27,12 @@
 
         <module name="MatchXpath">
             <property name="id" value="example1"/>
-            <property name="query" value="//CTOR_DEF[count(./PARAMETERS/*) > 0]"/>
+            <property name="query" value="//METHOD_DEF[.//LITERAL_PRIVATE                  and following-sibling::METHOD_DEF[.//LITERAL_PUBLIC]]"/>
         </module>
 
         <module name="MatchXpath">
             <property name="id" value="example2"/>
-            <property name="query" value="//METHOD_DEF[.//LITERAL_PRIVATE                  and following-sibling::METHOD_DEF[.//LITERAL_PUBLIC]]"/>
+            <property name="query" value="//CTOR_DEF[count(./PARAMETERS/*) > 0]"/>
         </module>
 
         <module name="MatchXpath">

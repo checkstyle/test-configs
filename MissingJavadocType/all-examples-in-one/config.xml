@@ -27,12 +27,12 @@
 
         <module name="MissingJavadocType">
             <property name="id" value="example1"/>
-            <property name="scope" value="private"/>
-            <property name="skipAnnotations" value="Annotation,MyClass.Annotation"/>
         </module>
 
         <module name="MissingJavadocType">
             <property name="id" value="example2"/>
+            <property name="scope" value="private"/>
+            <property name="skipAnnotations" value="Annotation,MyClass.Annotation"/>
         </module>
 
         <module name="MissingJavadocType">

@@ -25,20 +25,8 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="LocalFinalVariableName">
-            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="LocalFinalVariableName">
-            <property name="format" value="^[A-Z][A-Z0-9]*$"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="LocalFinalVariableName">
-            <property name="format" value="^[A-Z][A-Z0-9]*$"/>
-            <property name="id" value="example3"/>
-            <property name="tokens" value="PARAMETER_DEF,RESOURCE"/>
+        <module name="JavadocType">
+            <property name="tokens" value="CLASS_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

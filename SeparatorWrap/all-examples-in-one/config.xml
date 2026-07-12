@@ -27,12 +27,12 @@
 
         <module name="SeparatorWrap">
             <property name="id" value="example1"/>
-            <property name="option" value="nl"/>
-            <property name="tokens" value="METHOD_REF"/>
         </module>
 
         <module name="SeparatorWrap">
             <property name="id" value="example2"/>
+            <property name="option" value="nl"/>
+            <property name="tokens" value="METHOD_REF"/>
         </module>
 
         <module name="SeparatorWrap">

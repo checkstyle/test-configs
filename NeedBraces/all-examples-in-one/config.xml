@@ -26,24 +26,24 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="NeedBraces">
-            <property name="allowSingleLineStatement" value="true"/>
             <property name="id" value="example1"/>
+        </module>
+
+        <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="true"/>
+            <property name="id" value="example2"/>
             <property name="tokens" value="LITERAL_CASE, LITERAL_DEFAULT"/>
         </module>
 
         <module name="NeedBraces">
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="NeedBraces">
-            <property name="id" value="example3"/>
-            <property name="tokens" value="LITERAL_IF, LITERAL_ELSE"/>
-        </module>
-
-        <module name="NeedBraces">
             <property name="allowSingleLineStatement" value="true"/>
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
             <property name="tokens" value="LAMBDA"/>
+        </module>
+
+        <module name="NeedBraces">
+            <property name="id" value="example4"/>
+            <property name="tokens" value="LITERAL_IF, LITERAL_ELSE"/>
         </module>
 
         <module name="NeedBraces">

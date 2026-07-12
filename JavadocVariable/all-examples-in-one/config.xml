@@ -26,26 +26,31 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="JavadocVariable">
-            <property name="accessModifiers" value="private,package"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="JavadocVariable">
+            <property name="accessModifiers" value="private,package"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="JavadocVariable">
-            <property name="accessModifiers" value="public"/>
+            <property name="accessModifiers" value="public,protected,package,private"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="JavadocVariable">
-            <property name="accessModifiers" value="public,protected,package,private"/>
+            <property name="accessModifiers" value="public"/>
             <property name="id" value="example4"/>
         </module>
 
         <module name="JavadocVariable">
             <property name="id" value="example5"/>
+            <property name="tokens" value="VARIABLE_DEF"/>
+        </module>
+
+        <module name="JavadocVariable">
+            <property name="id" value="example6"/>
             <property name="ignoreNamePattern" value="log|logger"/>
         </module>
 

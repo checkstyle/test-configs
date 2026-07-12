@@ -35,11 +35,11 @@
 
         <module name="CommentsIndentation">
             <property name="id" value="example3"/>
-            <property name="tokens" value="SINGLE_LINE_COMMENT"/>
         </module>
 
         <module name="CommentsIndentation">
             <property name="id" value="example4"/>
+            <property name="tokens" value="SINGLE_LINE_COMMENT"/>
         </module>
 
         <module name="CommentsIndentation">

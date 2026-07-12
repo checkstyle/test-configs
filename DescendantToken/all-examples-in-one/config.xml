@@ -27,13 +27,6 @@
 
         <module name="DescendantToken">
             <property name="id" value="example1"/>
-            <property name="limitedTokens" value="EXPR"/>
-            <property name="minimumNumber" value="1"/>
-            <property name="tokens" value="FOR_INIT"/>
-        </module>
-
-        <module name="DescendantToken">
-            <property name="id" value="example2"/>
             <property name="limitedTokens" value="LITERAL_DEFAULT"/>
             <property name="maximumDepth" value="2"/>
             <property name="minimumNumber" value="1"/>
@@ -41,19 +34,26 @@
         </module>
 
         <module name="DescendantToken">
-            <property name="id" value="example3"/>
-            <property name="limitedTokens" value="LITERAL_CASE"/>
-            <property name="maximumDepth" value="2"/>
-            <property name="maximumNumber" value="1"/>
-            <property name="tokens" value="LITERAL_SWITCH"/>
+            <property name="id" value="example2"/>
+            <property name="limitedTokens" value="EXPR"/>
+            <property name="minimumNumber" value="1"/>
+            <property name="tokens" value="FOR_INIT"/>
         </module>
 
         <module name="DescendantToken">
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
             <property name="limitedTokens" value="VARIABLE_DEF"/>
             <property name="maximumDepth" value="2"/>
             <property name="maximumNumber" value="1"/>
             <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <module name="DescendantToken">
+            <property name="id" value="example4"/>
+            <property name="limitedTokens" value="LITERAL_CASE"/>
+            <property name="maximumDepth" value="2"/>
+            <property name="maximumNumber" value="1"/>
+            <property name="tokens" value="LITERAL_SWITCH"/>
         </module>
 
         <module name="DescendantToken">
@@ -73,16 +73,16 @@
 
         <module name="DescendantToken">
             <property name="id" value="example7"/>
-            <property name="limitedTokens" value="EXPR"/>
-            <property name="minimumNumber" value="1"/>
-            <property name="tokens" value="FOR_CONDITION"/>
+            <property name="limitedTokens" value="IDENT"/>
+            <property name="maximumNumber" value="1"/>
+            <property name="tokens" value="LITERAL_THROWS"/>
         </module>
 
         <module name="DescendantToken">
             <property name="id" value="example8"/>
-            <property name="limitedTokens" value="IDENT"/>
-            <property name="maximumNumber" value="1"/>
-            <property name="tokens" value="LITERAL_THROWS"/>
+            <property name="limitedTokens" value="EXPR"/>
+            <property name="minimumNumber" value="1"/>
+            <property name="tokens" value="FOR_CONDITION"/>
         </module>
 
         <module name="DescendantToken">
@@ -94,17 +94,17 @@
 
         <module name="DescendantToken">
             <property name="id" value="example10"/>
-            <property name="limitedTokens" value="VARIABLE_DEF"/>
-            <property name="maximumDepth" value="2"/>
-            <property name="maximumNumber" value="1"/>
-            <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
+            <property name="limitedTokens" value="LITERAL_RETURN"/>
+            <property name="maximumNumber" value="0"/>
+            <property name="tokens" value="LITERAL_FINALLY,LITERAL_CATCH"/>
         </module>
 
         <module name="DescendantToken">
             <property name="id" value="example11"/>
-            <property name="limitedTokens" value="LITERAL_RETURN"/>
-            <property name="maximumNumber" value="0"/>
-            <property name="tokens" value="LITERAL_FINALLY,LITERAL_CATCH"/>
+            <property name="limitedTokens" value="VARIABLE_DEF"/>
+            <property name="maximumDepth" value="2"/>
+            <property name="maximumNumber" value="1"/>
+            <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
         </module>
 
         <module name="DescendantToken">

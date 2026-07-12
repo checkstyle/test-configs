@@ -27,21 +27,21 @@
 
         <module name="TrailingComment">
             <property name="id" value="example1"/>
-            <property name="legalComment" value="^ (SUPPRESS CHECKSTYLE|NOPMD|NOSONAR).*"/>
         </module>
 
         <module name="TrailingComment">
             <property name="id" value="example2"/>
+            <property name="legalComment" value="^ (SUPPRESS CHECKSTYLE|NOPMD|NOSONAR).*"/>
+        </module>
+
+        <module name="TrailingComment">
+            <property name="id" value="example3"/>
+            <property name="legalComment" value="^ (TODO|FIXME|trailingcomment).*"/>
         </module>
 
         <module name="TrailingComment">
             <property name="format" value="^\s*$"/>
-            <property name="id" value="example3"/>
-        </module>
-
-        <module name="TrailingComment">
             <property name="id" value="example4"/>
-            <property name="legalComment" value="^ (TODO|FIXME|trailingcomment).*"/>
         </module>
 
         <module name="TrailingComment">
