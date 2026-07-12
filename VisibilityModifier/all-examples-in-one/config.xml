@@ -26,22 +26,22 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="VisibilityModifier">
             <property name="allowPublicImmutableFields" value="true"/>
-            <property name="id" value="example2"/>
+            <property name="id" value="example1"/>
             <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String, com.google.common.collect.ImmutableMap"/>
         </module>
 
         <module name="VisibilityModifier">
+            <property name="id" value="example2"/>
+        </module>
+
+        <module name="VisibilityModifier">
             <property name="id" value="example3"/>
+            <property name="packageAllowed" value="true"/>
         </module>
 
         <module name="VisibilityModifier">
             <property name="id" value="example4"/>
-            <property name="packageAllowed" value="true"/>
         </module>
 
         <module name="VisibilityModifier">
@@ -55,13 +55,13 @@
         </module>
 
         <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
             <property name="id" value="example7"/>
+            <property name="publicMemberPattern" value="^$"/>
         </module>
 
         <module name="VisibilityModifier">
+            <property name="allowPublicImmutableFields" value="true"/>
             <property name="id" value="example8"/>
-            <property name="publicMemberPattern" value="^$"/>
         </module>
 
         <module name="VisibilityModifier">
