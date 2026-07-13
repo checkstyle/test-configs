@@ -26,10 +26,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.cli.CommandLine;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Test class for DiffTool.
@@ -320,6 +325,48 @@ class DiffToolTest {
         final Method getModeMethod = configClass.getMethod("getMode");
         final String mode = (String) getModeMethod.invoke(configInstance);
         assertEquals("diff", mode, "Mode should be 'diff'");
+    }
+
+    /**
+     * Tests that postProcessCheckstyleReport rewrites the local absolute source path
+     * prefix to the repository path while streaming the report line by line, leaving
+     * unrelated lines untouched.
+     *
+     * @param tempDir a temporary directory for the report, provided by JUnit
+     * @throws Exception if an error occurs during the test
+     */
+    @Test
+    void testPostProcessCheckstyleReportRewritesPaths(@TempDir final Path tempDir)
+            throws Exception {
+        final String repoName = "mockRepo";
+        final String repoPath = "/repos/mockRepo";
+        final String localPathPrefix = new File(
+                "src" + File.separator + "main" + File.separator + "java"
+                        + File.separator + repoName).getAbsolutePath();
+
+        final Path reportPath = tempDir.resolve("checkstyle-result.xml");
+        final List<String> originalLines = List.of(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                "<checkstyle version=\"10.17.0\">",
+                "<file name=\"" + localPathPrefix + File.separator + "Foo.java\">",
+                "<error line=\"1\" message=\"unrelated\"/>",
+                "</file>",
+                "<file name=\"" + localPathPrefix + File.separator + "Bar.java\">",
+                "</file>",
+                "</checkstyle>");
+        Files.write(reportPath, originalLines, StandardCharsets.UTF_8);
+
+        final Method method = getDeclaredMethod("postProcessCheckstyleReport",
+                String.class, String.class, String.class);
+        method.invoke(null, tempDir.toString(), repoName, repoPath);
+
+        final String result = Files.readString(reportPath, StandardCharsets.UTF_8);
+        assertFalse(result.contains(localPathPrefix),
+                "Local absolute path prefix should have been replaced");
+        assertTrue(result.contains(repoPath + File.separator + "Foo.java"),
+                "Path should have been rewritten to the repository path");
+        assertTrue(result.contains("message=\"unrelated\""),
+                "Unrelated content should be preserved");
     }
 
     private Method getDeclaredMethod(final String methodName,
