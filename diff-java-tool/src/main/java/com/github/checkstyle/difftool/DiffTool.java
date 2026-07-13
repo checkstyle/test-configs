@@ -1797,11 +1797,22 @@ public final class DiffTool {
     private static void postProcessCheckstyleReport(final String targetDir,
                     final String repoName, final String repoPath) throws IOException {
         final Path reportPath = Paths.get(targetDir, "checkstyle-result.xml");
-        String content = new String(Files.readAllBytes(reportPath), StandardCharsets.UTF_8);
-        content = content
-                .replace(new File(getOsSpecificPath("src", "main", "java", repoName))
-                .getAbsolutePath(), getOsSpecificPath(repoPath));
-        Files.write(reportPath, content.getBytes(StandardCharsets.UTF_8));
+        final String absolutePath = new File(getOsSpecificPath("src", "main", "java", repoName))
+                .getAbsolutePath();
+        final String relativePath = getOsSpecificPath(repoPath);
+
+        final Path tempPath = Files.createTempFile("temp", ".xml");
+        try (BufferedReader reader = Files.newBufferedReader(reportPath, StandardCharsets.UTF_8);
+             BufferedWriter writer = Files.newBufferedWriter(tempPath, StandardCharsets.UTF_8)) {
+            String line = reader.readLine();
+            while (line != null) {
+                writer.write(line.replace(absolutePath, relativePath));
+                writer.newLine();
+                line = reader.readLine();
+            }
+        }
+        Files.copy(tempPath, reportPath, StandardCopyOption.REPLACE_EXISTING);
+        Files.delete(tempPath);
     }
 
     /**
