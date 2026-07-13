@@ -17,23 +17,7 @@
     </module>
 
     <module name="LineEnding">
-        <property name="id" value="example1"/>
-    </module>
-
-    <module name="LineEnding">
-        <property name="id" value="example2"/>
-        <property name="lineEnding" value="crlf"/>
-    </module>
-
-    <module name="LineEnding">
-        <property name="fileExtensions" value="java"/>
-        <property name="id" value="example3"/>
-        <property name="lineEnding" value="cr"/>
-    </module>
-
-    <module name="LineEnding">
         <property name="fileExtensions" value="txt"/>
-        <property name="id" value="example4"/>
         <property name="lineEnding" value="cr"/>
     </module>
 

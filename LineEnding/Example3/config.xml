@@ -17,6 +17,7 @@
     </module>
 
     <module name="LineEnding">
+        <property name="fileExtensions" value="java"/>
         <property name="lineEnding" value="cr"/>
     </module>
 
