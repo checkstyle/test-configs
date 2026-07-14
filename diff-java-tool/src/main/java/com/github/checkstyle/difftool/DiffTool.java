@@ -177,8 +177,8 @@ public final class DiffTool {
             CheckstyleReportInfo checkstyleBaseReportInfo = null;
             if (cfg.isDiffMode()) {
                 checkstyleBaseReportInfo =
-                        launchCheckstyleReport(cfg.getCheckstyleToolBaseConfig(), false);
-
+                        launchCheckstyleReport(cfg.getCheckstyleToolBaseConfig(),
+                                isRegressionTesting);
             }
 
             final CheckstyleReportInfo checkstylePatchReportInfo =
@@ -658,7 +658,11 @@ public final class DiffTool {
      * Launches the Checkstyle report generation process.
      *
      * @param cfg The configuration map for Checkstyle.
-     * @param isRegressionTesting whether regression testing mode is enabled
+     * @param isRegressionTesting whether regression testing mode is enabled. When true,
+     *     the branch from {@code cfg} is checked out and its Checkstyle artifact is built
+     *     and installed into the local Maven repository, which is required for the report
+     *     generation to resolve the SNAPSHOT version. Must be true for both base and patch
+     *     branches in diff mode.
      * @return CheckstyleReportInfo containing report details if regression testing, otherwise null.
      * @throws IOException If an I/O error occurs during command execution.
      * @throws InterruptedException If the process is interrupted.
