@@ -37,31 +37,31 @@
 
         <module name="VisibilityModifier">
             <property name="id" value="example3"/>
-        </module>
-
-        <module name="VisibilityModifier">
-            <property name="id" value="example4"/>
             <property name="packageAllowed" value="true"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example5"/>
-            <property name="protectedAllowed" value="true"/>
+            <property name="id" value="example4"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example6"/>
+            <property name="id" value="example5"/>
             <property name="ignoreAnnotationCanonicalNames" value="Deprecated"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
-            <property name="id" value="example7"/>
+            <property name="id" value="example6"/>
+            <property name="protectedAllowed" value="true"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="id" value="example8"/>
+            <property name="id" value="example7"/>
             <property name="publicMemberPattern" value="^$"/>
+        </module>
+
+        <module name="VisibilityModifier">
+            <property name="allowPublicImmutableFields" value="true"/>
+            <property name="id" value="example8"/>
         </module>
 
         <module name="VisibilityModifier">

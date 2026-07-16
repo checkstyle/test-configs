@@ -36,12 +36,12 @@
 
         <module name="IllegalSymbol">
             <property name="id" value="example3"/>
-            <property name="symbolCodes" value="0x0080-0x10FFFF"/>
+            <property name="symbolCodes" value="0x1F300-0x1F5FF, 0x1F680-0x1F6FF"/>
         </module>
 
         <module name="IllegalSymbol">
             <property name="id" value="example4"/>
-            <property name="symbolCodes" value="0x1F300-0x1F5FF, 0x1F680-0x1F6FF"/>
+            <property name="symbolCodes" value="0x0080-0x10FFFF"/>
         </module>
 
         <module name="IllegalSymbol">

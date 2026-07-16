@@ -51,6 +51,12 @@
         <property name="message" value="Empty file is not allowed"/>
     </module>
 
+    <module name="RegexpMultiline">
+        <property name="fileExtensions" value="java"/>
+        <property name="format" value="Test.*string"/>
+        <property name="id" value="example7"/>
+    </module>
+
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>

@@ -42,14 +42,6 @@
 
         <module name="DescendantToken">
             <property name="id" value="example3"/>
-            <property name="limitedTokens" value="VARIABLE_DEF"/>
-            <property name="maximumDepth" value="2"/>
-            <property name="maximumNumber" value="1"/>
-            <property name="tokens" value="METHOD_DEF"/>
-        </module>
-
-        <module name="DescendantToken">
-            <property name="id" value="example4"/>
             <property name="limitedTokens" value="LITERAL_CASE"/>
             <property name="maximumDepth" value="2"/>
             <property name="maximumNumber" value="1"/>
@@ -57,7 +49,22 @@
         </module>
 
         <module name="DescendantToken">
+            <property name="id" value="example4"/>
+            <property name="limitedTokens" value="VARIABLE_DEF"/>
+            <property name="maximumDepth" value="2"/>
+            <property name="maximumNumber" value="1"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <module name="DescendantToken">
             <property name="id" value="example5"/>
+            <property name="limitedTokens" value="LITERAL_RETURN"/>
+            <property name="maximumNumber" value="2"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <module name="DescendantToken">
+            <property name="id" value="example6"/>
             <property name="limitedTokens" value="LITERAL_SWITCH"/>
             <property name="maximumNumber" value="0"/>
             <property name="minimumDepth" value="1"/>
@@ -65,24 +72,17 @@
         </module>
 
         <module name="DescendantToken">
-            <property name="id" value="example6"/>
-            <property name="limitedTokens" value="LITERAL_RETURN"/>
-            <property name="maximumNumber" value="2"/>
-            <property name="tokens" value="METHOD_DEF"/>
-        </module>
-
-        <module name="DescendantToken">
             <property name="id" value="example7"/>
-            <property name="limitedTokens" value="IDENT"/>
-            <property name="maximumNumber" value="1"/>
-            <property name="tokens" value="LITERAL_THROWS"/>
+            <property name="limitedTokens" value="EXPR"/>
+            <property name="minimumNumber" value="1"/>
+            <property name="tokens" value="FOR_CONDITION"/>
         </module>
 
         <module name="DescendantToken">
             <property name="id" value="example8"/>
-            <property name="limitedTokens" value="EXPR"/>
-            <property name="minimumNumber" value="1"/>
-            <property name="tokens" value="FOR_CONDITION"/>
+            <property name="limitedTokens" value="IDENT"/>
+            <property name="maximumNumber" value="1"/>
+            <property name="tokens" value="LITERAL_THROWS"/>
         </module>
 
         <module name="DescendantToken">
@@ -94,17 +94,17 @@
 
         <module name="DescendantToken">
             <property name="id" value="example10"/>
-            <property name="limitedTokens" value="LITERAL_RETURN"/>
-            <property name="maximumNumber" value="0"/>
-            <property name="tokens" value="LITERAL_FINALLY,LITERAL_CATCH"/>
-        </module>
-
-        <module name="DescendantToken">
-            <property name="id" value="example11"/>
             <property name="limitedTokens" value="VARIABLE_DEF"/>
             <property name="maximumDepth" value="2"/>
             <property name="maximumNumber" value="1"/>
             <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
+        </module>
+
+        <module name="DescendantToken">
+            <property name="id" value="example11"/>
+            <property name="limitedTokens" value="LITERAL_RETURN"/>
+            <property name="maximumNumber" value="0"/>
+            <property name="tokens" value="LITERAL_FINALLY,LITERAL_CATCH"/>
         </module>
 
         <module name="DescendantToken">

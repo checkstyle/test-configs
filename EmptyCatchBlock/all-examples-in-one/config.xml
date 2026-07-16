@@ -35,12 +35,12 @@
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="myException"/>
+            <property name="exceptionVariableName" value="expected|ignore"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="expected|ignore"/>
+            <property name="exceptionVariableName" value="myException"/>
             <property name="id" value="example4"/>
         </module>
 

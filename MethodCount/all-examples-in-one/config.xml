@@ -55,6 +55,12 @@
             <property name="maxProtected" value="1"/>
         </module>
 
+        <module name="MethodCount">
+            <property name="id" value="example7"/>
+            <property name="maxTotal" value="2"/>
+            <property name="tokens" value="CLASS_DEF"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>
