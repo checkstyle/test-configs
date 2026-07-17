@@ -25,8 +25,8 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="ClassMemberImpliedModifier">
-            <property name="violateImpliedStaticOnNestedRecord" value="false"/>
+        <module name="IllegalIdentifierName">
+            <property name="tokens" value="VARIABLE_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

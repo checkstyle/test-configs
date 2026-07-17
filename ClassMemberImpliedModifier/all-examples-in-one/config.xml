@@ -31,14 +31,17 @@
 
         <module name="ClassMemberImpliedModifier">
             <property name="id" value="example2"/>
+            <property name="violateImpliedStaticOnNestedEnum" value="false"/>
         </module>
 
         <module name="ClassMemberImpliedModifier">
             <property name="id" value="example3"/>
+            <property name="violateImpliedStaticOnNestedInterface" value="false"/>
         </module>
 
         <module name="ClassMemberImpliedModifier">
             <property name="id" value="example4"/>
+            <property name="violateImpliedStaticOnNestedRecord" value="false"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

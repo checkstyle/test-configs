@@ -45,6 +45,13 @@
         <property name="match" value="false"/>
     </module>
 
+    <module name="RegexpOnFilename">
+        <property name="fileNamePattern" value="^Test.*\.xml$"/>
+        <property name="folderPattern" value="[\\/]regexponfilename$"/>
+        <property name="id" value="example6"/>
+        <property name="match" value="false"/>
+    </module>
+
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>

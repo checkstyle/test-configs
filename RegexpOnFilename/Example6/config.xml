@@ -17,8 +17,8 @@
     </module>
 
     <module name="RegexpOnFilename">
-        <property name="fileNamePattern" value="\.(java|xml)$"/>
-        <property name="folderPattern" value="[\\/]src[\\/]"/>
+        <property name="fileNamePattern" value="^Test.*\.xml$"/>
+        <property name="folderPattern" value="[\\/]regexponfilename$"/>
         <property name="match" value="false"/>
     </module>
 

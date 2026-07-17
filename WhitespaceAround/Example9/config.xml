@@ -26,7 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="WhitespaceAround">
-            <property name="allowEmptyCatches" value="true"/>
+            <property name="ignoreEnhancedForColon" value="false"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
