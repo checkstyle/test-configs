@@ -27,6 +27,7 @@
 
         <module name="Regexp">
             <property name="format" value="System\.out\.println"/>
+            <property name="ignoreComments" value="true"/>
             <property name="illegalPattern" value="true"/>
         </module>
 

@@ -26,8 +26,9 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="Regexp">
-            <property name="format" value="// This code is copyrighted\n// \(c\) MyCompany"/>
-            <property name="message" value="Copyright"/>
+            <property name="errorLimit" value="1"/>
+            <property name="format" value="fix me\."/>
+            <property name="illegalPattern" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

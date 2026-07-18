@@ -26,7 +26,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="Regexp">
-            <property name="format" value="// This code is copyrighted\n// \(c\) MyCompany"/>
+            <property name="duplicateLimit" value="0"/>
+            <property name="format" value="// \(c\) MyCompany"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

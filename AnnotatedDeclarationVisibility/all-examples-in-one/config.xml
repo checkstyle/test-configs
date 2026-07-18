@@ -25,7 +25,24 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="Regexp"/>
+        <module name="AnnotatedDeclarationVisibility">
+            <property name="id" value="example1"/>
+        </module>
+
+        <module name="AnnotatedDeclarationVisibility">
+            <property name="id" value="example2"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <module name="AnnotatedDeclarationVisibility">
+            <property name="annotations" value="com.google.common.annotations.Beta, com.google.common.annotations.VisibleForTesting"/>
+            <property name="id" value="example3"/>
+        </module>
+
+        <module name="AnnotatedDeclarationVisibility">
+            <property name="id" value="example4"/>
+            <property name="visibility" value="package"/>
+        </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
