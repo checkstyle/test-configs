@@ -36,8 +36,12 @@
         </module>
 
         <module name="LocalFinalVariableName">
-            <property name="format" value="^[A-Z][A-Z0-9]*$"/>
             <property name="id" value="example3"/>
+        </module>
+
+        <module name="LocalFinalVariableName">
+            <property name="format" value="^[A-Z][A-Z0-9]*$"/>
+            <property name="id" value="example4"/>
             <property name="tokens" value="PARAMETER_DEF,RESOURCE"/>
         </module>
 

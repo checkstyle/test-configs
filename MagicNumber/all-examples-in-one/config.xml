@@ -57,6 +57,16 @@
             <property name="ignoreHashCodeMethod" value="true"/>
         </module>
 
+        <module name="MagicNumber">
+            <property name="id" value="example7"/>
+            <property name="ignoreNumbers" value="0, 1, 10"/>
+        </module>
+
+        <module name="MagicNumber">
+            <property name="id" value="example8"/>
+            <property name="ignoreAnnotation" value="true"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

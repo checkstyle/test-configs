@@ -26,7 +26,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ParenPad">
-            <property name="option" value="space"/>
             <property name="tokens" value="LITERAL_FOR, LITERAL_CATCH, SUPER_CTOR_CALL"/>
         </module>
 

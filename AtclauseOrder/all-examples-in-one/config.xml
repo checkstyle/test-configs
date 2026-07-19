@@ -40,6 +40,11 @@
             <property name="target" value="ENUM_DEF"/>
         </module>
 
+        <module name="AtclauseOrder">
+            <property name="id" value="example4"/>
+            <property name="target" value="METHOD_DEF"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

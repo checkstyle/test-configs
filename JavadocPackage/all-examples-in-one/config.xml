@@ -30,6 +30,11 @@
         <property name="id" value="example3"/>
     </module>
 
+    <module name="JavadocPackage">
+        <property name="fileExtensions" value="properties"/>
+        <property name="id" value="example4"/>
+    </module>
+
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>
