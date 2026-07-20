@@ -26,10 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="AbbreviationAsWordInName">
-            <property name="allowedAbbreviationLength" value="1"/>
-            <property name="allowedAbbreviations" value="CSV"/>
-            <property name="ignoreStatic" value="true"/>
-            <property name="tokens" value="VARIABLE_DEF"/>
+            <property name="ignoreFinal" value="false"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

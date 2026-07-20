@@ -36,11 +36,11 @@
 
         <module name="NoLineWrap">
             <property name="id" value="example3"/>
+            <property name="tokens" value="IMPORT"/>
         </module>
 
         <module name="NoLineWrap">
             <property name="id" value="example4"/>
-            <property name="tokens" value="IMPORT"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

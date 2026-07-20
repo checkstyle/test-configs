@@ -26,8 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="AbbreviationAsWordInName">
-            <property name="allowedAbbreviations" value="ALLOWED"/>
-            <property name="ignoreStaticFinal" value="false"/>
+            <property name="tokens" value="METHOD_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
