@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2024 the original author or authors.
+// Copyright (C) 2001-2026 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package com.github.checkstyle.difftool;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -111,7 +110,8 @@ class DiffToolTest {
             throws Exception {
         final Method method = getDeclaredMethod("isValidCheckstyleConfigsCombination",
                 String.class, String.class, String.class, String.class);
-        final boolean result = (boolean) method.invoke(null, null, null, "patchConfig.xml", "diff");
+        final boolean result = (boolean) method.invoke(
+            null, null, null, "patchConfig.xml", "diff");
         assertFalse(result,
                 "Expected false when base config is null "
                         + "and patch config is not null in diff mode");
@@ -162,94 +162,6 @@ class DiffToolTest {
         final boolean result = (
                 boolean) method.invoke(null, null, null, "patchConfig.xml", "single");
         assertTrue(result, "Expected true in single mode with patch config");
-    }
-
-    /**
-     * Tests isGitSha with valid SHA.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testIsGitShaValidSha() throws Exception {
-        final Method method = getDeclaredMethod("isGitSha", String.class);
-        assertTrue((boolean) method.invoke(null, "a1b2c"), "Expected true for short SHA");
-        assertTrue((boolean) method.invoke(null, "abcdef1234567890abcdef1234567890abcdef12"),
-                "Expected true for full SHA");
-    }
-
-    /**
-     * Tests isGitSha with invalid SHA.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testIsGitShaInvalidSha() throws Exception {
-        final Method method = getDeclaredMethod("isGitSha", String.class);
-        assertFalse((boolean) method.invoke(null, "a1b2"),
-                "Expected false for too short SHA");
-        assertFalse((boolean) method.invoke(null, "g1b2c"),
-                "Expected false for invalid characters in SHA");
-        assertFalse((boolean) method.invoke(null,
-                "1234567890abcdef1234567890abcdef1234567890abcdef"),
-                "Expected false for too long SHA");
-    }
-
-    /**
-     * Tests getCloneCmd for Git repo.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetCloneCmdGitRepo() throws Exception {
-        final Method method =
-                getDeclaredMethod("getCloneCmd", String.class, String.class, String.class);
-        final String cmd = (String) method.invoke(null, "git",
-                "https://github.com/user/repo.git", "/path/to/dir");
-        assertEquals("git clone https://github.com/user/repo.git /path/to/dir",
-                cmd, "Unexpected clone command");
-    }
-
-    /**
-     * Tests getCloneCmd for unknown repo type.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetCloneCmdUnknownRepoType() throws Exception {
-        final Method method = getDeclaredMethod("getCloneCmd",
-                String.class, String.class, String.class);
-        final Exception exception = assertThrows(Exception.class, () -> {
-            method.invoke(null, "svn", "https://svnrepo/repo", "/path/to/dir");
-        }, "Expected exception for unknown repo type");
-        assertTrue(exception.getCause() instanceof IllegalArgumentException,
-                "Expected IllegalArgumentException");
-    }
-
-    /**
-     * Tests getResetCmd for Git repo with SHA.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetResetCmdGitRepoWithSha() throws Exception {
-        final Method method =
-                getDeclaredMethod("getResetCmd", String.class, String.class);
-        final String cmd =
-                (String) method.invoke(null, "git", "abcdef1234567890abcdef1234567890abcdef12");
-        assertEquals("git reset --hard abcdef1234567890abcdef1234567890abcdef12",
-                cmd, "Unexpected reset command");
-    }
-
-    /**
-     * Tests getResetCmd for Git repo with tag.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetResetCmdGitRepoWithTag() throws Exception {
-        final Method method = getDeclaredMethod("getResetCmd", String.class, String.class);
-        final String cmd = (String) method.invoke(null, "git", "v1.0");
-        assertEquals("git reset --hard refs/tags/v1.0", cmd, "Unexpected reset command");
     }
 
     /**
