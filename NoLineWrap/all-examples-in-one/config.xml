@@ -43,6 +43,12 @@
             <property name="id" value="example4"/>
         </module>
 
+        <module name="NoLineWrap">
+            <property name="id" value="example5"/>
+            <property name="skipAnnotations" value="false"/>
+            <property name="tokens" value="IMPORT, STATIC_IMPORT,      PACKAGE_DEF, CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

@@ -26,7 +26,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="NoLineWrap">
-            <property name="tokens" value="IMPORT"/>
+            <property name="skipAnnotations" value="false"/>
+            <property name="tokens" value="IMPORT, STATIC_IMPORT,      PACKAGE_DEF, CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

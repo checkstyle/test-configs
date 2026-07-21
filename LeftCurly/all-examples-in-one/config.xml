@@ -43,6 +43,11 @@
 
         <module name="LeftCurly">
             <property name="id" value="example4"/>
+            <property name="option" value="nl"/>
+        </module>
+
+        <module name="LeftCurly">
+            <property name="id" value="example5"/>
             <property name="ignoreEnums" value="false"/>
         </module>
 

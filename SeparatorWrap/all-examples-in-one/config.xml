@@ -38,6 +38,11 @@
         <module name="SeparatorWrap">
             <property name="id" value="example3"/>
             <property name="option" value="nl"/>
+        </module>
+
+        <module name="SeparatorWrap">
+            <property name="id" value="example4"/>
+            <property name="option" value="nl"/>
             <property name="tokens" value="COMMA"/>
         </module>
 

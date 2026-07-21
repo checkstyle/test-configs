@@ -35,6 +35,11 @@
             <property name="tokens" value="ASSIGN,DIV_ASSIGN,PLUS_ASSIGN,MINUS_ASSIGN,STAR_ASSIGN,                       MOD_ASSIGN,SR_ASSIGN,BSR_ASSIGN,SL_ASSIGN,                       BXOR_ASSIGN,BOR_ASSIGN,BAND_ASSIGN"/>
         </module>
 
+        <module name="OperatorWrap">
+            <property name="id" value="example3"/>
+            <property name="option" value="nl"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

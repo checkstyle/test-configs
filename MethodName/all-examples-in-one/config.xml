@@ -47,22 +47,23 @@
         </module>
 
         <module name="MethodName">
-            <property name="applyToProtected" value="false"/>
             <property name="applyToPublic" value="false"/>
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example5"/>
         </module>
 
         <module name="MethodName">
-            <property name="applyToPrivate" value="false"/>
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+            <property name="applyToProtected" value="false"/>
             <property name="id" value="example6"/>
         </module>
 
         <module name="MethodName">
-            <property name="applyToPackage" value="false"/>
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+            <property name="applyToPrivate" value="false"/>
             <property name="id" value="example7"/>
+        </module>
+
+        <module name="MethodName">
+            <property name="applyToPackage" value="false"/>
+            <property name="id" value="example8"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

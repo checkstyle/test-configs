@@ -25,7 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="SeparatorWrap">
+        <module name="OperatorWrap">
             <property name="option" value="nl"/>
         </module>
 

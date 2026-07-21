@@ -30,16 +30,28 @@
         </module>
 
         <module name="StaticVariableName">
-            <property name="applyToProtected" value="false"/>
-            <property name="applyToPublic" value="false"/>
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="StaticVariableName">
-            <property name="applyToPackage" value="false"/>
-            <property name="applyToPrivate" value="false"/>
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+            <property name="applyToPublic" value="false"/>
             <property name="id" value="example3"/>
+        </module>
+
+        <module name="StaticVariableName">
+            <property name="applyToProtected" value="false"/>
+            <property name="id" value="example4"/>
+        </module>
+
+        <module name="StaticVariableName">
+            <property name="applyToPrivate" value="false"/>
+            <property name="id" value="example5"/>
+        </module>
+
+        <module name="StaticVariableName">
+            <property name="applyToPackage" value="false"/>
+            <property name="id" value="example6"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

@@ -31,6 +31,7 @@
 
     <module name="NewlineAtEndOfFile">
         <property name="id" value="example4"/>
+        <property name="lineSeparator" value="crlf"/>
     </module>
 
     <module name="NewlineAtEndOfFile">

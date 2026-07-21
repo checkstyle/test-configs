@@ -25,8 +25,8 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="SeparatorWrap">
-            <property name="option" value="nl"/>
+        <module name="MethodParamPad">
+            <property name="allowLineBreaks" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

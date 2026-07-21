@@ -27,7 +27,6 @@
 
         <module name="MethodName">
             <property name="applyToPrivate" value="false"/>
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

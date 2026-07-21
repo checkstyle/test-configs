@@ -26,8 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="LeftCurly">
-            <property name="option" value="nlow"/>
-            <property name="tokens" value="CLASS_DEF,INTERFACE_DEF"/>
+            <property name="option" value="nl"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
