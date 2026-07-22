@@ -17,14 +17,14 @@
     </module>
 
     <module name="RegexpSingleline">
+        <property name="format" value="System.exit\("/>
         <property name="id" value="example1"/>
+        <property name="maximum" value="1"/>
+        <property name="minimum" value="0"/>
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="System.exit\("/>
         <property name="id" value="example2"/>
-        <property name="maximum" value="1"/>
-        <property name="minimum" value="0"/>
     </module>
 
     <module name="RegexpSingleline">
