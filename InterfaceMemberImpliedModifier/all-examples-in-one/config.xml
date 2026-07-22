@@ -48,6 +48,26 @@
             <property name="violateImpliedPublicMethod" value="false"/>
         </module>
 
+        <module name="InterfaceMemberImpliedModifier">
+            <property name="id" value="example5"/>
+            <property name="violateImpliedPublicNested" value="false"/>
+        </module>
+
+        <module name="InterfaceMemberImpliedModifier">
+            <property name="id" value="example6"/>
+            <property name="violateImpliedStaticNested" value="false"/>
+        </module>
+
+        <module name="InterfaceMemberImpliedModifier">
+            <property name="id" value="example7"/>
+            <property name="violateImpliedPublicField" value="false"/>
+        </module>
+
+        <module name="InterfaceMemberImpliedModifier">
+            <property name="id" value="example8"/>
+            <property name="violateImpliedStaticField" value="false"/>
+        </module>
+
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

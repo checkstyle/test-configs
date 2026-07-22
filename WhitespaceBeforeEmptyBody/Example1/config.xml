@@ -25,11 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="DescendantToken">
-            <property name="limitedTokens" value="LITERAL_SWITCH"/>
-            <property name="minimumNumber" value="1"/>
-            <property name="tokens" value="LITERAL_TRY"/>
-        </module>
+        <module name="WhitespaceBeforeEmptyBody"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

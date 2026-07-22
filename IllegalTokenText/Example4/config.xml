@@ -25,11 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="IllegalTokenText">
-            <property name="format" value="^0[^lx]"/>
-            <property name="ignoreCase" value="true"/>
-            <property name="tokens" value="NUM_INT,NUM_LONG"/>
-        </module>
+        <module name="IllegalTokenText"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
