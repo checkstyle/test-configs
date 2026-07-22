@@ -38,6 +38,7 @@ projects:
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/javadoctype/InputJavadocTypeRecordParamDescriptionWithAngularTags.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/checks/javadoc/singlelinejavadoc/InputSingleLineJavadocLexerError.java'
       - '**/src/test/resources/com/puppycrawl/tools/checkstyle/javadocpropertiesgenerator/InputJavadocPropertiesGeneratorJavadocParseError.java'
+      - '**/checkstyle/src/test/resources-with-javadoc-error/com/puppycrawl/tools/checkstyle/checks/**/*'
 
   - name: sevntu-checkstyle
     scm: git
@@ -625,6 +626,7 @@ projects:
       - '**/src/test/resources/**/*'
       - '**/src/main/java/spoon/reflect/code/CtJavaDocTag.java'
       - '**/src/test/java/spoon/test/javadoc/testclasses/B.java'
+      - '**/spoon-smpl/src/test/java/spoon/smpl/EndToEndTestReader.java'
 
   - name: lombok-ast
     scm: git
@@ -808,6 +810,7 @@ projects:
       - '**/hbase-client/src/main/java/org/apache/hadoop/hbase/filter/SkipFilter.java'
       - '**/hbase-client/src/main/java/org/apache/hadoop/hbase/ipc/ConnectionId.java'
       - '**/hbase-client/src/main/java/org/apache/hadoop/hbase/ipc/RpcClientImpl.java'
+      - '**/hbase-client/src/main/java/org/apache/hadoop/hbase/ipc/BlockingRpcConnection.java'
       - '**/hbase-client/src/main/java/org/apache/hadoop/hbase/protobuf/ProtobufUtil.java'
       - '**/hbase-client/src/main/java/org/apache/hadoop/hbase/protobuf/RequestConverter.java'
       - '**/hbase-common/src/main/java/org/apache/hadoop/hbase/KeyValue.java'
@@ -815,16 +818,23 @@ projects:
       - '**/hbase-common/src/main/java/org/apache/hadoop/hbase/util/OrderedBytes.java'
       - '**/hbase-common/src/test/java/org/apache/hadoop/hbase/HBaseCommonTestingUtility.java'
       - '**/hbase-common/src/test/java/org/apache/hadoop/hbase/Waiter.java'
+      - '**/hbase-balancer/src/main/java/org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer.java'
       - '**/hbase-examples/src/main/java/org/apache/hadoop/hbase/coprocessor/example/BulkDeleteEndpoint.java'
+      - '**/hbase-http/src/main/java/org/apache/hadoop/hbase/http/jmx/JMXJsonServlet.java'
+      - '**/hbase-procedure/src/main/java/org/apache/hadoop/hbase/procedure2/Procedure.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/constraint/Constraints.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/MultiRowMutationEndpoint.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/coprocessor/package-info.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/http/package-info.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/HFileBlockIndex.java'
+      - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/LruAdaptiveBlockCache.java'
+      - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/LruBlockCache.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/io/hfile/package-info.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/mapreduce/LoadIncrementalHFiles.java'
+      - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/HRegion.java'
+      - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MemStoreSizing.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/Region.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/regionserver/handler/OpenRegionHandler.java'
@@ -834,7 +844,9 @@ projects:
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/security/visibility/VisibilityUtils.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/util/FSRegionScanner.java'
       - '**/hbase-server/src/main/java/org/apache/hadoop/hbase/wal/WALSplitter.java'
+      - '**/hbase-server/src/test/java/org/apache/hadoop/hbase/ConnectionExtension.java'
       - '**/hbase-server/src/test/java/org/apache/hadoop/hbase/HBaseTestingUtility.java'
+      - '**/hbase-server/src/test/java/org/apache/hadoop/hbase/MiniClusterExtension.java'
       - '**/hbase-server/src/test/java/org/apache/hadoop/hbase/MultithreadedTestUtil.java'
       - '**/hbase-server/src/test/java/org/apache/hadoop/hbase/TestMetaTableAccessorNoCluster.java'
       - '**/hbase-server/src/test/java/org/apache/hadoop/hbase/client/HConnectionTestingUtility.java'
@@ -1210,6 +1222,8 @@ projects:
     scm: git
     url: https://github.com/ReactiveX/RxJava
     reference: v1.0.9
+    excludes:
+      - '**/src/test/java/rx/test/TestObstructionDetection.java'
 
   - name: Vavr
     scm: git
