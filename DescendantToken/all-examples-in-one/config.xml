@@ -116,17 +116,17 @@
 
         <module name="DescendantToken">
             <property name="id" value="example13"/>
-            <property name="limitedTokens" value="STRING_LITERAL"/>
-            <property name="maximumDepth" value="1"/>
+            <property name="limitedTokens" value="LITERAL_TRY"/>
             <property name="maximumNumber" value="0"/>
-            <property name="tokens" value="EQUAL,NOT_EQUAL"/>
+            <property name="tokens" value="LITERAL_CATCH,LITERAL_FINALLY"/>
         </module>
 
         <module name="DescendantToken">
             <property name="id" value="example14"/>
-            <property name="limitedTokens" value="LITERAL_TRY"/>
+            <property name="limitedTokens" value="STRING_LITERAL"/>
+            <property name="maximumDepth" value="1"/>
             <property name="maximumNumber" value="0"/>
-            <property name="tokens" value="LITERAL_CATCH,LITERAL_FINALLY"/>
+            <property name="tokens" value="EQUAL,NOT_EQUAL"/>
         </module>
 
         <module name="DescendantToken">

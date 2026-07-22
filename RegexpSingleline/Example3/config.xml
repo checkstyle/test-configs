@@ -17,9 +17,8 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="System.exit\("/>
-        <property name="maximum" value="1"/>
-        <property name="minimum" value="0"/>
+        <property name="format" value="COPYRIGHTED"/>
+        <property name="ignoreCase" value="true"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
