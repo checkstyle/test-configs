@@ -27,11 +27,11 @@
 
         <module name="IllegalSymbol">
             <property name="id" value="example1"/>
+            <property name="symbolCodes" value="0x0080-0x10FFFF"/>
         </module>
 
         <module name="IllegalSymbol">
             <property name="id" value="example2"/>
-            <property name="symbolCodes" value="0x0080-0x10FFFF"/>
         </module>
 
         <module name="IllegalSymbol">

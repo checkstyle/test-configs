@@ -26,13 +26,13 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassFanOutComplexity">
+            <property name="excludedPackages" value="java.util"/>
             <property name="id" value="example1"/>
+            <property name="max" value="3"/>
         </module>
 
         <module name="ClassFanOutComplexity">
-            <property name="excludedPackages" value="java.util"/>
             <property name="id" value="example2"/>
-            <property name="max" value="3"/>
         </module>
 
         <module name="ClassFanOutComplexity">

@@ -26,11 +26,11 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="Regexp">
+            <property name="format" value="// This code is copyrighted\."/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="Regexp">
-            <property name="format" value="// This code is copyrighted\."/>
             <property name="id" value="example2"/>
         </module>
 
@@ -46,13 +46,13 @@
 
         <module name="Regexp">
             <property name="duplicateLimit" value="0"/>
-            <property name="format" value="// This code is copyrighted\n// \(c\) MyCompany"/>
+            <property name="format" value="// \(c\) MyCompany"/>
             <property name="id" value="example5"/>
         </module>
 
         <module name="Regexp">
             <property name="duplicateLimit" value="0"/>
-            <property name="format" value="// \(c\) MyCompany"/>
+            <property name="format" value="// This code is copyrighted\n// \(c\) MyCompany"/>
             <property name="id" value="example6"/>
         </module>
 

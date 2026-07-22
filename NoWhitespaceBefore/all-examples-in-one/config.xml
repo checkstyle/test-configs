@@ -26,13 +26,13 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="NoWhitespaceBefore">
+            <property name="allowLineBreaks" value="true"/>
             <property name="id" value="example1"/>
+            <property name="tokens" value="METHOD_REF, DOT"/>
         </module>
 
         <module name="NoWhitespaceBefore">
-            <property name="allowLineBreaks" value="true"/>
             <property name="id" value="example2"/>
-            <property name="tokens" value="METHOD_REF, DOT"/>
         </module>
 
         <module name="NoWhitespaceBefore">
