@@ -26,13 +26,13 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
             <property name="id" value="example1"/>
-            <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String, com.google.common.collect.ImmutableMap"/>
         </module>
 
         <module name="VisibilityModifier">
+            <property name="allowPublicImmutableFields" value="true"/>
             <property name="id" value="example2"/>
+            <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String, com.google.common.collect.ImmutableMap"/>
         </module>
 
         <module name="VisibilityModifier">
@@ -46,12 +46,12 @@
 
         <module name="VisibilityModifier">
             <property name="id" value="example5"/>
-            <property name="protectedAllowed" value="true"/>
+            <property name="ignoreAnnotationCanonicalNames" value="Deprecated"/>
         </module>
 
         <module name="VisibilityModifier">
             <property name="id" value="example6"/>
-            <property name="ignoreAnnotationCanonicalNames" value="Deprecated"/>
+            <property name="protectedAllowed" value="true"/>
         </module>
 
         <module name="VisibilityModifier">

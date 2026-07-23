@@ -26,11 +26,11 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="LocalVariableName">
-            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="LocalVariableName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
             <property name="id" value="example2"/>
         </module>
 

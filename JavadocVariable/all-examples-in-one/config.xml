@@ -26,11 +26,11 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="JavadocVariable">
-            <property name="accessModifiers" value="private,package"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="JavadocVariable">
+            <property name="accessModifiers" value="private,package"/>
             <property name="id" value="example2"/>
         </module>
 

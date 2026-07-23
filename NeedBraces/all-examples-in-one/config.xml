@@ -26,13 +26,13 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="NeedBraces">
-            <property name="allowSingleLineStatement" value="true"/>
             <property name="id" value="example1"/>
-            <property name="tokens" value="LITERAL_CASE, LITERAL_DEFAULT"/>
         </module>
 
         <module name="NeedBraces">
+            <property name="allowSingleLineStatement" value="true"/>
             <property name="id" value="example2"/>
+            <property name="tokens" value="LITERAL_CASE, LITERAL_DEFAULT"/>
         </module>
 
         <module name="NeedBraces">

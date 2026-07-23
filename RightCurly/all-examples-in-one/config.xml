@@ -27,12 +27,12 @@
 
         <module name="RightCurly">
             <property name="id" value="example1"/>
-            <property name="option" value="alone"/>
-            <property name="tokens" value="LITERAL_SWITCH, LITERAL_CASE, LITERAL_DEFAULT"/>
         </module>
 
         <module name="RightCurly">
             <property name="id" value="example2"/>
+            <property name="option" value="alone"/>
+            <property name="tokens" value="LITERAL_SWITCH, LITERAL_CASE, LITERAL_DEFAULT"/>
         </module>
 
         <module name="RightCurly">
