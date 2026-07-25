@@ -27,11 +27,11 @@
 
         <module name="NoLineWrap">
             <property name="id" value="example1"/>
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
 
         <module name="NoLineWrap">
             <property name="id" value="example2"/>
-            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
 
         <module name="NoLineWrap">

@@ -26,11 +26,11 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="EmptyCatchBlock">
+            <property name="commentFormat" value="This is expected"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="EmptyCatchBlock">
-            <property name="commentFormat" value="This is expected"/>
             <property name="id" value="example2"/>
         </module>
 
