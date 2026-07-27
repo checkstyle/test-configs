@@ -26,7 +26,13 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ParameterName">
-            <property name="format" value="^[a-z][a-zA-Z0-9]+$"/>
+            <property name="accessModifiers" value="protected, package, private"/>
+            <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
+        </module>
+
+        <module name="ParameterName">
+            <property name="accessModifiers" value="public"/>
+            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

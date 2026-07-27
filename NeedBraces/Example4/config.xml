@@ -26,8 +26,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="NeedBraces">
-            <property name="allowSingleLineStatement" value="true"/>
-            <property name="tokens" value="LITERAL_CASE, LITERAL_DEFAULT"/>
+            <property name="allowEmptyLoopBody" value="true"/>
+            <property name="tokens" value="LITERAL_WHILE, LITERAL_FOR"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

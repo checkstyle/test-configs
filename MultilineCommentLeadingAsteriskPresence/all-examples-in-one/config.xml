@@ -25,9 +25,8 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="RightCurly">
-            <property name="option" value="alone_or_singleline"/>
-            <property name="tokens" value="LITERAL_IF, METHOD_DEF"/>
+        <module name="MultilineCommentLeadingAsteriskPresence">
+            <property name="id" value="example1"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

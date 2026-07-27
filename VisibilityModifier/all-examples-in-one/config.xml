@@ -76,13 +76,13 @@
         </module>
 
         <module name="VisibilityModifier">
+            <property name="allowPublicFinalFields" value="true"/>
             <property name="id" value="example11"/>
-            <property name="ignoreAnnotationCanonicalNames" value="java.lang.Deprecated"/>
         </module>
 
         <module name="VisibilityModifier">
-            <property name="allowPublicFinalFields" value="true"/>
             <property name="id" value="example12"/>
+            <property name="ignoreAnnotationCanonicalNames" value="java.lang.Deprecated"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

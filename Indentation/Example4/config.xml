@@ -25,7 +25,9 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="Indentation"/>
+        <module name="Indentation">
+            <property name="basicOffset" value="2"/>
+        </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

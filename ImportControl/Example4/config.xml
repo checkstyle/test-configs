@@ -26,7 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control4.xml"/>
+            <property name="file" value="${config.folder}/import-control13.xml"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

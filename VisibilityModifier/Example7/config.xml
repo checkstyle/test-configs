@@ -26,8 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="VisibilityModifier">
-            <property name="allowPublicImmutableFields" value="true"/>
-            <property name="immutableClassCanonicalNames" value="com.google.common.collect.ImmutableSet,                       java.lang.String, com.google.common.collect.ImmutableMap"/>
+            <property name="allowPublicFinalFields" value="true"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

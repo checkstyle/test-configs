@@ -26,9 +26,11 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="DescendantToken">
-            <property name="limitedTokens" value="LITERAL_RETURN"/>
-            <property name="maximumNumber" value="2"/>
-            <property name="tokens" value="METHOD_DEF"/>
+            <property name="limitedTokens" value="LITERAL_THIS,LITERAL_NULL"/>
+            <property name="maximumDepth" value="1"/>
+            <property name="maximumNumber" value="1"/>
+            <property name="sumTokenCounts" value="true"/>
+            <property name="tokens" value="EQUAL,NOT_EQUAL"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

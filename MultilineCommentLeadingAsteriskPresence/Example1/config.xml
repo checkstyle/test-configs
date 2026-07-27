@@ -25,10 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="RightCurly">
-            <property name="option" value="alone_or_singleline"/>
-            <property name="tokens" value="LITERAL_IF, METHOD_DEF"/>
-        </module>
+        <module name="MultilineCommentLeadingAsteriskPresence"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

@@ -26,7 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassDataAbstractionCoupling">
-            <property name="max" value="2"/>
+            <property name="excludeClassesRegexps" value=".*Reader$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
