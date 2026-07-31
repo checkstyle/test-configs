@@ -134,6 +134,16 @@ public final class YamlParserAndProjectHandler {
     private static final String JAVADOC_PATH_FRAGMENT = "/checks/javadoc/";
 
     /**
+     * The subfolder name for the all-examples-in-one case.
+     */
+    private static final String ALL_EXAMPLES_SUBFOLDER = "all-examples-in-one";
+
+    /**
+     * The subfolder name for the all-usecases-in-one case.
+     */
+    private static final String ALL_USECASES_SUBFOLDER = "all-usecases-in-one";
+
+    /**
      * Private constructor to prevent instantiation of this utility class.
      *
      * @throws UnsupportedOperationException if an attempt is made to instantiate this class
@@ -191,10 +201,11 @@ public final class YamlParserAndProjectHandler {
                 createProjectsPropertiesFileForExample(examplePath, projectNames,
                         propertiesProjectLines, checkName);
 
-                if ("all-examples-in-one".equals(exampleName)) {
+                if (ALL_EXAMPLES_SUBFOLDER.equals(exampleName)
+                        || ALL_USECASES_SUBFOLDER.equals(exampleName)) {
                     createAllInOneProjectsFile(Paths.get(testConfigPath, checkName),
                             projectNames, yamlProjectData, propertiesProjectLines,
-                            checkName, yamlSourceName);
+                            checkName, yamlSourceName, exampleName);
                 }
             }
         }
@@ -454,7 +465,8 @@ public final class YamlParserAndProjectHandler {
                 examplePath.resolve("list-of-projects.yml");
 
         final List<Map<String, Object>> projects =
-                filterProjects(projectNames, allProjectData, checkName, yamlSourceName);
+                filterProjects(projectNames, allProjectData, checkName, yamlSourceName,
+                        ALL_EXAMPLES_SUBFOLDER);
 
         final Map<String, Object> yamlData = new ConcurrentHashMap<>();
         yamlData.put("projects", projects);
@@ -584,7 +596,8 @@ public final class YamlParserAndProjectHandler {
     }
 
     /**
-     * Creates a project YAML and properties file for the "all-examples-in-one" case.
+     * Creates a project YAML and properties file for an "all-in-one" case
+     * (either "all-examples-in-one" or "all-usecases-in-one").
      *
      * @param modulePath      the path to the module directory
      * @param projectNames    the list of project names
@@ -592,6 +605,8 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectLines the list of all project lines from all-projects.properties
      * @param checkName       the name of the check
      * @param yamlSourceName  the YAML source name for error messages
+     * @param subfolderName   the all-in-one subfolder name
+     *                        (e.g. "all-examples-in-one" or "all-usecases-in-one")
      * @throws IOException if an I/O error occurs
      */
     private static void createAllInOneProjectsFile(final Path modulePath,
@@ -599,25 +614,30 @@ public final class YamlParserAndProjectHandler {
                                                    final List<Map<String, Object>> allProjectData,
                                                    final List<String> allProjectLines,
                                                    final String checkName,
-                                                   final String yamlSourceName)
+                                                   final String yamlSourceName,
+                                                   final String subfolderName)
             throws IOException {
-        final Path allInOnePath = prepareAllInOnePath(modulePath);
+        final Path allInOnePath = prepareAllInOnePath(modulePath, subfolderName);
 
         // Create YAML and Properties files
         generateProjectsYaml(allInOnePath, projectNames, allProjectData,
-                checkName, yamlSourceName);
-        generateProjectsProperties(allInOnePath, projectNames, allProjectLines, checkName);
+                checkName, yamlSourceName, subfolderName);
+        generateProjectsProperties(allInOnePath, projectNames, allProjectLines,
+                checkName, subfolderName);
     }
 
     /**
      * Prepares the all-in-one directory path by creating necessary directories.
      *
      * @param modulePath The base module path.
+     * @param subfolderName The all-in-one subfolder name
+     *                      (e.g. "all-examples-in-one" or "all-usecases-in-one").
      * @return The path to the all-in-one directory.
      * @throws IOException If an I/O error occurs during directory creation.
      */
-    private static Path prepareAllInOnePath(final Path modulePath) throws IOException {
-        final Path allInOnePath = modulePath.resolve("all-examples-in-one");
+    private static Path prepareAllInOnePath(final Path modulePath, final String subfolderName)
+            throws IOException {
+        final Path allInOnePath = modulePath.resolve(subfolderName);
         Files.createDirectories(allInOnePath);
         return allInOnePath;
     }
@@ -630,17 +650,21 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectData  A list of project data maps.
      * @param checkName       The context name for error messages.
      * @param yamlSourceName  the YAML source name for error messages.
+     * @param subfolderName   the all-in-one subfolder name, used in error messages
+     *                        (e.g. "all-examples-in-one" or "all-usecases-in-one").
      * @throws IOException If an I/O error occurs during file operations.
      */
     private static void generateProjectsYaml(final Path allInOnePath,
                                              final List<String> projectNames,
                                              final List<Map<String, Object>> allProjectData,
                                              final String checkName,
-                                             final String yamlSourceName) throws IOException {
+                                             final String yamlSourceName,
+                                             final String subfolderName) throws IOException {
         final Path projectsYamlFilePath =
                 allInOnePath.resolve("list-of-projects.yml");
         final List<Map<String, Object>> projectsYaml =
-                filterProjects(projectNames, allProjectData, checkName, yamlSourceName);
+                filterProjects(projectNames, allProjectData, checkName, yamlSourceName,
+                        subfolderName);
 
         final Map<String, Object> yamlData = new ConcurrentHashMap<>();
         yamlData.put("projects", projectsYaml);
@@ -659,13 +683,16 @@ public final class YamlParserAndProjectHandler {
      * @param projectNames     A list of project names to include.
      * @param allProjectLines  A list of project lines.
      * @param checkName        The context name for error messages.
+     * @param subfolderName    the all-in-one subfolder name, used in error messages
+     *                         (e.g. "all-examples-in-one" or "all-usecases-in-one").
      * @throws IOException If an I/O error occurs during file operations.
      * @throws IllegalArgumentException If project not found
      */
     private static void generateProjectsProperties(final Path allInOnePath,
                                                    final List<String> projectNames,
                                                    final List<String> allProjectLines,
-                                                   final String checkName) throws IOException {
+                                                   final String checkName,
+                                                   final String subfolderName) throws IOException {
         final Path projectsPropertiesFilePath = allInOnePath.resolve("list-of-projects.properties");
         final List<String> fileContents = new ArrayList<>();
         fileContents.add(DEFAULT_COMMENTS);
@@ -683,7 +710,7 @@ public final class YamlParserAndProjectHandler {
                                     + projectName
                                     + " (Context: "
                                     + checkName
-                                    + ", Example: all-examples-in-one"
+                                    + ", Example: " + subfolderName
                                     + ")");
                 }
             }
@@ -702,6 +729,8 @@ public final class YamlParserAndProjectHandler {
      * @param allProjectData A list of all project data maps.
      * @param checkName      The context name for error messages.
      * @param dataSource     The data source identifier for error messages.
+     * @param subfolderName  the all-in-one subfolder name, used in error messages
+     *                       (e.g. "all-examples-in-one" or "all-usecases-in-one").
      * @return A filtered list of project data maps.
      * @throws IllegalArgumentException If a project name is not found in the data source.
      */
@@ -709,7 +738,8 @@ public final class YamlParserAndProjectHandler {
             final List<String> projectNames,
             final List<Map<String, Object>> allProjectData,
             final String checkName,
-            final String dataSource
+            final String dataSource,
+            final String subfolderName
     ) {
         final List<Map<String, Object>> filteredProjects;
 
@@ -728,7 +758,7 @@ public final class YamlParserAndProjectHandler {
                     throw new IllegalArgumentException(
                             "Project not found in " + dataSource + ": " + projectName
                                     + " (Context: "
-                                    + checkName + ", Example: all-examples-in-one" + ")");
+                                    + checkName + ", Example: " + subfolderName + ")");
                 }
             }
         }
