@@ -27,56 +27,51 @@
 
         <module name="WhitespaceAround">
             <property name="id" value="example1"/>
-            <property name="tokens" value="ASSIGN, DIV_ASSIGN, PLUS_ASSIGN, MINUS_ASSIGN, STAR_ASSIGN,                       MOD_ASSIGN, SR_ASSIGN, BSR_ASSIGN, SL_ASSIGN, BXOR_ASSIGN,                       BOR_ASSIGN, BAND_ASSIGN"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="WhitespaceAround">
-            <property name="id" value="example3"/>
             <property name="tokens" value="LCURLY, RCURLY, SLIST"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptyMethods" value="true"/>
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptyConstructors" value="true"/>
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptyTypes" value="true"/>
-            <property name="id" value="example6"/>
+            <property name="id" value="example5"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptyLoops" value="true"/>
-            <property name="id" value="example7"/>
+            <property name="id" value="example6"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptyLambdas" value="true"/>
-            <property name="id" value="example8"/>
+            <property name="id" value="example7"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptyCatches" value="true"/>
-            <property name="id" value="example9"/>
+            <property name="id" value="example8"/>
         </module>
 
         <module name="WhitespaceAround">
-            <property name="id" value="example10"/>
+            <property name="id" value="example9"/>
             <property name="ignoreEnhancedForColon" value="false"/>
         </module>
 
         <module name="WhitespaceAround">
             <property name="allowEmptySwitchBlockStatements" value="true"/>
-            <property name="id" value="example11"/>
+            <property name="id" value="example10"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

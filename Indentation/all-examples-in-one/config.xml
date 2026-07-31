@@ -30,42 +30,38 @@
         </module>
 
         <module name="Indentation">
+            <property name="caseIndent" value="0"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="Indentation">
-            <property name="caseIndent" value="0"/>
+            <property name="forceStrictCondition" value="true"/>
             <property name="id" value="example3"/>
         </module>
 
         <module name="Indentation">
-            <property name="forceStrictCondition" value="true"/>
+            <property name="basicOffset" value="2"/>
             <property name="id" value="example4"/>
         </module>
 
         <module name="Indentation">
-            <property name="basicOffset" value="2"/>
             <property name="id" value="example5"/>
-        </module>
-
-        <module name="Indentation">
-            <property name="id" value="example6"/>
             <property name="lineWrappingIndentation" value="8"/>
         </module>
 
         <module name="Indentation">
-            <property name="id" value="example7"/>
+            <property name="id" value="example6"/>
             <property name="throwsIndent" value="8"/>
         </module>
 
         <module name="Indentation">
             <property name="arrayInitIndent" value="2"/>
-            <property name="id" value="example8"/>
+            <property name="id" value="example7"/>
         </module>
 
         <module name="Indentation">
             <property name="braceAdjustment" value="2"/>
-            <property name="id" value="example9"/>
+            <property name="id" value="example8"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

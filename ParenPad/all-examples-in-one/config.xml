@@ -31,15 +31,11 @@
 
         <module name="ParenPad">
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="ParenPad">
-            <property name="id" value="example3"/>
             <property name="tokens" value="LITERAL_FOR, LITERAL_CATCH, SUPER_CTOR_CALL"/>
         </module>
 
         <module name="ParenPad">
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
             <property name="option" value="space"/>
         </module>
 

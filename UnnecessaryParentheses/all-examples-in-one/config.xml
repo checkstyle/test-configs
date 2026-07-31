@@ -27,15 +27,10 @@
 
         <module name="UnnecessaryParentheses">
             <property name="id" value="example1"/>
-            <property name="tokens" value="QUESTION"/>
         </module>
 
         <module name="UnnecessaryParentheses">
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="UnnecessaryParentheses">
-            <property name="id" value="example3"/>
             <property name="tokens" value="BOR, BAND, BXOR"/>
         </module>
 

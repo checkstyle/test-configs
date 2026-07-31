@@ -27,24 +27,19 @@
 
         <module name="NoLineWrap">
             <property name="id" value="example1"/>
-            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
 
         <module name="NoLineWrap">
             <property name="id" value="example2"/>
-        </module>
-
-        <module name="NoLineWrap">
-            <property name="id" value="example3"/>
             <property name="tokens" value="IMPORT"/>
         </module>
 
         <module name="NoLineWrap">
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
         </module>
 
         <module name="NoLineWrap">
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
             <property name="skipAnnotations" value="false"/>
             <property name="tokens" value="IMPORT, STATIC_IMPORT,      PACKAGE_DEF, CLASS_DEF, METHOD_DEF, CTOR_DEF"/>
         </module>
