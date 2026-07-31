@@ -26,34 +26,29 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ParameterName">
-            <property name="format" value="^[a-z][a-zA-Z0-9]+$"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="ParameterName">
+            <property name="format" value="^[a-z][_a-zA-Z0-9]+$"/>
             <property name="id" value="example2"/>
         </module>
 
         <module name="ParameterName">
-            <property name="format" value="^[a-z][_a-zA-Z0-9]+$"/>
             <property name="id" value="example3"/>
-        </module>
-
-        <module name="ParameterName">
-            <property name="id" value="example4"/>
             <property name="ignoreOverridden" value="true"/>
         </module>
 
         <module name="ParameterName">
             <property name="accessModifiers" value="protected, package, private"/>
             <property name="format" value="^[a-z]([a-z0-9][a-zA-Z0-9]*)?$"/>
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
         </module>
 
         <module name="ParameterName">
             <property name="accessModifiers" value="public"/>
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

@@ -31,60 +31,19 @@
         </module>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control4.xml"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control2.xml"/>
-            <property name="id" value="example3"/>
+            <property name="id" value="example2"/>
             <property name="path" value="${config.folder}[\\/]api[\\/].*$"/>
         </module>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control5.xml"/>
-            <property name="id" value="example4"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control6.xml"/>
-            <property name="id" value="example5"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control7.xml"/>
-            <property name="id" value="example6"/>
-        </module>
-
-        <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control13.xml"/>
-            <property name="id" value="example7"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control8.xml"/>
-            <property name="id" value="example8"/>
+            <property name="id" value="example3"/>
         </module>
 
         <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control14.xml"/>
-            <property name="id" value="example9"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control10.xml"/>
-            <property name="id" value="example10"/>
-            <property name="path" value="^.*[\\/]src[\\/]xdocs-examples[\\/].*$"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control11.xml"/>
-            <property name="id" value="example11"/>
-        </module>
-
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control12.xml"/>
-            <property name="id" value="example12"/>
+            <property name="id" value="example4"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
