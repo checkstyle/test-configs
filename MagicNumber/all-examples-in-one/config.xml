@@ -59,7 +59,7 @@
 
         <module name="MagicNumber">
             <property name="id" value="example7"/>
-            <property name="ignoreNumbers" value="0, 1, 10"/>
+            <property name="ignoreNumbers" value="0, 1, 8, 10"/>
         </module>
 
         <module name="MagicNumber">
