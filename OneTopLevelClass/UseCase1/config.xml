@@ -25,26 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="AtclauseOrder">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="AtclauseOrder">
-            <property name="id" value="example2"/>
-            <property name="tagOrder" value="@author, @since, @version, @param, @return,                       @throws, @exception, @deprecated,                       @see, @serial, @serialField, @serialData"/>
-        </module>
-
-        <module name="AtclauseOrder">
-            <property name="id" value="example3"/>
-            <property name="tagOrder" value="@author, @since, @version, @param, @return,                       @throws, @exception, @deprecated,                       @see, @serial, @serialField, @serialData"/>
-            <property name="target" value="ENUM_DEF"/>
-        </module>
-
-        <module name="AtclauseOrder">
-            <property name="id" value="example4"/>
-            <property name="tagOrder" value="@version, @author, @param, @return,                       @throws, @exception, @see, @since,                       @serial, @serialField, @serialData"/>
-            <property name="target" value="CLASS_DEF"/>
-        </module>
+        <module name="OneTopLevelClass"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

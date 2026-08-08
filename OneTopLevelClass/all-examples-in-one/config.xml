@@ -33,10 +33,6 @@
             <property name="id" value="example2"/>
         </module>
 
-        <module name="OneTopLevelClass">
-            <property name="id" value="example3"/>
-        </module>
-
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>
