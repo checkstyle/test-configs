@@ -25,39 +25,9 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="MethodName">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="MethodName">
-            <property name="format" value="^[a-z][a-zA-Z0-9]{7,}$"/>
-            <property name="id" value="example2"/>
-        </module>
-
-        <module name="MethodName">
-            <property name="allowClassName" value="true"/>
-            <property name="format" value="^[a-zA-Z](_?[a-zA-Z0-9]+)*$"/>
-            <property name="id" value="example3"/>
-        </module>
-
-        <module name="MethodName">
-            <property name="applyToPublic" value="false"/>
-            <property name="id" value="example4"/>
-        </module>
-
-        <module name="MethodName">
-            <property name="applyToProtected" value="false"/>
-            <property name="id" value="example5"/>
-        </module>
-
-        <module name="MethodName">
-            <property name="applyToPrivate" value="false"/>
-            <property name="id" value="example6"/>
-        </module>
-
-        <module name="MethodName">
-            <property name="applyToPackage" value="false"/>
-            <property name="id" value="example7"/>
+        <module name="IllegalBlockTag">
+            <property name="tag" value="@since"/>
+            <property name="tagTextPattern" value="^[1-9\\.]+$"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
