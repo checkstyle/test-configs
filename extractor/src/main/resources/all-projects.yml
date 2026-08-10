@@ -29,6 +29,11 @@ projects:
     url: https://github.com/checkstyle/sonar-checkstyle
     reference: master
 
+  - name: apereo-cas
+    scm: git
+    url: https://github.com/apereo/cas.git
+    reference: 957bb1ea4a5bd696de282867599c882e824db317
+
   # OpenJDK 25 requires lots of excludes; list here should be consistent with file filters at:
   # https://github.com/checkstyle/checkstyle/blob/master/config/projects-to-test/openjdk25-excluded.files
   - name: openjdk25
