@@ -25,9 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="MethodLength">
-            <property name="max" value="4"/>
-        </module>
+        <module name="PreferLiteralJavadocInlineTag"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

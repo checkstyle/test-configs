@@ -26,7 +26,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="MethodLength">
-            <property name="countEmpty" value="false"/>
             <property name="max" value="4"/>
             <property name="tokens" value="METHOD_DEF"/>
         </module>
