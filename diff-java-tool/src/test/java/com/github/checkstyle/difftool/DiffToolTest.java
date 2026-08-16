@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.cli.CommandLine;
 import org.junit.jupiter.api.Test;
@@ -162,52 +161,6 @@ class DiffToolTest {
         final boolean result = (
                 boolean) method.invoke(null, null, null, "patchConfig.xml", "single");
         assertTrue(result, "Expected true in single mode with patch config");
-    }
-
-    /**
-     * Tests getOsSpecificCmd for non-Windows OS.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetOsSpecificCmdNonWindows() throws Exception {
-        final Method method = getDeclaredMethod("getOsSpecificCmd", String.class);
-        final String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-        if (!osName.contains("windows")) {
-            final String cmd = (String) method.invoke(null, "ls -la");
-            assertEquals("ls -la", cmd, "Unexpected command for non-Windows OS");
-        }
-    }
-
-    /**
-     * Tests getOsSpecificCmd for Windows OS.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetOsSpecificCmdWindows() throws Exception {
-        final Method method = getDeclaredMethod("getOsSpecificCmd", String.class);
-        final String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-        if (osName.contains("windows")) {
-            final String cmd = (String) method.invoke(null, "dir");
-            assertEquals("cmd /c dir", cmd, "Unexpected command for Windows OS");
-        }
-    }
-
-    /**
-     * Tests getOsSpecificPath.
-     *
-     * @throws Exception if an error occurs during the test
-     */
-    @Test
-    void testGetOsSpecificPath() throws Exception {
-        final Method method =
-                getDeclaredMethod("getOsSpecificPath", String[].class);
-        final String path = (String) method.invoke(null,
-                        (Object) new String[]{"folder", "subfolder", "file.txt"});
-        final String expected =
-                "folder" + File.separator + "subfolder" + File.separator + "file.txt";
-        assertEquals(expected, path, "Unexpected OS-specific path");
     }
 
     /**

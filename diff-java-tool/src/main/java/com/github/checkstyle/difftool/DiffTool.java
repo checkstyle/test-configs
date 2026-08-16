@@ -572,7 +572,7 @@ public final class DiffTool {
                     + ") into local Maven repository ...");
             GitCommands.printLatestCommitMessageSha((String) cfg.get("branch"),
                 (File) cfg.get("localGitRepo"));
-            executeCmd(
+            CommandsUtil.executeCmd(
                     "./mvnw -e --no-transfer-progress --batch-mode -Pno-validations clean install",
                     (File) cfg.get("localGitRepo")
             );
@@ -615,7 +615,7 @@ public final class DiffTool {
         LOGGER.info("Testing Checkstyle started");
 
         final String targetDir = "target";
-        final String srcDir = getOsSpecificPath("src", "main", "java");
+        final String srcDir = CommandsUtil.getOsSpecificPath("src", "main", "java");
         final String reposDir = "repositories";
         final String reportsDir = "reports";
         makeWorkDirsIfNotExist(srcDir, reposDir, reportsDir);
@@ -641,7 +641,7 @@ public final class DiffTool {
 
             deleteDir(srcDir);
             if ("local".equals(repoType)) {
-                copyDir(repoUrl, getOsSpecificPath(srcDir, repoName));
+                copyDir(repoUrl, CommandsUtil.getOsSpecificPath(srcDir, repoName));
             }
             else {
                 if (useShallowClone && !GitCommands.isGitSha(commitId)) {
@@ -651,21 +651,24 @@ public final class DiffTool {
                 else {
                     GitCommands.cloneRepository(repoName, repoUrl, commitId, reposDir);
                 }
-                copyDir(getOsSpecificPath(reposDir, repoName), getOsSpecificPath(srcDir, repoName));
+                copyDir(
+                    CommandsUtil.getOsSpecificPath(reposDir, repoName),
+                    CommandsUtil.getOsSpecificPath(srcDir, repoName));
             }
             runMavenExecution(srcDir, excludes, checkstyleConfig,
                     checkstyleVersion, extraMvnRegressionOptions);
             String repoPath = repoUrl;
             if (!"local".equals(repoType)) {
-                repoPath = new File(getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
+                repoPath = new File(
+                    CommandsUtil.getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
             }
             postProcessCheckstyleReport(targetDir, repoName, repoPath);
-            deleteDir(getOsSpecificPath(srcDir, repoName));
-            moveDir(targetDir, getOsSpecificPath(reportsDir, repoName));
+            deleteDir(CommandsUtil.getOsSpecificPath(srcDir, repoName));
+            moveDir(targetDir, CommandsUtil.getOsSpecificPath(reportsDir, repoName));
         }
 
         // Restore empty_file to make src directory tracked by git
-        final File emptyFile = new File(getOsSpecificPath(srcDir, "empty_file"));
+        final File emptyFile = new File(CommandsUtil.getOsSpecificPath(srcDir, "empty_file"));
         if (!emptyFile.createNewFile()) {
             LOGGER.warn("Failed to create or already existing 'empty_file' in " + srcDir);
         }
@@ -787,7 +790,7 @@ public final class DiffTool {
             diffCmdBuilder.append(" --shortFilePaths");
         }
 
-        executeCmd(diffCmdBuilder.toString());
+        CommandsUtil.executeCmd(diffCmdBuilder.toString());
     }
 
     /**
@@ -1232,7 +1235,7 @@ public final class DiffTool {
         generatePomXml(".");
 
         final String mvnClean = "mvn -e --no-transfer-progress --batch-mode clean";
-        executeCmd(mvnClean, new File("."));
+        CommandsUtil.executeCmd(mvnClean, new File("."));
 
         LOGGER.info("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
         final StringBuilder mvnSite =
@@ -1251,7 +1254,7 @@ public final class DiffTool {
             mvnSite.append(extraMvnRegressionOptions);
         }
         LOGGER.info(mvnSite.toString());
-        executeCmd(mvnSite.toString(), new File("."));
+        CommandsUtil.executeCmd(mvnSite.toString(), new File("."));
         LOGGER.info("Running Checkstyle on " + srcDir + " - finished");
     }
 
@@ -1291,9 +1294,9 @@ public final class DiffTool {
     private static void postProcessCheckstyleReport(final String targetDir,
                     final String repoName, final String repoPath) throws IOException {
         final Path reportPath = Paths.get(targetDir, "checkstyle-result.xml");
-        final String absolutePath = new File(getOsSpecificPath("src", "main", "java", repoName))
-                .getAbsolutePath();
-        final String relativePath = getOsSpecificPath(repoPath);
+        final String absolutePath = new File(
+            CommandsUtil.getOsSpecificPath("src", "main", "java", repoName)).getAbsolutePath();
+        final String relativePath = CommandsUtil.getOsSpecificPath(repoPath);
 
         final Path tempPath = Files.createTempFile("temp", ".xml");
         try (BufferedReader reader = Files.newBufferedReader(reportPath, StandardCharsets.UTF_8);
@@ -1403,63 +1406,6 @@ public final class DiffTool {
                 }
             });
         }
-    }
-
-    /**
-     * Executes a command in the specified directory.
-     *
-     * @param cmd The command to execute.
-     * @param dir The directory in which to execute the command.
-     * @throws IOException If an I/O error occurs during command execution.
-     * @throws InterruptedException If the process is interrupted while waiting.
-     * @throws CommandExecutionException If the command exits with a non-zero status.
-     */
-    private static void executeCmd(final String cmd, final File dir)
-            throws IOException, InterruptedException {
-        LOGGER.info("Running command: " + cmd);
-        final ProcessBuilder processBuilder =
-                new ProcessBuilder(getOsSpecificCmd(cmd).split("\\s+"));
-        processBuilder.directory(dir);
-        processBuilder.inheritIO();
-        final Process process = processBuilder.start();
-        final int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new CommandExecutionException("Command execution failed", exitCode);
-        }
-    }
-
-    /**
-     * Executes a command in the current working directory.
-     *
-     * @param cmd the command to execute
-     * @throws IOException if an I/O error occurs while executing the command
-     * @throws InterruptedException if the process is interrupted while waiting
-     */
-    private static void executeCmd(final String cmd) throws IOException, InterruptedException {
-        executeCmd(cmd, new File("").getAbsoluteFile());
-    }
-
-    /**
-     * Returns the command string adjusted for the operating system.
-     *
-     * @param cmd the original command
-     * @return the OS-specific command string
-     */
-    private static String getOsSpecificCmd(final String cmd) {
-        if (System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("windows")) {
-            return "cmd /c " + cmd;
-        }
-        return cmd;
-    }
-
-    /**
-     * Constructs a path string using the appropriate file separator for the operating system.
-     *
-     * @param name the path components
-     * @return the OS-specific path string
-     */
-    private static String getOsSpecificPath(final String... name) {
-        return String.join(File.separator, name);
     }
 
     /**
@@ -1955,24 +1901,6 @@ public final class DiffTool {
          */
         public String getCommitTime() {
             return commitTime;
-        }
-    }
-
-    /**
-     * Custom runtime exception for handling command execution failures.
-     * Includes the exit code in the error message.
-     */
-    public static class CommandExecutionException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Constructs a CommandExecutionException with a message and exit code.
-         *
-         * @param message the detail message to be included in the exception
-         * @param exitCode the exit code associated with the command execution failure
-         */
-        public CommandExecutionException(final String message, final int exitCode) {
-            super(message + " (Exit code: " + exitCode + ")");
         }
     }
 
