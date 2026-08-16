@@ -26,12 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ClassTypeParameterName">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="ClassTypeParameterName">
-            <property name="format" value="^[A-Z]{2,}$"/>
-            <property name="id" value="example2"/>
+            <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
