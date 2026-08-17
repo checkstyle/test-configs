@@ -80,6 +80,9 @@
         <!-- NPathComplexity is excluded due to the conversion of a large Groovy script (diff.groovy)
              into a single Java class (DiffTool.java), where the complexity is inherent to the original design. -->
         <exclude name="NPathComplexity"/>
+        <!-- UseObjectForClearerAPI is excluded because some utility methods in GitCommands require
+             more than 3 arguments of String type to have enough information for invoking certain git operations.  -->
+        <exclude name="UseObjectForClearerAPI"/>
     </rule>
 
     <rule ref="category/java/documentation.xml">

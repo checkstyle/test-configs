@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // checkstyle: Checks Java source code and other text files for adherence to a set of rules.
-// Copyright (C) 2001-2024 the original author or authors.
+// Copyright (C) 2001-2026 the original author or authors.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -49,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -120,16 +118,6 @@ public final class DiffTool {
     private static final String EXCLUDE_DELIMITER = ",";
 
     /**
-     * Number of times a command will be retried if it fails.
-     */
-    private static final int DEFAULT_RETRY_COUNT = 5;
-
-    /**
-     * Time (in seconds) to wait between retry attempts.
-     */
-    private static final int SLEEP_DURATION_SECONDS = 15;
-
-    /**
      * Initial capacity for the StringBuilder to build the Maven command.
      */
     private static final int STRING_BUILDER_CAPACITY = 200;
@@ -164,7 +152,8 @@ public final class DiffTool {
                             cfg.getListOfProjects());
             copyConfigFilesAndUpdatePaths(configFilesList);
 
-            if (cfg.getLocalGitRepo() != null && hasUnstagedChanges(cfg.getLocalGitRepo())) {
+            if (cfg.getLocalGitRepo() != null && GitCommands.hasUnstagedChanges(
+                    cfg.getLocalGitRepo())) {
                 LOGGER.error("Error: git repository "
                         + cfg.getLocalGitRepo().getPath()
                         + " has unstaged changes!");
@@ -419,15 +408,17 @@ public final class DiffTool {
         if (!isValidCheckstyleConfigsCombination(config, baseConfig, patchConfig, toolMode)) {
             return false;
         }
-        if (localGitRepo != null && !isValidGitRepo(new File(localGitRepo))) {
+        if (localGitRepo != null && !GitCommands.isValidGitRepo(new File(localGitRepo))) {
             LOGGER.error("Error: " + localGitRepo + " is not a valid git repository!");
             return false;
         }
-        if (localGitRepo != null && !isExistingGitBranch(new File(localGitRepo), patchBranch)) {
+        if (localGitRepo != null && !GitCommands.isExistingGitBranch(
+                                        new File(localGitRepo), patchBranch)) {
             LOGGER.error("Error: " + patchBranch + " is not an existing git branch!");
             return false;
         }
-        if (baseBranch != null && !isExistingGitBranch(new File(localGitRepo), baseBranch)) {
+        if (baseBranch != null && !GitCommands.isExistingGitBranch(
+                                        new File(localGitRepo), baseBranch)) {
             LOGGER.error("Error: " + baseBranch + " is not an existing git branch!");
             return false;
         }
@@ -498,66 +489,6 @@ public final class DiffTool {
     }
 
     /**
-     * Checks if the given directory is a valid Git repository.
-     *
-     * @param gitRepoDir The directory to check.
-     * @return True if it is a valid Git repository, otherwise false.
-     */
-    private static boolean isValidGitRepo(final File gitRepoDir) {
-        if (gitRepoDir.exists() && gitRepoDir.isDirectory()) {
-            try {
-                final ProcessBuilder processBuilder = new ProcessBuilder("git", "status");
-                processBuilder.directory(gitRepoDir);
-                final Process process = processBuilder.start();
-                final int exitCode = process.waitFor();
-                return exitCode == 0;
-            }
-            catch (IOException | InterruptedException ex) {
-                LOGGER.error("Error: '"
-                        + gitRepoDir.getPath()
-                        + "' is not a git repository!");
-                return false;
-            }
-        }
-        else {
-            LOGGER.error("Error: '"
-                    + gitRepoDir.getPath()
-                    + "' does not exist or it is not a directory!");
-            return false;
-        }
-    }
-
-    /**
-     * Checks if the given branch exists in the specified Git repository.
-     *
-     * @param gitRepo The Git repository directory.
-     * @param branchName The branch name to check.
-     * @return True if the branch exists, otherwise false.
-     */
-    private static boolean isExistingGitBranch(final File gitRepo, final String branchName) {
-        try {
-            final ProcessBuilder processBuilder =
-                    new ProcessBuilder("git", "rev-parse", "--verify", branchName);
-            processBuilder.directory(gitRepo);
-            final Process process = processBuilder.start();
-            final int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                LOGGER.error("Error: git repository "
-                        + gitRepo.getPath()
-                        + " does not have a branch with name '"
-                        + branchName
-                        + "'!");
-                return false;
-            }
-            return true;
-        }
-        catch (IOException | InterruptedException ex) {
-            LOGGER.error("Error checking branch existence: " + ex.getMessage());
-            return false;
-        }
-    }
-
-    /**
      * Copies unique configuration files from the specified list to the current working directory,
      * updating file paths as needed.
      *
@@ -587,44 +518,6 @@ public final class DiffTool {
             else {
                 LOGGER.error("Skipping invalid file path: " + filename);
             }
-        }
-    }
-
-    /**
-     * Checks if there are unstaged changes in the specified Git repository.
-     *
-     * @param gitRepo the directory of the Git repository
-     * @return {@code true} if there are unstaged changes, {@code false} otherwise
-     */
-    private static boolean hasUnstagedChanges(final File gitRepo) {
-        try {
-            final ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "--exit-code");
-            processBuilder.directory(gitRepo);
-            final Process process = processBuilder.start();
-            final int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                return false;
-            }
-            else {
-                try (BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(process.getInputStream(),
-                        StandardCharsets.UTF_8))) {
-
-                    String line;
-                    while (true) {
-                        line = reader.readLine();
-                        if (line == null) {
-                            break;
-                        }
-                        LOGGER.info(line);
-                    }
-                }
-                return true;
-            }
-        }
-        catch (IOException | InterruptedException ex) {
-            LOGGER.error("Error checking for unstaged changes: " + ex.getMessage());
-            return true;
         }
     }
 
@@ -677,9 +570,9 @@ public final class DiffTool {
             LOGGER.info("Installing Checkstyle artifact ("
                     + cfg.get("branch")
                     + ") into local Maven repository ...");
-            executeCmd("git checkout " + cfg.get("branch"), (File) cfg.get("localGitRepo"));
-            executeCmd("git log -1 --pretty=MSG:%s%nSHA-1:%H", (File) cfg.get("localGitRepo"));
-            executeCmd(
+            GitCommands.printLatestCommitMessageSha((String) cfg.get("branch"),
+                (File) cfg.get("localGitRepo"));
+            CommandsUtil.executeCmd(
                     "./mvnw -e --no-transfer-progress --batch-mode -Pno-validations clean install",
                     (File) cfg.get("localGitRepo")
             );
@@ -699,10 +592,12 @@ public final class DiffTool {
         if (isRegressionTesting) {
             reportInfo = new CheckstyleReportInfo(
                     (String) cfg.get("branch"),
-                    getLastCheckstyleCommitSha((File) cfg.get("localGitRepo"),
+                    GitCommands.getLastCheckstyleCommitSha((File) cfg.get("localGitRepo"),
                             (String) cfg.get("branch")),
-                    getLastCommitMsg((File) cfg.get("localGitRepo"), (String) cfg.get("branch")),
-                    getLastCommitTime((File) cfg.get("localGitRepo"), (String) cfg.get("branch"))
+                    GitCommands.getLastCommitMsg((File) cfg.get("localGitRepo"),
+                        (String) cfg.get("branch")),
+                    GitCommands.getLastCommitTime((File) cfg.get("localGitRepo"),
+                        (String) cfg.get("branch"))
             );
         }
         return reportInfo;
@@ -720,7 +615,7 @@ public final class DiffTool {
         LOGGER.info("Testing Checkstyle started");
 
         final String targetDir = "target";
-        final String srcDir = getOsSpecificPath("src", "main", "java");
+        final String srcDir = CommandsUtil.getOsSpecificPath("src", "main", "java");
         final String reposDir = "repositories";
         final String reportsDir = "reports";
         makeWorkDirsIfNotExist(srcDir, reposDir, reportsDir);
@@ -746,439 +641,37 @@ public final class DiffTool {
 
             deleteDir(srcDir);
             if ("local".equals(repoType)) {
-                copyDir(repoUrl, getOsSpecificPath(srcDir, repoName));
+                copyDir(repoUrl, CommandsUtil.getOsSpecificPath(srcDir, repoName));
             }
             else {
-                if (useShallowClone && !isGitSha(commitId)) {
-                    shallowCloneRepository(repoName, repoType, repoUrl, commitId, reposDir);
+                if (useShallowClone && !GitCommands.isGitSha(commitId)) {
+                    GitCommands
+                        .shallowCloneRepository(repoName, repoUrl, commitId, reposDir);
                 }
                 else {
-                    cloneRepository(repoName, repoType, repoUrl, commitId, reposDir);
+                    GitCommands.cloneRepository(repoName, repoUrl, commitId, reposDir);
                 }
-                copyDir(getOsSpecificPath(reposDir, repoName), getOsSpecificPath(srcDir, repoName));
+                copyDir(
+                    CommandsUtil.getOsSpecificPath(reposDir, repoName),
+                    CommandsUtil.getOsSpecificPath(srcDir, repoName));
             }
             runMavenExecution(srcDir, excludes, checkstyleConfig,
                     checkstyleVersion, extraMvnRegressionOptions);
             String repoPath = repoUrl;
             if (!"local".equals(repoType)) {
-                repoPath = new File(getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
+                repoPath = new File(
+                    CommandsUtil.getOsSpecificPath(reposDir, repoName)).getAbsolutePath();
             }
             postProcessCheckstyleReport(targetDir, repoName, repoPath);
-            deleteDir(getOsSpecificPath(srcDir, repoName));
-            moveDir(targetDir, getOsSpecificPath(reportsDir, repoName));
+            deleteDir(CommandsUtil.getOsSpecificPath(srcDir, repoName));
+            moveDir(targetDir, CommandsUtil.getOsSpecificPath(reportsDir, repoName));
         }
 
         // Restore empty_file to make src directory tracked by git
-        final File emptyFile = new File(getOsSpecificPath(srcDir, "empty_file"));
+        final File emptyFile = new File(CommandsUtil.getOsSpecificPath(srcDir, "empty_file"));
         if (!emptyFile.createNewFile()) {
             LOGGER.warn("Failed to create or already existing 'empty_file' in " + srcDir);
         }
-    }
-
-    /**
-     * Retrieves the SHA of the last Checkstyle commit on the given branch.
-     *
-     * @param gitRepo The Git repository directory.
-     * @param branch The branch name.
-     * @return The SHA of the last commit.
-     * @throws IOException If an I/O error occurs during command execution.
-     * @throws InterruptedException If the process is interrupted.
-     */
-    private static String getLastCheckstyleCommitSha(final File gitRepo, final String branch)
-            throws IOException, InterruptedException {
-        // Checkout the specified branch
-        executeCmd("git checkout " + branch, gitRepo);
-
-        try {
-            final ProcessBuilder processBuilder = new ProcessBuilder("git", "rev-parse", "HEAD");
-            processBuilder.directory(gitRepo);
-            processBuilder.redirectErrorStream(true);
-            final Process process = processBuilder.start();
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                final String line = reader.readLine();
-                if (line != null) {
-                    return line.trim();
-                }
-                else {
-                    LOGGER.error("No output from git rev-parse HEAD");
-                    return "";
-                }
-            }
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error getting last commit SHA: " + ex.getMessage());
-            return "";
-        }
-    }
-
-    /**
-     * Retrieves the message of the most recent commit on the specified branch.
-     *
-     * @param gitRepo the directory of the Git repository
-     * @param branch the branch to check out and retrieve the commit message from
-     * @return the message of the most recent commit
-     * @throws IOException if an I/O error occurs while executing commands or reading output
-     * @throws InterruptedException if the process is interrupted while waiting
-     */
-    private static String getLastCommitMsg(final File gitRepo, final String branch)
-            throws IOException, InterruptedException {
-        executeCmd("git checkout " + branch, gitRepo);
-
-        try {
-            final ProcessBuilder processBuilder =
-                    new ProcessBuilder("git", "log", "-1", "--pretty=%B");
-            processBuilder.directory(gitRepo);
-            processBuilder.redirectErrorStream(true);
-            final Process process = processBuilder.start();
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                final String line = reader.readLine();
-                if (line != null) {
-                    return line.trim();
-                }
-                else {
-                    return "";
-                }
-            }
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error getting last commit message: " + ex.getMessage());
-            return "";
-        }
-    }
-
-    /**
-     * Retrieves the timestamp of the last commit on the specified branch.
-     *
-     * @param gitRepo The repository directory.
-     * @param branch  The branch name to check out.
-     * @return The timestamp of the last commit, or an empty string if an error occurs.
-     * @throws IOException If an I/O error occurs.
-     * @throws InterruptedException If the process is interrupted.
-     */
-    private static String getLastCommitTime(final File gitRepo, final String branch)
-            throws IOException, InterruptedException {
-        executeCmd("git checkout " + branch, gitRepo);
-
-        try {
-            final ProcessBuilder processBuilder =
-                    new ProcessBuilder("git", "log", "-1", "--format=%cd");
-            processBuilder.directory(gitRepo);
-            processBuilder.redirectErrorStream(true);
-            final Process process = processBuilder.start();
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                final String line = reader.readLine();
-                if (line != null) {
-                    return line.trim();
-                }
-                else {
-                    return "";
-                }
-            }
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error getting last commit time: " + ex.getMessage());
-            return "";
-        }
-    }
-
-    /**
-     * Gets the SHA of a commit based on the provided commit ID.
-     *
-     * @param commitId The commit ID or reference.
-     * @param repoType The type of repository (e.g., "git").
-     * @param srcDestinationDir The source directory of the repository.
-     * @return The commit SHA, or an empty string if an error occurs.
-     * @throws IllegalArgumentException if the repository type is unknown.
-     * @throws IOException if an I/O error occurs while executing the command.
-     */
-    private static String getCommitSha(final String commitId,
-                                       final String repoType,
-                                       final String srcDestinationDir) {
-        final String cmd;
-        if ("git".equals(repoType)) {
-            cmd = "git rev-parse " + commitId;
-        }
-        else {
-            throw new IllegalArgumentException("Error! Unknown "
-                    + repoType
-                    + " repository.");
-        }
-
-        try {
-            // Use ProcessBuilder instead of Runtime#exec
-            final ProcessBuilder processBuilder =
-                    new ProcessBuilder(cmd.split("\\s+"));
-            processBuilder.directory(new File(srcDestinationDir));
-            processBuilder.redirectErrorStream(true);
-            final Process process = processBuilder.start();
-
-            // Use InputStreamReader with explicit charset
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(),
-                    StandardCharsets.UTF_8))) {
-                final String sha = reader.readLine();
-                return sha != null ? sha.replace("\n", "") : "";
-            }
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error getting commit SHA: " + ex.getMessage());
-            return "";
-        }
-    }
-
-    /**
-     * Performs a shallow clone of the specified repository.
-     *
-     * @param repoName       The name of the repository.
-     * @param repoType       The type of repository (e.g., "git").
-     * @param repoUrl        The URL of the repository.
-     * @param commitId       The commit ID or reference.
-     * @param srcDir         The source directory for cloning.
-     * @throws IOException If an I/O error occurs.
-     */
-    private static void shallowCloneRepository(final String repoName, final String repoType,
-                        final String repoUrl, final String commitId, final String srcDir)
-                        throws IOException {
-        final String srcDestinationDir = getOsSpecificPath(srcDir, repoName);
-        if (!Files.exists(Paths.get(srcDestinationDir))) {
-            final String cloneCmd = getCloneShallowCmd(
-                            repoType,
-                            repoUrl,
-                            srcDestinationDir,
-                            commitId);
-            LOGGER.info("Shallow clone "
-                    + repoType
-                    + " repository '"
-                    + repoName
-                    + "' to "
-                    + srcDestinationDir
-                    + " folder ...");
-            executeCmdWithRetry(cloneCmd);
-            LOGGER.info("Cloning " + repoType + " repository '" + repoName + "' - completed\n");
-        }
-        LOGGER.info(repoName + " is synchronized");
-    }
-
-    /**
-     * Clones the specified repository and resets to a specific commit if needed.
-     *
-     * @param repoName       The name of the repository.
-     * @param repoType       The type of repository (e.g., "git").
-     * @param repoUrl        The URL of the repository.
-     * @param commitId       The commit ID or reference.
-     * @param srcDir         The source directory for cloning.
-     * @throws IOException          If an I/O error occurs.
-     * @throws InterruptedException If the process is interrupted.
-     */
-    private static void cloneRepository(final String repoName, final String repoType,
-                        final String repoUrl,
-                        final String commitId,
-                        final String srcDir)
-                        throws IOException, InterruptedException {
-        final String srcDestinationDir = getOsSpecificPath(srcDir, repoName);
-        if (!Files.exists(Paths.get(srcDestinationDir))) {
-            final String cloneCmd =
-                    getCloneCmd(repoType, repoUrl, srcDestinationDir);
-            LOGGER.info("Cloning "
-                    + repoType
-                    + " repository '"
-                    + repoName
-                    + "' to "
-                    + srcDestinationDir
-                    + " folder ...");
-            executeCmdWithRetry(cloneCmd);
-            LOGGER.info("Cloning "
-                    + repoType
-                    + " repository '"
-                    + repoName
-                    + "' - completed\n");
-        }
-
-        if (commitId != null && !commitId.isEmpty()) {
-            final String lastCommitSha = getLastProjectCommitSha(repoType, srcDestinationDir);
-            final String commitIdSha = getCommitSha(commitId, repoType, srcDestinationDir);
-            if (!lastCommitSha.equals(commitIdSha)) {
-                if (!isGitSha(commitId)) {
-                    // If commitId is a branch or tag, fetch more data and then reset
-                    fetchAdditionalData(repoType, srcDestinationDir, commitId);
-                }
-                final String resetCmd = getResetCmd(repoType, commitId);
-                LOGGER.info("Resetting " + repoType + " sources to commit '" + commitId + "'");
-                executeCmd(resetCmd, new File(srcDestinationDir));
-            }
-        }
-        LOGGER.info(repoName + " is synchronized");
-    }
-
-    /**
-     * Generates the clone command based on the repository type.
-     *
-     * @param repoType The type of repository (e.g., "git").
-     * @param repoUrl The URL of the repository.
-     * @param srcDestinationDir The destination directory for cloning.
-     * @return The command to clone the repository.
-     * @throws IllegalArgumentException if the repository type is unknown.
-     */
-    private static String getCloneCmd(final String repoType,
-                                      final String repoUrl,
-                                      final String srcDestinationDir) {
-        if ("git".equals(repoType)) {
-            return "git clone " + repoUrl + " " + srcDestinationDir;
-        }
-        throw new IllegalArgumentException("Error! Unknown "
-                + repoType
-                + " repository.");
-    }
-
-    /**
-     * Generates the shallow clone command based on the repository type and commit ID.
-     *
-     * @param repoType The type of repository (e.g., "git").
-     * @param repoUrl The URL of the repository.
-     * @param srcDestinationDir The destination directory for cloning.
-     * @param commitId The commit ID or reference.
-     * @return The command to perform a shallow clone.
-     * @throws IllegalArgumentException if the repository type is unknown.
-     */
-    private static String getCloneShallowCmd(final String repoType, final String repoUrl,
-                          final String srcDestinationDir, final String commitId) {
-        if ("git".equals(repoType)) {
-            return "git clone --depth 1 --branch "
-                    + commitId
-                    + " "
-                    + repoUrl
-                    + " "
-                    + srcDestinationDir;
-        }
-        throw new IllegalArgumentException("Error! Unknown repository type: " + repoType);
-    }
-
-    /**
-     * Fetches additional data for a specific commit if needed.
-     *
-     * @param repoType The type of repository (e.g., "git").
-     * @param srcDestinationDir The source directory of the repository.
-     * @param commitId The commit ID or reference to fetch data for.
-     * @throws IOException If an I/O error occurs during the fetch operation.
-     * @throws IllegalArgumentException If the repository type is unknown.
-     * @throws InterruptedException If the process is interrupted during execution.
-     */
-    private static void fetchAdditionalData(final String repoType, final String srcDestinationDir,
-                                            final String commitId)
-                                            throws IOException, InterruptedException {
-        final String fetchCmd;
-        if ("git".equals(repoType)) {
-            if (isGitSha(commitId)) {
-                fetchCmd = "git fetch";
-            }
-            else {
-                // Check if commitId is a tag and handle accordingly
-                if (isTag(commitId, new File(srcDestinationDir))) {
-                    fetchCmd = "git fetch --tags";
-                }
-                else {
-                    fetchCmd = "git fetch origin " + commitId + ":" + commitId;
-                }
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Error! Unknown "
-                    + repoType
-                    + " repository.");
-        }
-
-        executeCmd(fetchCmd, new File(srcDestinationDir));
-    }
-
-    /**
-     * Checks if the provided commit ID is a tag in the repository.
-     *
-     * @param commitId   The commit ID to check.
-     * @param gitRepo    The repository directory.
-     * @return True if the commit ID is a tag, false otherwise.
-     */
-    private static boolean isTag(final String commitId, final File gitRepo) {
-        try {
-            // Use ProcessBuilder instead of Runtime#exec
-            final ProcessBuilder processBuilder = new ProcessBuilder("git", "tag", "-l", commitId);
-            processBuilder.directory(gitRepo);
-            processBuilder.redirectErrorStream(true);
-            final Process process = processBuilder.start();
-
-            // Use InputStreamReader with explicit charset
-            try (BufferedReader reader =
-                         new BufferedReader(
-                                 new InputStreamReader(process.getInputStream(),
-                                 StandardCharsets.UTF_8))) {
-                final String result = reader.readLine();
-                return result != null && result.trim().equals(commitId);
-            }
-        }
-        catch (IOException ex) {
-            LOGGER.error("Error checking if commit is a tag: " + ex.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Checks if the provided value matches the format of a Git SHA.
-     *
-     * @param value The value to check.
-     * @return True if the value matches a valid Git SHA format, false otherwise.
-     */
-    private static boolean isGitSha(final String value) {
-        return value.matches("[0-9a-f]{5,40}");
-    }
-
-    /**
-     * Executes a command with retry logic.
-     *
-     * @param cmd   The command to execute.
-     * @param dir   The directory to execute the command in.
-     * @param retry The number of retry attempts.
-     * @throws IllegalStateException If the command fails after all retries.
-     */
-    private static void executeCmdWithRetry(final String cmd, final File dir, final int retry) {
-        final String osSpecificCmd = getOsSpecificCmd(cmd);
-        int left = retry;
-        while (left > 0) {
-            try {
-                final ProcessBuilder processBuilder =
-                        new ProcessBuilder(osSpecificCmd.split("\\s+"));
-                processBuilder.directory(dir);
-                processBuilder.inheritIO();
-                final Process process = processBuilder.start();
-                final int exitCode = process.waitFor();
-                if (exitCode == 0) {
-                    return;
-                }
-                left--;
-                if (left > 0) {
-                    TimeUnit.SECONDS.sleep(SLEEP_DURATION_SECONDS);
-                }
-            }
-            catch (IOException | InterruptedException ex) {
-                LOGGER.error("Error executing command: " + ex.getMessage());
-                left--;
-            }
-        }
-        throw new IllegalStateException("Error executing command: " + cmd);
-    }
-
-    /**
-     * Executes a command with retry mechanism.
-     *
-     * @param cmd The command to execute.
-     * @throws IllegalStateException if the command fails after retries.
-     */
-    private static void executeCmdWithRetry(final String cmd) {
-        executeCmdWithRetry(cmd, new File("").getAbsoluteFile(), DEFAULT_RETRY_COUNT);
     }
 
     /**
@@ -1297,7 +790,7 @@ public final class DiffTool {
             diffCmdBuilder.append(" --shortFilePaths");
         }
 
-        executeCmd(diffCmdBuilder.toString());
+        CommandsUtil.executeCmd(diffCmdBuilder.toString());
     }
 
     /**
@@ -1742,7 +1235,7 @@ public final class DiffTool {
         generatePomXml(".");
 
         final String mvnClean = "mvn -e --no-transfer-progress --batch-mode clean";
-        executeCmd(mvnClean, new File("."));
+        CommandsUtil.executeCmd(mvnClean, new File("."));
 
         LOGGER.info("Running Checkstyle on " + srcDir + " ... with excludes {" + excludes + "}");
         final StringBuilder mvnSite =
@@ -1761,7 +1254,7 @@ public final class DiffTool {
             mvnSite.append(extraMvnRegressionOptions);
         }
         LOGGER.info(mvnSite.toString());
-        executeCmd(mvnSite.toString(), new File("."));
+        CommandsUtil.executeCmd(mvnSite.toString(), new File("."));
         LOGGER.info("Running Checkstyle on " + srcDir + " - finished");
     }
 
@@ -1801,9 +1294,9 @@ public final class DiffTool {
     private static void postProcessCheckstyleReport(final String targetDir,
                     final String repoName, final String repoPath) throws IOException {
         final Path reportPath = Paths.get(targetDir, "checkstyle-result.xml");
-        final String absolutePath = new File(getOsSpecificPath("src", "main", "java", repoName))
-                .getAbsolutePath();
-        final String relativePath = getOsSpecificPath(repoPath);
+        final String absolutePath = new File(
+            CommandsUtil.getOsSpecificPath("src", "main", "java", repoName)).getAbsolutePath();
+        final String relativePath = CommandsUtil.getOsSpecificPath(repoPath);
 
         final Path tempPath = Files.createTempFile("temp", ".xml");
         try (BufferedReader reader = Files.newBufferedReader(reportPath, StandardCharsets.UTF_8);
@@ -1913,113 +1406,6 @@ public final class DiffTool {
                 }
             });
         }
-    }
-
-    /**
-     * Executes a command in the specified directory.
-     *
-     * @param cmd The command to execute.
-     * @param dir The directory in which to execute the command.
-     * @throws IOException If an I/O error occurs during command execution.
-     * @throws InterruptedException If the process is interrupted while waiting.
-     * @throws CommandExecutionException If the command exits with a non-zero status.
-     */
-    private static void executeCmd(final String cmd, final File dir)
-            throws IOException, InterruptedException {
-        LOGGER.info("Running command: " + cmd);
-        final ProcessBuilder processBuilder =
-                new ProcessBuilder(getOsSpecificCmd(cmd).split("\\s+"));
-        processBuilder.directory(dir);
-        processBuilder.inheritIO();
-        final Process process = processBuilder.start();
-        final int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new CommandExecutionException("Command execution failed", exitCode);
-        }
-    }
-
-    /**
-     * Executes a command in the current working directory.
-     *
-     * @param cmd the command to execute
-     * @throws IOException if an I/O error occurs while executing the command
-     * @throws InterruptedException if the process is interrupted while waiting
-     */
-    private static void executeCmd(final String cmd) throws IOException, InterruptedException {
-        executeCmd(cmd, new File("").getAbsoluteFile());
-    }
-
-    /**
-     * Returns the command string adjusted for the operating system.
-     *
-     * @param cmd the original command
-     * @return the OS-specific command string
-     */
-    private static String getOsSpecificCmd(final String cmd) {
-        if (System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("windows")) {
-            return "cmd /c " + cmd;
-        }
-        return cmd;
-    }
-
-    /**
-     * Constructs a path string using the appropriate file separator for the operating system.
-     *
-     * @param name the path components
-     * @return the OS-specific path string
-     */
-    private static String getOsSpecificPath(final String... name) {
-        return String.join(File.separator, name);
-    }
-
-    /**
-     * Generates the reset command for a specific commit ID.
-     *
-     * @param repoType  The type of repository (e.g., "git").
-     * @param commitId  The commit ID or tag name.
-     * @return The reset command for the specified commit.
-     * @throws IllegalArgumentException if the repository type is unknown.
-     */
-    private static String getResetCmd(final String repoType, final String commitId) {
-        if ("git".equals(repoType)) {
-            if (isGitSha(commitId)) {
-                return "git reset --hard " + commitId;
-            }
-            else {
-                return "git reset --hard refs/tags/" + commitId;
-            }
-        }
-        throw new IllegalArgumentException("Error! Unknown "
-                + repoType + " repository.");
-    }
-
-    /**
-     * Retrieves the SHA of the most recent commit in the specified repository directory.
-     *
-     * @param repoType the type of repository (e.g., "git")
-     * @param srcDestinationDir the directory of the repository
-     * @return the SHA of the most recent commit, or an empty string if not found
-     * @throws IOException if an I/O error occurs while executing the command
-     * @throws InterruptedException if the process is interrupted while waiting
-     * @throws IllegalArgumentException if the repository type is unknown
-     */
-    private static String getLastProjectCommitSha(final String repoType,
-                                                  final String srcDestinationDir)
-                                                  throws IOException, InterruptedException {
-        if ("git".equals(repoType)) {
-            final ProcessBuilder processBuilder =
-                    new ProcessBuilder("git", "rev-parse", "HEAD");
-            processBuilder.directory(new File(srcDestinationDir));
-            final Process process = processBuilder.start();
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(),
-                    StandardCharsets.UTF_8))) {
-                final String sha = reader.readLine();
-                process.waitFor();
-                return sha != null ? sha.trim() : "";
-            }
-        }
-        throw new IllegalArgumentException("Error! Unknown " + repoType + " repository.");
     }
 
     /**
@@ -2519,24 +1905,6 @@ public final class DiffTool {
     }
 
     /**
-     * Custom runtime exception for handling command execution failures.
-     * Includes the exit code in the error message.
-     */
-    public static class CommandExecutionException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Constructs a CommandExecutionException with a message and exit code.
-         *
-         * @param message the detail message to be included in the exception
-         * @param exitCode the exit code associated with the command execution failure
-         */
-        public CommandExecutionException(final String message, final int exitCode) {
-            super(message + " (Exit code: " + exitCode + ")");
-        }
-    }
-
-    /**
      * Represents a project with its SCM details and optional excludes.
      */
     public static class Project {
@@ -2651,4 +2019,3 @@ public final class DiffTool {
         }
     }
 }
-
