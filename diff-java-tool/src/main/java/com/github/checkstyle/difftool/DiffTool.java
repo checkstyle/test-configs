@@ -1327,11 +1327,8 @@ public final class DiffTool {
             @Override
             public FileVisitResult preVisitDirectory(final Path dir,
                                                      final BasicFileAttributes attrs)
-                                                     throws IOException {
-                final Path targetPath =
-                        destinationPath.resolve(sourcePath.relativize(dir));
-                Files.createDirectories(targetPath);
-                return FileVisitResult.CONTINUE;
+                    throws IOException {
+                return handlePreVisitDirectory(sourcePath, destinationPath, dir);
             }
 
             @Override
@@ -1343,6 +1340,32 @@ public final class DiffTool {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    /**
+     * Copies {@code dir} into the destination tree, or skips it if it is a
+     * {@code .git} directory.
+     *
+     * @param sourcePath root of the source directory tree.
+     * @param destinationPath root of the destination directory tree.
+     * @param dir the directory about to be visited.
+     * @return {@link FileVisitResult#SKIP_SUBTREE} for a {@code .git}
+     *     directory, otherwise {@link FileVisitResult#CONTINUE}.
+     * @throws IOException if the target directory cannot be created.
+     */
+    private static FileVisitResult handlePreVisitDirectory(final Path sourcePath,
+                                                           final Path destinationPath,
+                                                           final Path dir) throws IOException {
+        FileVisitResult result = FileVisitResult.CONTINUE;
+        final Path dirName = dir.getFileName();
+        if (dirName != null && ".git".equals(dirName.toString())) {
+            result = FileVisitResult.SKIP_SUBTREE;
+        }
+        else {
+            final Path targetPath = destinationPath.resolve(sourcePath.relativize(dir));
+            Files.createDirectories(targetPath);
+        }
+        return result;
     }
 
     /**
