@@ -27,7 +27,8 @@
 
         <module name="IllegalTokenText">
             <property name="format" value="a href"/>
-            <property name="tokens" value="COMMENT_CONTENT"/>
+            <property name="ignoreCase" value="true"/>
+            <property name="tokens" value="STRING_LITERAL"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
