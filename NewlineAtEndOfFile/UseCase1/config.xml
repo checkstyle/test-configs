@@ -17,21 +17,7 @@
     </module>
 
     <module name="NewlineAtEndOfFile">
-        <property name="id" value="example1"/>
-    </module>
-
-    <module name="NewlineAtEndOfFile">
-        <property name="id" value="example2"/>
-    </module>
-
-    <module name="NewlineAtEndOfFile">
-        <property name="id" value="example3"/>
-        <property name="lineSeparator" value="lf"/>
-    </module>
-
-    <module name="NewlineAtEndOfFile">
-        <property name="fileExtensions" value="java, xml, py"/>
-        <property name="id" value="example4"/>
+        <property name="lineSeparator" value="crlf"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
