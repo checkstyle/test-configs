@@ -39,11 +39,6 @@
             <property name="requiredJavadocPhrase" value="This implementation"/>
         </module>
 
-        <module name="DesignForExtension">
-            <property name="id" value="example4"/>
-            <property name="requiredJavadocPhrase" value="This[\s\S]*implementation"/>
-        </module>
-
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
             <property name="message" value="Javadoc comment at column \d+ has parse error"/>

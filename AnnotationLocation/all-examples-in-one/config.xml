@@ -52,7 +52,7 @@
         </module>
 
         <module name="AnnotationLocation">
-            <property name="allowSamelineMultipleAnnotations" value="false"/>
+            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
             <property name="id" value="example5"/>
         </module>
 

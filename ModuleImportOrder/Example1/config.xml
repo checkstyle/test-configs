@@ -25,9 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="AnnotationLocation">
-            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
-        </module>
+        <module name="ModuleImportOrder"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">

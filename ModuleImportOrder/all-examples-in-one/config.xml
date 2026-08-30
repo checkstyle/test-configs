@@ -25,8 +25,18 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="AnnotationLocation">
-            <property name="allowSamelineSingleParameterlessAnnotation" value="false"/>
+        <module name="ModuleImportOrder">
+            <property name="id" value="example1"/>
+        </module>
+
+        <module name="ModuleImportOrder">
+            <property name="id" value="example2"/>
+            <property name="separated" value="true"/>
+        </module>
+
+        <module name="ModuleImportOrder">
+            <property name="id" value="example3"/>
+            <property name="option" value="bottom"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
