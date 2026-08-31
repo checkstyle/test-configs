@@ -17,22 +17,21 @@
     </module>
 
     <module name="LineLength">
-        <property name="id" value="example1"/>
+        <property name="id" value="usecase1"/>
+        <property name="ignorePattern" value="^(import) "/>
+        <property name="max" value="60"/>
     </module>
 
     <module name="LineLength">
-        <property name="id" value="example2"/>
-        <property name="max" value="120"/>
+        <property name="id" value="usecase2"/>
+        <property name="max" value="84"/>
     </module>
 
-    <module name="LineLength">
-        <property name="id" value="example3"/>
-        <property name="ignorePattern" value="^ *\* *[^ ]+$"/>
-    </module>
-
-    <module name="LineLength">
-        <property name="fileExtensions" value="xml, properties"/>
-        <property name="id" value="example4"/>
+    <module name="com.puppycrawl.tools.checkstyle.filters.SuppressWithPlainTextCommentFilter">
+        <property name="checkFormat" value="LineLength"/>
+        <property name="id" value="usecase2"/>
+        <property name="offCommentFormat" value='^.*"""$'/>
+        <property name="onCommentFormat" value='^\s*"""\s*(?:[,;]|.+)$'/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->

@@ -31,12 +31,6 @@
         <property name="lineEnding" value="cr"/>
     </module>
 
-    <module name="LineEnding">
-        <property name="fileExtensions" value="txt"/>
-        <property name="id" value="example4"/>
-        <property name="lineEnding" value="cr"/>
-    </module>
-
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>

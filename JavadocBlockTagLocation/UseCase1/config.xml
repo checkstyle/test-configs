@@ -26,12 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="JavadocBlockTagLocation">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="JavadocBlockTagLocation">
-            <property name="id" value="example2"/>
-            <property name="tags" value="apiNote, implSpec, implNote"/>
+            <property name="tags" value="author, deprecated, exception, hidden,param, provides, return, see, serial,serialData, serialField, since, throws,uses, version,noinspection"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
