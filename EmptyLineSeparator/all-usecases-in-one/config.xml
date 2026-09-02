@@ -26,7 +26,13 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="EmptyLineSeparator">
-            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+            <property name="id" value="usecase1"/>
+            <property name="tokens" value="IMPORT"/>
+        </module>
+
+        <module name="EmptyLineSeparator">
+            <property name="id" value="usecase2"/>
+            <property name="tokens" value="VARIABLE_DEF, METHOD_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
