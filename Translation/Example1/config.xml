@@ -16,9 +16,7 @@
         <property name="fileNamePattern" value="module\-info\.java$" />
     </module>
 
-    <module name="Translation">
-        <property name="requiredTranslations" value="es, fr"/>
-    </module>
+    <module name="Translation"/>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">

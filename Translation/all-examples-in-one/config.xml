@@ -18,23 +18,23 @@
 
     <module name="Translation">
         <property name="id" value="example1"/>
+    </module>
+
+    <module name="Translation">
+        <property name="id" value="example2"/>
         <property name="requiredTranslations" value="es, fr"/>
     </module>
 
     <module name="Translation">
         <property name="baseName" value="^ButtonLabels.*$"/>
-        <property name="id" value="example2"/>
-        <property name="requiredTranslations" value="fr"/>
-    </module>
-
-    <module name="Translation">
-        <property name="fileExtensions" value="properties,translations"/>
         <property name="id" value="example3"/>
         <property name="requiredTranslations" value="fr"/>
     </module>
 
     <module name="Translation">
+        <property name="fileExtensions" value="properties,translations"/>
         <property name="id" value="example4"/>
+        <property name="requiredTranslations" value="fr"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
