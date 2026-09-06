@@ -26,7 +26,7 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ReturnCount">
-            <property name="format" value="^$"/>
+            <property name="format" value="^signB$"/>
             <property name="max" value="3"/>
         </module>
 

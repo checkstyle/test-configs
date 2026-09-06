@@ -42,7 +42,7 @@
         </module>
 
         <module name="ReturnCount">
-            <property name="format" value="^$"/>
+            <property name="format" value="^signB$"/>
             <property name="id" value="example4"/>
             <property name="max" value="3"/>
         </module>
