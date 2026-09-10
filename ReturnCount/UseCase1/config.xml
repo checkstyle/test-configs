@@ -26,18 +26,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ReturnCount">
-            <property name="maxForVoid" value="0"/>
-            <property name="tokens" value="CTOR_DEF"/>
-        </module>
-
-        <module name="ReturnCount">
-            <property name="max" value="1"/>
-            <property name="tokens" value="LAMBDA"/>
-        </module>
-
-        <module name="ReturnCount">
             <property name="max" value="2"/>
-            <property name="tokens" value="METHOD_DEF"/>
+            <property name="maxForVoid" value="1"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

@@ -26,8 +26,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ReturnCount">
-            <property name="max" value="2"/>
-            <property name="maxForVoid" value="1"/>
+            <property name="format" value="^signB$"/>
+            <property name="max" value="3"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

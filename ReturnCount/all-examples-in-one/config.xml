@@ -27,7 +27,6 @@
 
         <module name="ReturnCount">
             <property name="id" value="example1"/>
-            <property name="max" value="3"/>
         </module>
 
         <module name="ReturnCount">
@@ -36,33 +35,32 @@
         </module>
 
         <module name="ReturnCount">
-            <property name="id" value="example3"/>
-            <property name="max" value="2"/>
-            <property name="maxForVoid" value="1"/>
-        </module>
-
-        <module name="ReturnCount">
             <property name="format" value="^signB$"/>
-            <property name="id" value="example4"/>
+            <property name="id" value="example3"/>
             <property name="max" value="3"/>
         </module>
 
         <module name="ReturnCount">
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
             <property name="maxForVoid" value="0"/>
             <property name="tokens" value="CTOR_DEF"/>
         </module>
 
         <module name="ReturnCount">
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
             <property name="max" value="1"/>
             <property name="tokens" value="LAMBDA"/>
         </module>
 
         <module name="ReturnCount">
-            <property name="id" value="example5"/>
+            <property name="id" value="example4"/>
             <property name="max" value="2"/>
             <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <module name="ReturnCount">
+            <property name="id" value="example5"/>
+            <property name="max" value="3"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
