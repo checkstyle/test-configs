@@ -26,11 +26,6 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ModifierOrder">
-            <property name="id" value="example1"/>
-        </module>
-
-        <module name="ModifierOrder">
-            <property name="id" value="example2"/>
             <property name="modifiersOrder" value="public, private,                protected, abstract, static, final, transient, volatile,                default, synchronized, native, strictfp"/>
         </module>
 
