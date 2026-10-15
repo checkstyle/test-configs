@@ -26,7 +26,8 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="IllegalIdentifierName">
-            <property name="tokens" value="VARIABLE_DEF"/>
+            <property name="format" value="(?i)^(?!(when|record|yield|var|permits|sealed|open|transitive|_)$|(.*\$)).+$"/>
+            <property name="tokens" value="RECORD_DEF"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
