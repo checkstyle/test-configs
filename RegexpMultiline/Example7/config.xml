@@ -19,6 +19,7 @@
     <module name="RegexpMultiline">
         <property name="fileExtensions" value="java"/>
         <property name="format" value="Test.*string"/>
+        <property name="ignoreCase" value="true"/>
     </module>
 
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
