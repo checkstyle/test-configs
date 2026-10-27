@@ -41,7 +41,7 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="COPYRIGHTED"/>
+        <property name="format" value="COPYRIGHT(ED)"/>
         <property name="id" value="example5"/>
         <property name="ignoreCase" value="true"/>
         <property name="maximum" value="1"/>
