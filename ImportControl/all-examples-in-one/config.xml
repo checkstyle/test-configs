@@ -26,24 +26,28 @@
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control1.xml"/>
             <property name="id" value="example1"/>
         </module>
 
         <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control2.xml"/>
+            <property name="file" value="${config.folder}/import-control1.xml"/>
             <property name="id" value="example2"/>
+        </module>
+
+        <module name="ImportControl">
+            <property name="file" value="${config.folder}/import-control2.xml"/>
+            <property name="id" value="example3"/>
             <property name="path" value="${config.folder}[\\/]api[\\/].*$"/>
         </module>
 
         <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control13.xml"/>
-            <property name="id" value="example3"/>
+            <property name="id" value="example4"/>
         </module>
 
         <module name="ImportControl">
             <property name="file" value="${config.folder}/import-control14.xml"/>
-            <property name="id" value="example4"/>
+            <property name="id" value="example5"/>
         </module>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->

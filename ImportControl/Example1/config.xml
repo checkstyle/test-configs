@@ -25,9 +25,7 @@
         <property name="skipFileOnJavaParseException" value="true"/>
         <property name="javaParseExceptionSeverity" value="ignore"/>
 
-        <module name="ImportControl">
-            <property name="file" value="${config.folder}/import-control1.xml"/>
-        </module>
+        <module name="ImportControl"/>
 
         <!-- suppress javadoc parsing errors, as we test Check not a parser -->
         <module name="SuppressionXpathSingleFilter">
