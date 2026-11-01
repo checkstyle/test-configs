@@ -27,10 +27,6 @@
 
         <module name="DescendantToken">
             <property name="id" value="example1"/>
-            <property name="limitedTokens" value="LITERAL_DEFAULT"/>
-            <property name="maximumDepth" value="2"/>
-            <property name="minimumNumber" value="1"/>
-            <property name="tokens" value="LITERAL_SWITCH"/>
         </module>
 
         <module name="DescendantToken">
