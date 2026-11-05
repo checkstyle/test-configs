@@ -70,6 +70,14 @@
         <property name="maximum" value="1"/>
     </module>
 
+    <module name="RegexpMultiline">
+        <property name="format" value="(System\s*\.\s*)(out)\s*\.\s*print\("/>
+        <property name="id" value="example10"/>
+        <property name="matchAcrossLines" value="true"/>
+        <property name="message" value="Avoid using System.out for printing."/>
+        <property name="reportGroup" value="2"/>
+    </module>
+
     <!-- as we run on regression even on non-compiled files we need to skip exceptions on them -->
     <module name="SuppressionSingleFilter">
         <property name="message" value="Exception occurred while parsing"/>
